@@ -35,7 +35,7 @@ ID              [a-zA-Z_]+
 INTLIT          [0-9]+
 CHRLIT          \'(\\n|\\t|\\\\|\\'|\\\"|\\[0-7][0-7]?[0-7]?|[^\n\'])\'
 REALLIT         ([0-9]+"."[0-9]*((e|E)[+-][0-9]+)?)|("."[0-9]+((e|E)[+-][0-9]+)?)|([0-9]+((e|E)[+-][0-9]+))
-RESERVED        "["|"]"|"++"|"--"
+RESERVED        "["|"]"|"++"|"--"|"auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"
 %{
     #include<string.h>
     int lines = 1;
@@ -76,11 +76,11 @@ RESERVED        "["|"]"|"++"|"--"
 {RBRACE}         {if(verbose) printf("RBRACE\n");columns += sizeof(yylex);}
 {RPAR}           {if(verbose) printf("RPAR\n");columns += sizeof(yylex);}
 {SEMI}           {if(verbose) printf("SEMI\n");columns += sizeof(yylex);}
+{RESERVED}       {if(verbose) printf("RESERVED(%s)\n",yytext);columns += sizeof(yylex);}
 {ID}             {if(verbose) printf("ID(%s)\n",yytext);columns += sizeof(yylex);}
 {INTLIT}         {if(verbose) printf("INTLIT(%s)\n",yytext);columns += sizeof(yylex);}
 {CHRLIT}         {if(verbose) printf("CHRLIT(%s)\n",yytext);columns += sizeof(yylex);}
 {REALLIT}        {if(verbose) printf("REALLIT(%s)\n",yytext);columns += sizeof(yylex);}
-{RESERVED}       {if(verbose) printf("RESERVED(%s)\n",yytext);columns += sizeof(yylex);}
 [\t ]            {columns += sizeof(yylex);}
 \n               {++lines; columns = 1;}
 .                {printf("ERRO!");}

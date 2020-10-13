@@ -2,6 +2,6 @@
 
 lex lexer.l
 gcc lex.yy.c -o uccompiler
-cat $1 | ./uccompiler
+./uccompiler -l
 rm lex.yy.c
 rm uccompiler
