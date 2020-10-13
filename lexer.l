@@ -36,12 +36,19 @@ INTLIT          [0-9]+
 CHRLIT          \'(\\n|\\t|\\\\|\\'|\\\"|\\[0-7][0-7]?[0-7]?|[^\n\'])\'
 REALLIT         ([0-9]+"."[0-9]*((e|E)[+-][0-9]+)?)|("."[0-9]+((e|E)[+-][0-9]+)?)|([0-9]+((e|E)[+-][0-9]+))
 RESERVED        "["|"]"|"++"|"--"|"auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"
+SIMPLECOMMENT "//".*
+MLCOMMENTS "/*"
+MLCOMMENTE "*/"
 %{
     #include<string.h>
     int lines = 1;
     int columns = 1;
     int verbose = 0;
+    int comment = 0;
+    int linecomment = 0;
+    int colcomment = 0;
 %}
+%X COMMENT
 %%
 {CHAR}           {if(verbose) printf("CHAR\n"); columns += sizeof(yylex);}
 {ELSE}           {if(verbose) printf("ELSE\n"); columns += sizeof(yylex);}
@@ -81,6 +88,11 @@ RESERVED        "["|"]"|"++"|"--"|"auto"|"break"|"case"|"const"|"continue"|"defa
 {INTLIT}         {if(verbose) printf("INTLIT(%s)\n",yytext);columns += sizeof(yylex);}
 {CHRLIT}         {if(verbose) printf("CHRLIT(%s)\n",yytext);columns += sizeof(yylex);}
 {REALLIT}        {if(verbose) printf("REALLIT(%s)\n",yytext);columns += sizeof(yylex);}
+{SIMPLECOMMENT}  {;}  
+{MLCOMMENTS}     {BEGIN(COMMENT); comment = 1;linecomment = lines;colcomment = columns;}
+<COMMENT>{MLCOMMENTE}      {comment = 0; BEGIN 0;}
+<COMMENT>.       {;}
+<COMMENT>\n	 {++lines;}
 [\t ]            {columns += sizeof(yylex);}
 \n               {++lines; columns = 1;}
 .                {printf("ERRO!");}
@@ -95,6 +107,8 @@ int main(int argc, char* argv[]) {
 	}
    }	
     yylex();
+    if(comment)
+        printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment);
     return 0;
 }
 
