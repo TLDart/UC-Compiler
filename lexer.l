@@ -9,7 +9,7 @@ RETURN          return
 VOID            void
 BITWISEAND      "&"
 BITWISEOR       "|"
-BITWISEXOR      "ˆ"
+BITWISEXOR      "^"
 AND             "&&"
 ASSIGN          "="
 MUL             "*"
@@ -34,7 +34,7 @@ SEMI            ";"
 ID              [a-zA-Z_][a-zA-Z_0-9]*
 INTLIT          [0-9]+
 CHRLIT          (\\n|\\t|\\\\|\\'|\\\"|\\[0-7][0-7]?[0-7]?|[^\n\'\\])\'
-REALLIT         ([0-9]+"."[0-9]*((e|E)[+-][0-9]+)?)|("."[0-9]+((e|E)[+-][0-9]+)?)|([0-9]+((e|E)[+-][0-9]+))
+REALLIT         ([0-9]+"."[0-9]*((e|E)[+-]?[0-9]+)?)|("."[0-9]+((e|E)[+-]?[0-9]+)?)|([0-9]+((e|E)[+-]?[0-9]+))
 RESERVED        "["|"]"|"++"|"--"|"auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"
 SIMPLECOMMENT "//".*
 MLCOMMENTS "/*"
