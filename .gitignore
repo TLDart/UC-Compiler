@@ -1,2 +1,4 @@
 uccompiler
 lex.yy.c
+*.swp*
+log.info

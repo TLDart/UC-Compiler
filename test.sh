@@ -10,16 +10,21 @@ if [ "$#" -ne 2 ]; then
     exit 9
 fi
 echo "Error Reported Analysis" > $2.info
-ls -a | grep  ".txt" | while read -r line ; do
+echo $1
+ls -a "$1"| grep  "\.c\|.uc" | while read -r line ; do
 		echo "Processing $line"
-		processed=`sed 's/.txt/.out/' <<<$line`	
+		processed=`sed -E 's/\.c|\.uc/.out/' <<<$line`	
 		found=`find $1 -name $processed`
 		if [ "$found" ];
 		then
-			result=`diff $line 2.txt`
-			echo "$result"
+			lex lexer.l
+			gcc lex.yy.c -o uccompiler
+			rm lex.yy.c
+			result=`./uccompiler -l < $1/$line | diff $1/$processed -`
+			# result="./uccompiler -l < $1/$line | diff $1/$processed -"
 			if [ "$result" ]; 
 			then
+				echo "$result"
 				echo "Error found "
 				echo "On file $line" >> $2.info
 				echo "$result" >> $2.info
