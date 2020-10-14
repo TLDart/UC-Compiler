@@ -33,7 +33,7 @@ RPAR            ")"
 SEMI            ";"
 ID              [a-zA-Z_]+
 INTLIT          [0-9]+
-CHRLIT          \'(\\n|\\t|\\\\|\\'|\\\"|\\[0-7][0-7]?[0-7]?|[^\n\'])\'
+CHRLIT          (\\n|\\t|\\\\|\\'|\\\"|\\[0-7][0-7]?[0-7]?|[^\n\'\\])\'
 REALLIT         ([0-9]+"."[0-9]*((e|E)[+-][0-9]+)?)|("."[0-9]+((e|E)[+-][0-9]+)?)|([0-9]+((e|E)[+-][0-9]+))
 RESERVED        "["|"]"|"++"|"--"|"auto"|"break"|"case"|"const"|"continue"|"default"|"do"|"enum"|"extern"|"float"|"for"|"goto"|"inline"|"long"|"register"|"restrict"|"signed"|"sizeof"|"static"|"struct"|"switch"|"typedef"|"union"|"unsigned"|"volatile"|"_Bool"|"_Complex"|"_Imaginary"
 SIMPLECOMMENT "//".*
@@ -42,60 +42,63 @@ MLCOMMENTE "*/"
 %{
     #include<string.h>
     int lines = 1;
-    int columns = 1;
+    int columns = 0;
     int verbose = 0;
     int comment = 0;
     int linecomment = 0;
     int colcomment = 0;
 %}
-%X COMMENT
+%X COMMENT CHARAC
 %%
-{CHAR}           {if(verbose) printf("CHAR\n"); columns += sizeof(yylex);}
-{ELSE}           {if(verbose) printf("ELSE\n"); columns += sizeof(yylex);}
-{WHILE}          {if(verbose) printf("WHILE\n"); columns += sizeof(yylex);}
-{IF}             {if(verbose) printf("IF\n"); columns += sizeof(yylex);}
-{INT}            {if(verbose) printf("INT\n"); columns += sizeof(yylex);}
-{SHORT}          {if(verbose) printf("SHORT\n");columns += sizeof(yylex);}
-{DOUBLE}         {if(verbose) printf("DOUBLE\n");columns += sizeof(yylex);}
-{RETURN}         {if(verbose) printf("RETURN\n");columns += sizeof(yylex);}
-{VOID}           {if(verbose) printf("VOID\n");columns += sizeof(yylex);}
-{BITWISEAND}     {if(verbose) printf("BITWISEAND\n");columns += sizeof(yylex);}
-{BITWISEOR}      {if(verbose) printf("BITWISEOR\n");columns += sizeof(yylex);}
-{BITWISEXOR}     {if(verbose) printf("BITWISEXOR\n");columns += sizeof(yylex);}
-{AND}            {if(verbose) printf("AND\n");columns += sizeof(yylex);}
-{ASSIGN}         {if(verbose) printf("ASSIGN\n");columns += sizeof(yylex);}
-{MUL}            {if(verbose) printf("MUL\n");columns += sizeof(yylex);}
-{COMMA}          {if(verbose) printf("COMMA\n");columns += sizeof(yylex);}
-{DIV}            {if(verbose) printf("DIV\n");columns += sizeof(yylex);}
-{EQ}             {if(verbose) printf("EQ\n");columns += sizeof(yylex);}
-{GE}             {if(verbose) printf("GE\n");columns += sizeof(yylex);}
-{GT}             {if(verbose) printf("GT\n");columns += sizeof(yylex);}
-{LBRACE}         {if(verbose) printf("LBRACE\n");columns += sizeof(yylex);}
-{LE}             {if(verbose) printf("LE\n");columns += sizeof(yylex);}
-{LPAR}           {if(verbose) printf("LPAR\n");columns += sizeof(yylex);}
-{LT}             {if(verbose) printf("LT\n");columns += sizeof(yylex);}
-{MINUS}          {if(verbose) printf("MINUS\n");columns += sizeof(yylex);}
-{MOD}            {if(verbose) printf("MOD\n");columns += sizeof(yylex);}
-{NE}             {if(verbose) printf("NE\n");columns += sizeof(yylex);}
-{NOT}            {if(verbose) printf("NOT\n");columns += sizeof(yylex);}
-{OR}             {if(verbose) printf("OR\n");columns += sizeof(yylex);}
-{PLUS}           {if(verbose) printf("PLUS\n");columns += sizeof(yylex);}
-{RBRACE}         {if(verbose) printf("RBRACE\n");columns += sizeof(yylex);}
-{RPAR}           {if(verbose) printf("RPAR\n");columns += sizeof(yylex);}
-{SEMI}           {if(verbose) printf("SEMI\n");columns += sizeof(yylex);}
-{RESERVED}       {if(verbose) printf("RESERVED(%s)\n",yytext);columns += sizeof(yylex);}
-{ID}             {if(verbose) printf("ID(%s)\n",yytext);columns += sizeof(yylex);}
-{INTLIT}         {if(verbose) printf("INTLIT(%s)\n",yytext);columns += sizeof(yylex);}
-{CHRLIT}         {if(verbose) printf("CHRLIT(%s)\n",yytext);columns += sizeof(yylex);}
-{REALLIT}        {if(verbose) printf("REALLIT(%s)\n",yytext);columns += sizeof(yylex);}
-{SIMPLECOMMENT}  {;}  
-{MLCOMMENTS}     {BEGIN(COMMENT); comment = 1;linecomment = lines;colcomment = columns;}
-<COMMENT>{MLCOMMENTE}      {comment = 0; BEGIN 0;}
-<COMMENT>.       {;}
-<COMMENT>\n	 {++lines;}
-[\t ]            {columns += sizeof(yylex);}
-\n               {++lines; columns = 1;}
-.                {printf("ERRO!");}
+{CHAR}                              {if(verbose) printf("CHAR\n"); columns += yyleng;}
+{ELSE}                              {if(verbose) printf("ELSE\n"); columns += yyleng;}
+{WHILE}                             {if(verbose) printf("WHILE\n"); columns += yyleng;}
+{IF}                                {if(verbose) printf("IF\n"); columns += yyleng;}
+{INT}                               {if(verbose) printf("INT\n"); columns += yyleng;}
+{SHORT}                             {if(verbose) printf("SHORT\n");columns += yyleng;}
+{DOUBLE}                            {if(verbose) printf("DOUBLE\n");columns += yyleng;}
+{RETURN}                            {if(verbose) printf("RETURN\n");columns += yyleng;}
+{VOID}                              {if(verbose) printf("VOID\n");columns += yyleng;}
+{BITWISEAND}                        {if(verbose) printf("BITWISEAND\n");columns += yyleng;}
+{BITWISEOR}                         {if(verbose) printf("BITWISEOR\n");columns += yyleng;}
+{BITWISEXOR}                        {if(verbose) printf("BITWISEXOR\n");columns += yyleng;}
+{AND}                               {if(verbose) printf("AND\n");columns += yyleng;}
+{ASSIGN}                            {if(verbose) printf("ASSIGN\n");columns += yyleng;}
+{MUL}                               {if(verbose) printf("MUL\n");columns += yyleng;}
+{COMMA}                             {if(verbose) printf("COMMA\n");columns += yyleng;}
+{DIV}                               {if(verbose) printf("DIV\n");columns += yyleng;}
+{EQ}                                {if(verbose) printf("EQ\n");columns += yyleng;}
+{GE}                                {if(verbose) printf("GE\n");columns += yyleng;}
+{GT}                                {if(verbose) printf("GT\n");columns += yyleng;}
+{LBRACE}                            {if(verbose) printf("LBRACE\n");columns += yyleng;}
+{LE}                                {if(verbose) printf("LE\n");columns += yyleng;}
+{LPAR}                              {if(verbose) printf("LPAR\n");columns += yyleng;}
+{LT}                                {if(verbose) printf("LT\n");columns += yyleng;}
+{MINUS}                             {if(verbose) printf("MINUS\n");columns += yyleng;}
+{MOD}                               {if(verbose) printf("MOD\n");columns += yyleng;}
+{NE}                                {if(verbose) printf("NE\n");columns += yyleng;}
+{NOT}                               {if(verbose) printf("NOT\n");columns += yyleng;}
+{OR}                                {if(verbose) printf("OR\n");columns += yyleng;}
+{PLUS}                              {if(verbose) printf("PLUS\n");columns += yyleng;}
+{RBRACE}                            {if(verbose) printf("RBRACE\n");columns += yyleng;}
+{RPAR}                              {if(verbose) printf("RPAR\n");columns += yyleng;}
+{SEMI}                              {if(verbose) printf("SEMI\n");columns += yyleng;}
+{RESERVED}                          {if(verbose) printf("RESERVED(%s)\n",yytext);columns += yyleng;}
+{ID}                                {if(verbose) printf("ID(%s)\n",yytext);columns += yyleng;}
+{INTLIT}                            {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng;}
+\'                                  {BEGIN(CHARAC);columns++;}
+<CHARAC>{CHRLIT}                    {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0);}
+<CHARAC>([^\n\']*\n)|(\\'\n)        {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);}
+<CHARAC>[^\'\n]*\'                  {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0);}
+{REALLIT}                           {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng;}
+{SIMPLECOMMENT}                     {;}  
+{MLCOMMENTS}                        {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1;}
+<COMMENT>{MLCOMMENTE}               {comment = 0;columns += yyleng; BEGIN 0;}
+<COMMENT>.                          {;columns += yyleng;}
+<COMMENT>\n	                        {++lines;columns = 0;}
+[\t ]                               {columns += yyleng;}
+\n                                  {++lines; columns = 0;}
+.                                   {columns++;printf("Line %d, col %d: illegal character (%s)\n", lines, columns, yytext);}
 %%
 int main(int argc, char* argv[]) {
    for(int i = 0; i < argc; i++){
