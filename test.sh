@@ -3,30 +3,31 @@
 <<COMMENT
 The purpose of this program is to automatically analize all files and files in a test directory and give user feedback about the number of errors.
 If you use the same name for the log file changes will be overwriten
-This script takes 2 parameters, test directory and logfile name.
+This script takes 3 parameters, the name of your lex (.l) logfile name and test directory.
 COMMENT
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 3 ]; then
     echo "There should be 2 parameters in this script, test directory and logfile name"
     exit 9
 fi
 echo "Error Reported Analysis" > $2.info
-echo $1
-ls -a "$1"| grep  "\.c\|.uc" | while read -r line ; do
+echo "Error Reported Analysis"
+# echo $3
+ls -a "$3"| grep  "\.c\|.uc" | while read -r line ; do
 		echo "Processing $line"
 		processed=`sed -E 's/\.c|\.uc/.out/' <<<$line`	
-		found=`find $1 -name $processed`
+		found=`find $3 -name $processed`
 		if [ "$found" ];
 		then
-			lex lexer.l
+			lex $1 
 			gcc lex.yy.c -o uccompiler
 			rm lex.yy.c
-			result=`./uccompiler -l < $1/$line | diff $1/$processed -`
-			# result="./uccompiler -l < $1/$line | diff $1/$processed -"
+			result=`./uccompiler -l < $3/$line | diff $3/$processed -`
+			# result="./uccompiler -l < $3/$line | diff $3/$processed -"
 			if [ "$result" ]; 
 			then
-				echo "$result"
 				echo "Error found "
 				echo "On file $line" >> $2.info
+				echo "$result"
 				echo "$result" >> $2.info
 			else
 				echo "No errors found"
