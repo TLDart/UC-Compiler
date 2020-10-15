@@ -88,8 +88,8 @@ MLCOMMENTE "*/"
 {INTLIT}                            {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng;}
 \'                                  {BEGIN(CHARAC);columns++;}
 <CHARAC>{CHRLIT}                    {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0);}
-<CHARAC>(\\|(([^\n\r\'\\]|\\'|\\\\|\\[^\\\n\r])*)(\n|\r|\r\n))       {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);}
-<CHARAC>([^\'\n\r]|\\')*\'                  {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0);}
+<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?(\n|\r|\r\n)     {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);}
+<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'                  {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0);}
 {REALLIT}                           {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng;}
 {SIMPLECOMMENT}                     {;}  
 {MLCOMMENTS}                        {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1;}
