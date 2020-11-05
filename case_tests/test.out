@@ -1,0 +1,25 @@
+ID(i)
+Line 1, col 2: illegal character (\)
+ID(a)
+ID(i)
+Line 2, col 2: illegal character (\)
+Line 2, col 3: unterminated char constant
+DIV
+ID(a)
+Line 4, col 1: invalid char constant ('/* this is a test */ ')
+Line 5, col 1: unterminated char constant
+ID(chari)
+CHAR
+ID(i)
+Line 7, col 1: unterminated char constant
+Line 8, col 1: invalid char constant ('\999')
+Line 9, col 1: invalid char constant ('999')
+CHRLIT('\777')
+Line 11, col 1: invalid char constant ('\9\'')
+Line 12, col 1: invalid char constant ('\9')
+Line 12, col 5: illegal character (\)
+Line 12, col 6: unterminated char constant
+Line 13, col 1: invalid char constant ('int i = 1')
+Line 13, col 13: invalid char constant ('bcs')
+Line 13, col 19: unterminated char constant
+Line 14, col 1: unterminated char constant
