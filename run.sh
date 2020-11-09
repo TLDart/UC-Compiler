@@ -1,6 +1,7 @@
 #!/bin/sh
 
 lex lexer.l
-gcc lex.yy.c -o uccompiler
-rm lex.yy.c
+yacc -d yaccer.y
+gcc  -o uccompiler lex.yy.c y.tab.c
+rm lex.yy.c y.tab.h y.tab.c
 cat $1 | ./uccompiler
