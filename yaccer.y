@@ -56,49 +56,122 @@ void yyerror(char* s);
 
 %%
 // test: ID ASSIGN INTLIT {printf("sucess\n");}
-FunctionsAndDeclarations: (FunctionDefinition | FunctionDeclaration | Declaration) {FunctionDefinition | FunctionDeclaration | Declaration}
-;
+
+FunctionsAndDeclarations:   FunctionDefinition kleenClosureFDefFDecDec
+                |           FunctionDeclaration kleenClosureFDefFDecDec
+                |           Declaration kleenClosureFDefFDecDec
+                ;
+
+kleenClosureFDefFDecDec:    /* Epsilon */
+                |           kleenClosureFDefFDecDec FunctionDefinition
+                |           kleenClosureFDefFDecDec FunctionDeclaration
+                |           kleenClosureFDefFDecDec Declaration
+                ;
+
 FunctionDefinition : TypeSpec FunctionDeclarator FunctionBody
 ;
-FunctionBody : LBRACE [DeclarationsAndStatements] RBRACE
-;
-DeclarationsAndStatements : Statement DeclarationsAndStatements | Declaration DeclarationsAndStatements | Statement | Declaration
-;
-FunctionDeclaration : TypeSpec FunctionDeclarator SEMI
-;
-FunctionDeclarator : ID LPAR ParameterList RPAR
-;
-ParameterList : ParameterDeclaration {COMMA ParameterDeclaration}
-;
-ParameterDeclaration : TypeSpec [ID]
-;
-Declaration :   TypeSpec Declarator {COMMA Declarator} SEMI
-        |       error SEMI
+
+FunctionBody:   LBRACE RBRACE
+        |       LBRACE DeclarationsAndStatements RBRACE
         ;
-TypeSpec : CHAR | INT | VOID | SHORT | DOUBLE
-;
-Declarator : ID [ASSIGN Expr]
+
+DeclarationsAndStatements:  Statement DeclarationsAndStatements 
+                |           Declaration DeclarationsAndStatements 
+                |           Statement 
+                |           Declaration
+                ;
+
+FunctionDeclaration: TypeSpec FunctionDeclarator SEMI
 ;
 
-Statement:  [Expr] SEMI
-            | LBRACE {Statement} RBRACE;
-            | IF LPAR Expr RPAR Statement [ELSE Statement]
+FunctionDeclarator: ID LPAR ParameterList RPAR
+;
+
+ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration
+;
+kleenClosureCommaParameterDeclaration:  /* Epsilon */
+                            |           kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration
+                            ;       
+
+ParameterDeclaration:   TypeSpec ID
+                |       TypeSpec
+                ;
+
+
+Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI
+        |       error SEMI
+        ;
+kleenClosureCommaDeclarator: /* Epsilon */
+                |            kleenClosureCommaDeclarator COMMA Declarator
+                ;
+
+TypeSpec: CHAR 
+        | INT 
+        | VOID 
+        | SHORT 
+        | DOUBLE
+        ;
+
+Declarator: ID 
+        |    ID ASSIGN Expr
+        ;
+
+Statement:  Expr SEMI
+            | SEMI
+            | LBRACE kleenClosureStatement RBRACE;
+            | IF LPAR Expr RPAR Statement 
+            | IF LPAR Expr RPAR Statement ELSE Statement
             | WHILE LPAR Expr RPAR Statement
-            | RETURN [Expr] SEMI
+            | RETURN SEMI
+            | RETURN Expr SEMI
             | error SEMI
             | LBRACE error RBRACE
             ;
+kleenClosureStatement:  /* Epsilon */
+                |       kleenClosureStatement Statement
+                ;
 
-Expr : Expr (ASSIGN | COMMA) Expr
-    | Expr (PLUS | MINUS | MUL | DIV | MOD) Expr
-    | Expr (OR | AND | BITWISEAND | BITWISEOR | BITWISEXOR) Expr
-    | Expr (EQ | NE | LE | GE | LT | GT) Expr
-    | (PLUS | MINUS | NOT) Expr
-    | ID LPAR [Expr {COMMA Expr}] RPAR
-    | ID | INTLIT | CHRLIT | REALLIT | LPAR Expr RPAR 
-    | ID LPAR error RPAR
-    | LPAR error RPAR
+Expr:   Expr ASSIGN Expr
+    |   Expr COMMA Expr
+
+    |   Expr PLUS Expr
+    |   Expr MINUS Expr
+    |   Expr MUL Expr
+    |   Expr DIV Expr
+    |   Expr MOD Expr
+
+    |   Expr OR Expr
+    |   Expr AND Expr
+    |   Expr BITWISEAND Expr
+    |   Expr BITWISEOR Expr
+    |   Expr BITWISEXOR Expr
+
+    |   Expr EQ Expr
+    |   Expr NE Expr
+    |   Expr LE Expr
+    |   Expr GE Expr
+    |   Expr LT Expr
+    |   Expr GT Expr
+
+    |   PLUS Expr
+    |   MINUS Expr
+    |   NOT Expr
+
+    |   ID LPAR Expr kleenClosureCommaExpr RPAR
+    |   ID LPAR RPAR
+
+    |   ID 
+    |   INTLIT 
+    |   CHRLIT 
+    |   REALLIT 
+
+    |   LPAR Expr RPAR 
+    |   ID LPAR error RPAR
+    |   LPAR error RPAR
     ;
+kleenClosureCommaExpr:   /* Epsilon */
+        |               kleenClosureCommaExpr COMMA Expr
+        ;
 
 %%
 
