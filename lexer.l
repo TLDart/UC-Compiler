@@ -58,7 +58,8 @@ MLCOMMENTE      "*/"
     int linecomment = 0;
     int colcomment = 0;
 %}
-%X COMMENT CHARAC
+
+%x COMMENT CHARAC
 
 %%
 
@@ -96,15 +97,15 @@ MLCOMMENTE      "*/"
 {RPAR}                                                      {if(verbose) printf("RPAR\n");columns += yyleng; return RPAR;}
 {SEMI}                                                      {if(verbose) printf("SEMI\n");columns += yyleng; return SEMI;}
 {RESERVED}                                                  {if(verbose) printf("RESERVED(%s)\n",yytext);columns += yyleng; return RESERVED;}
-{ID}                                                        {if(verbose) printf("ID(%s)\n",yytext);columns += yyleng; return ID;}
-{INTLIT}                                                    {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng; return INTLIT;}
+{ID}                                                        {if(verbose) printf("ID(%s)\n",yytext);columns += yyleng; yylval.string = (char*) strdup(yytext); return ID;}
+{INTLIT}                                                    {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng; yylval.integer = atoi(yytext); return INTLIT;}
 \'                                                          {BEGIN(CHARAC);columns++;}
-<CHARAC>{CHRLIT}                                            {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0);return CHRLIT;}
+<CHARAC>{CHRLIT}                                            {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0); yylval.character = yytext[0]; return CHRLIT;}
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?(\n|\r|\r\n)  {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0); return ERROR;}
-<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0);return ERROR;}
+<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0); return ERROR;}
 <CHARAC>.                                                   {;}
-<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);return ERROR;}
-{REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; return REALLIT;}
+<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0); return ERROR;}
+{REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; yylval.dfloat = atof(yytext); return REALLIT;}
 {SIMPLECOMMENT}                                             {;return SIMPLECOMMENT;}  
 {MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1; return MLCOMMENTS;}
 <COMMENT>{MLCOMMENTE}                                       {comment = 0;columns += yyleng; BEGIN 0;return MLCOMMENTE;}
