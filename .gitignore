@@ -3,3 +3,4 @@ lex.yy.c
 *.swp*
 log.info
 .history
+y.output

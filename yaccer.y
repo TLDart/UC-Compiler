@@ -27,7 +27,7 @@ void yyerror(char* s);
 // Tokens which yylval (Value) is NOT necessary
 %token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR
         AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS
-        RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE
+        RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE ERROR THEN
 
 // Tokens which yylval (Value) is necessary
 %token <integer>    INTLIT
@@ -35,11 +35,12 @@ void yyerror(char* s);
 %token <character>  CHRLIT
 %token <string>     ID
 
-/* Associativity and Priority of Operators */ 
-   
+/* Associativity and Priority of Operators */
+
     // Based on this ref: https://www.tutorialspoint.com/cprogramming/c_operators_precedence.htm
 
 //----------------- Lesser Priority
+%right THEN ELSE
 %left COMMA         // ,
 %right ASSIGN       // =
 %left OR            // ||
@@ -75,9 +76,9 @@ FunctionBody:   LBRACE RBRACE
         |       LBRACE DeclarationsAndStatements RBRACE
         ;
 
-DeclarationsAndStatements:  Statement DeclarationsAndStatements 
-                |           Declaration DeclarationsAndStatements 
-                |           Statement 
+DeclarationsAndStatements:  Statement DeclarationsAndStatements
+                |           Declaration DeclarationsAndStatements
+                |           Statement
                 |           Declaration
                 ;
 
@@ -91,7 +92,7 @@ ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration
 ;
 kleenClosureCommaParameterDeclaration:  /* Epsilon */
                             |           kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration
-                            ;       
+                            ;
 
 ParameterDeclaration:   TypeSpec ID
                 |       TypeSpec
@@ -99,36 +100,36 @@ ParameterDeclaration:   TypeSpec ID
 
 
 Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI
-        |       error SEMI
+        |       ERROR SEMI
         ;
 kleenClosureCommaDeclarator: /* Epsilon */
                 |            kleenClosureCommaDeclarator COMMA Declarator
                 ;
 
-TypeSpec: CHAR 
-        | INT 
-        | VOID 
-        | SHORT 
+TypeSpec: CHAR
+        | INT
+        | VOID
+        | SHORT
         | DOUBLE
         ;
 
-Declarator: ID 
+Declarator: ID
         |    ID ASSIGN Expr
         ;
 
 Statement:  Expr SEMI
             | SEMI
             | LBRACE kleenClosureStatement RBRACE;
-            | IF LPAR Expr RPAR Statement 
+            | IF LPAR Expr RPAR Statement  %prec THEN
             | IF LPAR Expr RPAR Statement ELSE Statement
             | WHILE LPAR Expr RPAR Statement
             | RETURN SEMI
             | RETURN Expr SEMI
-            | error SEMI
-            | LBRACE error RBRACE
+            | ERROR SEMI
             ;
 kleenClosureStatement:  /* Epsilon */
-                |       kleenClosureStatement Statement
+                | kleenClosureStatement Statement
+                | ERROR
                 ;
 
 Expr:   Expr ASSIGN Expr
@@ -160,16 +161,16 @@ Expr:   Expr ASSIGN Expr
     |   ID LPAR Expr kleenClosureCommaExpr RPAR
     |   ID LPAR RPAR
 
-    |   ID 
-    |   INTLIT 
-    |   CHRLIT 
-    |   REALLIT 
+    |   ID
+    |   INTLIT
+    |   CHRLIT
+    |   REALLIT
 
-    |   LPAR Expr RPAR 
-    |   ID LPAR error RPAR
-    |   LPAR error RPAR
+    |   LPAR Expr RPAR
+    |   ID LPAR ERROR RPAR
+    |   LPAR ERROR RPAR
     ;
-kleenClosureCommaExpr:   /* Epsilon */
+kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA
         |               kleenClosureCommaExpr COMMA Expr
         ;
 
