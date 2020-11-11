@@ -12,7 +12,9 @@
 
 int yylex(void);
 void yyerror(char* s);
-
+extern int lines;
+extern int columns;
+extern char* yytext;
 %}
 
 %union{
@@ -76,11 +78,12 @@ FunctionBody:   LBRACE RBRACE
         |       LBRACE DeclarationsAndStatements RBRACE
         ;
 
-DeclarationsAndStatements:  Statement DeclarationsAndStatements
-                |           Declaration DeclarationsAndStatements
-                |           Statement
-                |           Declaration
-                |           error SEMI
+DeclarationsAndStatements:  DeclarationsOrStatements
+                |           DeclarationsAndStatements DeclarationsOrStatements 
+                ;
+DeclarationsOrStatements:   Statement 
+                |           Declaration 
+                |           error SEMI      
                 ;
 
 FunctionDeclaration: TypeSpec FunctionDeclarator SEMI
@@ -178,5 +181,5 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA
 %%
 
 void yyerror(char *msg) {
-   printf ("Line %d, col %d: %s: %s\n" , 69, 69, msg , "TDB");
+   printf ("Line %d, col %d: %s: %s\n" , lines, columns, msg , yytext);
 }

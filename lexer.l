@@ -101,9 +101,9 @@ MLCOMMENTE      "*/"
 \'                                                          {BEGIN(CHARAC);columns++;}
 <CHARAC>{CHRLIT}                                            {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0); yylval.character = yytext[0]; return CHRLIT;}
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?(\n|\r|\r\n)  {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);/*return ERROR;*/}
-<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0); /*return ERROR;*/}
+<CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns, yytext);columns+=yyleng;BEGIN(0);}
 <CHARAC>.                                                   {;}
-<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0); /*return ERROR;*/}
+<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);}
 {REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; yylval.dfloat = atof(yytext); return REALLIT;}
 {SIMPLECOMMENT}                                             {;return SIMPLECOMMENT;}  
 {MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1; return MLCOMMENTS;}
@@ -112,27 +112,26 @@ MLCOMMENTE      "*/"
 <COMMENT>\n|\r|\r\n	                                        {++lines;columns = 0;}
 [\t ]                                                       {columns += yyleng;}
 \n|\r|\r\n                                                  {++lines; columns = 0;}
-.                                                           {columns++;printf("Line %d, col %d: illegal character (%s)\n", lines, columns, yytext); return yytext[0];}
+.                                                           {columns++;printf("Line %d, col %d: illegal character (%s)\n", lines, columns, yytext);}
 
 %%
 
 int main(int argc, char* argv[]) {
-   for(int i = 0; i < argc; i++){
-	if(strcmp("-l", argv[i]) == 0){
-		verbose = 1;	
-	}
-	else if(strcmp("-t", argv[i]) == 0){
-		sintaxTree = 1;	
-	}
-	else if(strcmp("-e1", argv[i]) == 0){
-		verbose = 0;	
-	}
-	else if(strcmp("-e2", argv[i]) == 0){
-		sintaxError = 1;	
-		verbose = 1;	
-	}
-    
-   }	
+    for(int i = 0; i < argc; i++){
+        if(strcmp("-l", argv[i]) == 0){
+            verbose = 1;	
+        }
+        else if(strcmp("-t", argv[i]) == 0){
+            sintaxTree = 1;	
+        }
+        else if(strcmp("-e1", argv[i]) == 0){
+            verbose = 0;	
+        }
+        else if(strcmp("-e2", argv[i]) == 0){
+            sintaxError = 1;	
+            verbose = 1;	
+        }
+    }
     yyparse();
     if(comment)
         printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment);
