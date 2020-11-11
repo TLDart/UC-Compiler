@@ -12,9 +12,11 @@
 
 int yylex(void);
 void yyerror(char* s);
+
 extern int lines;
 extern int columns;
 extern char* yytext;
+int syntax_error_counter = 0;
 %}
 
 %union{
@@ -182,4 +184,5 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA
 
 void yyerror(char *msg) {
    printf ("Line %d, col %d: %s: %s\n" , lines, columns, msg , yytext);
+   ++syntax_error_counter;
 }
