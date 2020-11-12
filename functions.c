@@ -156,3 +156,60 @@ struct function_declaration* insert_function_declaration(int i_typespec, char* i
     new->param_list = i_param_list;
 }
 
+struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id){
+    struct parameter_declaration* new = (struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
+
+    if(i_typespec == 0){
+         new->type = t_typespec_char;
+    }
+    if(i_typespec == 1){
+         new->type = t_typespec_int;
+    }
+    if(i_typespec == 2){
+         new->type = t_typespec_void;
+    }
+    if(i_typespec == 3){
+         new->type = t_typespec_short;
+    }
+    if(i_typespec == 4){
+         new->type = t_typespec_double;
+    }
+
+    if(i_id == NULL){
+        new->id = NULL;
+    }
+    else
+        new->id = (char*)strdup(i_id);
+
+}
+struct parameter_list* insert_param_list(struct parameter_declaration* p_dec, struct parameter_list* rem){
+	struct parameter_list* new=(struct parameter_list*)malloc(sizeof(struct parameter_list));
+
+    new->p_dec = p_dec;
+    new->next = NULL;
+
+    if(rem != NULL)
+        new->next = rem;
+
+    return new;
+}
+
+struct parameter_list* insert_param_list_rem(struct parameter_list* head, struct parameter_declaration* p_dec){
+
+    struct parameter_list* new=(struct parameter_list*)malloc(sizeof(struct parameter_list));
+
+    new->p_dec = p_dec;
+    new->next = NULL;
+
+    if(head == NULL)
+        head = new;
+
+    else{
+        struct parameter_list* looper = head;
+        while(looper->next != NULL) looper = looper->next;
+        looper->next = new;
+    }
+    return head;
+
+
+}

@@ -91,6 +91,20 @@ void print_id(char* id, int depth){
 
 void print_param_list(struct parameter_list* p_list, int depth){
     print_indentation(depth);
+    printf("ParamList\n");
+    while(p_list != NULL){
+        print_param_dec(p_list->p_dec, depth + 1);
+        p_list = p_list->next;
+    }
+}
+
+void print_param_dec(struct parameter_declaration* p_dec, int depth){
+        print_indentation(depth);
+        printf("ParamDeclaration\n");
+            print_typespec(p_dec->type, depth + 1);
+        if(p_dec->id != NULL){
+            print_id(p_dec->id, depth + 1);
+        }
 }
 
 void print_f_body( struct function_body* f_body, int depth){

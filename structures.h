@@ -47,8 +47,14 @@ struct function_declaration{
         struct parameter_list* param_list; 
 };
 
-struct param_list{
-    char id;
+struct parameter_list{
+    struct parameter_declaration* p_dec;
+    struct parameter_list* next;
+};
+
+struct parameter_declaration{
+    typespec_type type;
+    char* id;
 };
 struct function_body{
     ;

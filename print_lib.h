@@ -7,4 +7,5 @@ void print_dec(struct declaration* f_dec, int depth);
 void print_typespec(typespec_type type, int depth);
 void print_id(char* id, int depth);
 void print_param_list(struct parameter_list* p_list, int depth);
+void print_param_dec(struct parameter_declaration* p_dec, int depth);
 void print_f_body( struct function_body* f_body, int depth);

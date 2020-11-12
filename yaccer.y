@@ -32,6 +32,7 @@ int syntax_error_counter = 0;
     struct declaration* i_dec;
     struct parameter_list* i_param_list;
     struct function_body* i_f_body;
+    struct parameter_declaration* i_param_dec;
 }
 
 %type<prog> FunctionsAndDeclarations kleenClosureFDefFDecDec
@@ -40,7 +41,8 @@ int syntax_error_counter = 0;
 %type<i_dec> Declaration
 %type<integer> TypeSpec
 %type<i_f_body> FunctionBody
-%type<i_param_list> ParameterList
+%type<i_param_list> ParameterList kleenClosureCommaParameterDeclaration
+%type<i_param_dec> ParameterDeclaration
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -106,21 +108,21 @@ DeclarationsOrStatements:   Statement
 FunctionDeclaration: TypeSpec ID LPAR ParameterList RPAR SEMI                   {$$=insert_function_declaration($1,$2,$4);}
 ;
 
-ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration       {$$=NULL;}
+ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration       {$$=insert_param_list($1, $2);}
 ;
-kleenClosureCommaParameterDeclaration:  /* Epsilon */
-                            |           kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration
+kleenClosureCommaParameterDeclaration:  /* Epsilon */                           {$$=NULL;}
+                            |           kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration {$$=insert_param_list_rem($1,$3);}
                             ;
 
-ParameterDeclaration:   TypeSpec ID
-                |       TypeSpec
+ParameterDeclaration:   TypeSpec ID                                             {$$=insert_param_dec($1,$2);}
+                |       TypeSpec                                                {$$=insert_param_dec($1, NULL);}
                 ;
 
 
 Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI             {$$=NULL;}
         ;
-kleenClosureCommaDeclarator: /* Epsilon */
-                |            kleenClosureCommaDeclarator COMMA Declarator
+kleenClosureCommaDeclarator: /* Epsilon */                                      
+                |            kleenClosureCommaDeclarator COMMA Declarator       
                 ;
 
 TypeSpec: CHAR                                                                  {$$=0;}
