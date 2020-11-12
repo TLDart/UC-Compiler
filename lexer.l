@@ -48,6 +48,8 @@ MLCOMMENTE      "*/"
 %{
     #include<string.h>
     #include "y.tab.h"
+    #include "structures.h"
+    #include "print_lib.h"
 
     extern int syntax_error_counter;
     
@@ -58,6 +60,7 @@ MLCOMMENTE      "*/"
     int comment = 0;
     int linecomment = 0;
     int colcomment = 0;
+    struct program* myprog;
 
     typedef enum {meta1, meta2} meta_flag;
 
@@ -146,6 +149,7 @@ int main(int argc, char* argv[]) {
             break;
         case meta2:
             yyparse();
+            print_ast(myprog);
             break;
     }
     
@@ -157,13 +161,17 @@ int main(int argc, char* argv[]) {
 int yywrap() {
     if(sintaxTree && syntax_error_counter == 0){
         /*fazer aqui print_ast()*/
-        printf("        Arvore dos deuses\n");
+       /*  printf("        Arvore dos deuses\n");
         printf("            /       \\\n");
         printf("           /         \\\n");
         printf("        LEFT         RIGHT\n");
         printf("        /  \\        /    \\\n");
         printf("       /    \\      /      \\\n");
-        printf("     LEFT  RIGHT LEFT    RIGHT\n");
+        printf("     LEFT  RIGHT LEFT    RIGHT\n"); */
+        //print_ast(myprog);
     }
     return 1;
 }
+
+
+

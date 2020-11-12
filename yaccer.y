@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "y.tab.h"
+#include "functions.h"
 
 int yylex(void);
 void yyerror(char* s);
@@ -16,6 +17,7 @@ void yyerror(char* s);
 extern int lines;
 extern int columns;
 extern char* yytext;
+extern struct program* myprog;
 int syntax_error_counter = 0;
 %}
 
@@ -24,8 +26,16 @@ int syntax_error_counter = 0;
     double dfloat;
     char character;
     char* string;
+    struct program* prog;
+    struct function_definition* i_f_def;
+    struct function_declaration* i_f_dec;
+    struct declaration* i_dec;
 }
 
+%type<prog> FunctionsAndDeclarations kleenClosureFDefFDecDec
+%type<i_f_def> FunctionDefinition
+%type<i_f_dec> FunctionDeclaration
+%type<i_dec> Declaration
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -62,18 +72,18 @@ int syntax_error_counter = 0;
 %%
 // test: ID ASSIGN INTLIT {printf("sucess\n");}
 
-FunctionsAndDeclarations:   FunctionDefinition kleenClosureFDefFDecDec
-                |           FunctionDeclaration kleenClosureFDefFDecDec
-                |           Declaration kleenClosureFDefFDecDec
+FunctionsAndDeclarations:   FunctionDefinition kleenClosureFDefFDecDec  {$$=myprog=insert_program_func_def($1,$2);}
+                |           FunctionDeclaration kleenClosureFDefFDecDec {$$=myprog=insert_program_func_dec($1,$2);}
+                |           Declaration kleenClosureFDefFDecDec         {$$=myprog=insert_program_dec($1,$2);}
                 ;
 
-kleenClosureFDefFDecDec:    /* Epsilon */
-                |           kleenClosureFDefFDecDec FunctionDefinition
-                |           kleenClosureFDefFDecDec FunctionDeclaration
-                |           kleenClosureFDefFDecDec Declaration
+kleenClosureFDefFDecDec:    /* Epsilon */ {$$= NULL;}
+                |           kleenClosureFDefFDecDec FunctionDefinition  {$$=insert_program_func_def_rem($1,$2);}
+                |           kleenClosureFDefFDecDec FunctionDeclaration {$$=insert_program_func_dec_rem($1,$2);}
+                |           kleenClosureFDefFDecDec Declaration         {$$=insert_program_dec_rem($1,$2);}
                 ;
 
-FunctionDefinition : TypeSpec FunctionDeclarator FunctionBody
+FunctionDefinition : TypeSpec FunctionDeclarator FunctionBody {$$=NULL;}
 ;
 
 FunctionBody:   LBRACE RBRACE
@@ -88,7 +98,7 @@ DeclarationsOrStatements:   Statement
                 |           error SEMI      
                 ;
 
-FunctionDeclaration: TypeSpec FunctionDeclarator SEMI
+FunctionDeclaration: TypeSpec FunctionDeclarator SEMI                   {$$=NULL;}
 ;
 
 FunctionDeclarator: ID LPAR ParameterList RPAR
@@ -105,7 +115,7 @@ ParameterDeclaration:   TypeSpec ID
                 ;
 
 
-Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI
+Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI     {$$=NULL;}
         ;
 kleenClosureCommaDeclarator: /* Epsilon */
                 |            kleenClosureCommaDeclarator COMMA Declarator
