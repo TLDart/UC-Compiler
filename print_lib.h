@@ -9,3 +9,5 @@ void print_id(char* id, int depth);
 void print_param_list(struct parameter_list* p_list, int depth);
 void print_param_dec(struct parameter_declaration* p_dec, int depth);
 void print_f_body( struct function_body* f_body, int depth);
+void print_statement(struct statement* stt, int depth);
+void print_declaration(struct declaration* dec, int depth);

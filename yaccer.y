@@ -33,6 +33,7 @@ int syntax_error_counter = 0;
     struct parameter_list* i_param_list;
     struct function_body* i_f_body;
     struct parameter_declaration* i_param_dec;
+    struct statement* i_stt;
 }
 
 %type<prog> FunctionsAndDeclarations kleenClosureFDefFDecDec
@@ -40,9 +41,10 @@ int syntax_error_counter = 0;
 %type<i_f_dec> FunctionDeclaration
 %type<i_dec> Declaration
 %type<integer> TypeSpec
-%type<i_f_body> FunctionBody
+%type<i_f_body> FunctionBody DeclarationsAndStatements DeclarationsOrStatements
 %type<i_param_list> ParameterList kleenClosureCommaParameterDeclaration
 %type<i_param_dec> ParameterDeclaration
+%type<i_stt> Statement
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -94,15 +96,15 @@ FunctionDefinition : TypeSpec ID LPAR ParameterList RPAR FunctionBody   {$$=inse
 ;
 
 FunctionBody:   LBRACE RBRACE                                           {$$=NULL;} 
-        |       LBRACE DeclarationsAndStatements RBRACE                 {$$= NULL;}
+        |       LBRACE DeclarationsAndStatements RBRACE                 {$$=$2;}
         ;
 
-DeclarationsAndStatements:  DeclarationsOrStatements
-                |           DeclarationsAndStatements DeclarationsOrStatements 
+DeclarationsAndStatements:  DeclarationsOrStatements                    {$$=$1;}
+                |           DeclarationsAndStatements DeclarationsOrStatements  {$$=insert_f_body_multiple($1,$2);} 
                 ;
-DeclarationsOrStatements:   Statement 
-                |           Declaration 
-                |           error SEMI      
+DeclarationsOrStatements:   Statement                                   {$$=insert_f_body_statement($1);} 
+                |           Declaration                                 {$$=insert_f_body_declaration($1);} 
+                |           error SEMI                                  {$$=NULL;}
                 ;
 
 FunctionDeclaration: TypeSpec ID LPAR ParameterList RPAR SEMI                   {$$=insert_function_declaration($1,$2,$4);}
@@ -136,15 +138,15 @@ Declarator: ID
         |    ID ASSIGN Expr
         ;
 
-Statement:  Expr SEMI
-            | SEMI
-            | LBRACE kleenClosureStatement RBRACE;
-            | IF LPAR Expr RPAR Statement  %prec THEN
-            | IF LPAR Expr RPAR Statement ELSE Statement
-            | WHILE LPAR Expr RPAR Statement
-            | RETURN SEMI
-            | RETURN Expr SEMI
-            | LBRACE error RBRACE
+Statement:  Expr SEMI                                                           {$$=NULL;}
+            | SEMI                                                              {$$=NULL;}
+            | LBRACE kleenClosureStatement RBRACE                              {$$=NULL;}        
+            | IF LPAR Expr RPAR Statement  %prec THEN                           {$$=NULL;}
+            | IF LPAR Expr RPAR Statement ELSE Statement                        {$$=NULL;}
+            | WHILE LPAR Expr RPAR Statement                                    {$$=NULL;}
+            | RETURN SEMI                                                       {$$=NULL;}
+            | RETURN Expr SEMI                                                  {$$=NULL;}
+            | LBRACE error RBRACE                                               {$$=NULL;}
             ;
 kleenClosureStatement:  /* Epsilon */
                 | kleenClosureStatement Statement

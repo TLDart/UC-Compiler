@@ -56,7 +56,23 @@ struct parameter_declaration{
     typespec_type type;
     char* id;
 };
+
+typedef enum {t_statement, t_declaration} f_body_type;
+
 struct function_body{
+    f_body_type type;
+    union{
+        struct statement* u_stt;
+        struct declaration* u_dec;
+    }data_body;
+    struct function_body* next;
+};
+
+struct statement{
+        ;
+};
+
+struct declaration{
     ;
 };
 

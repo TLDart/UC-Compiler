@@ -11,3 +11,6 @@ struct function_declaration* insert_function_declaration(int i_typespec, char* i
 struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id);
 struct parameter_list* insert_param_list(struct parameter_declaration* p_dec, struct parameter_list* rem);
 struct parameter_list* insert_param_list_rem(struct parameter_list* head, struct parameter_declaration* p_dec);
+struct function_body* insert_f_body_statement(struct statement* stt);
+struct function_body* insert_f_body_declaration(struct declaration* dec);
+struct function_body* insert_f_body_multiple(struct function_body* f_b1, struct function_body* f_b2);

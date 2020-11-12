@@ -210,6 +210,28 @@ struct parameter_list* insert_param_list_rem(struct parameter_list* head, struct
         looper->next = new;
     }
     return head;
+}
 
+struct function_body* insert_f_body_statement(struct statement* stt){
+ struct function_body* new=(struct function_body*)malloc(sizeof(struct function_body));
 
+    new->type = t_statement;
+    new->data_body.u_stt = stt;
+    new->next = NULL;
+    return new;
+}
+struct function_body* insert_f_body_declaration(struct declaration* dec){
+ struct function_body* new=(struct function_body*)malloc(sizeof(struct function_body));
+
+    new->type = t_declaration;
+    new->data_body.u_dec = dec;
+    new->next = NULL;
+    return new;
+}
+
+struct function_body* insert_f_body_multiple(struct function_body* f_b1, struct function_body* f_b2){
+    struct function_body* temp = f_b1;
+    while(temp->next != NULL) temp = temp->next;
+    temp->next = f_b2;
+    return f_b1;
 }
