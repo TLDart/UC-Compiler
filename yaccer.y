@@ -30,12 +30,17 @@ int syntax_error_counter = 0;
     struct function_definition* i_f_def;
     struct function_declaration* i_f_dec;
     struct declaration* i_dec;
+    struct parameter_list* i_param_list;
+    struct function_body* i_f_body;
 }
 
 %type<prog> FunctionsAndDeclarations kleenClosureFDefFDecDec
 %type<i_f_def> FunctionDefinition
 %type<i_f_dec> FunctionDeclaration
 %type<i_dec> Declaration
+%type<integer> TypeSpec
+%type<i_f_body> FunctionBody
+%type<i_param_list> ParameterList
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -83,11 +88,11 @@ kleenClosureFDefFDecDec:    /* Epsilon */ {$$= NULL;}
                 |           kleenClosureFDefFDecDec Declaration         {$$=insert_program_dec_rem($1,$2);}
                 ;
 
-FunctionDefinition : TypeSpec FunctionDeclarator FunctionBody {$$=NULL;}
+FunctionDefinition : TypeSpec ID LPAR ParameterList RPAR FunctionBody   {$$=insert_function_definition($1,$2,$4,$6);}
 ;
 
-FunctionBody:   LBRACE RBRACE
-        |       LBRACE DeclarationsAndStatements RBRACE
+FunctionBody:   LBRACE RBRACE                                           {$$=NULL;} 
+        |       LBRACE DeclarationsAndStatements RBRACE                 {$$= NULL;}
         ;
 
 DeclarationsAndStatements:  DeclarationsOrStatements
@@ -98,13 +103,10 @@ DeclarationsOrStatements:   Statement
                 |           error SEMI      
                 ;
 
-FunctionDeclaration: TypeSpec FunctionDeclarator SEMI                   {$$=NULL;}
+FunctionDeclaration: TypeSpec ID LPAR ParameterList RPAR SEMI                   {$$=insert_function_declaration($1,$2,$4);}
 ;
 
-FunctionDeclarator: ID LPAR ParameterList RPAR
-;
-
-ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration
+ParameterList: ParameterDeclaration kleenClosureCommaParameterDeclaration       {$$=NULL;}
 ;
 kleenClosureCommaParameterDeclaration:  /* Epsilon */
                             |           kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration
@@ -115,17 +117,17 @@ ParameterDeclaration:   TypeSpec ID
                 ;
 
 
-Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI     {$$=NULL;}
+Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI             {$$=NULL;}
         ;
 kleenClosureCommaDeclarator: /* Epsilon */
                 |            kleenClosureCommaDeclarator COMMA Declarator
                 ;
 
-TypeSpec: CHAR
-        | INT
-        | VOID
-        | SHORT
-        | DOUBLE
+TypeSpec: CHAR                                                                  {$$=0;}
+        | INT                                                                   {$$=1;}
+        | VOID                                                                  {$$=2;}
+        | SHORT                                                                 {$$=3;}
+        | DOUBLE                                                                {$$=4;}
         ;
 
 Declarator: ID

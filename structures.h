@@ -32,10 +32,26 @@ struct program{
     struct program* next;
 };
 
+typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double} typespec_type;
+
 struct function_definition{
-        char* typespec;
+        typespec_type type;
         char* id;
-        //struct parameter_list* param_list; 
+        struct parameter_list* param_list; 
+        struct function_body* f_body;
+};
+
+struct function_declaration{
+        typespec_type type;
+        char* id;
+        struct parameter_list* param_list; 
+};
+
+struct param_list{
+    char id;
+};
+struct function_body{
+    ;
 };
 
 #endif
