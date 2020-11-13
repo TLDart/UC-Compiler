@@ -265,3 +265,76 @@ struct declaration* insert_dec_rem(struct declaration* head, struct declarator* 
     return head;
     
 }
+struct statement* insert_statement(struct statement* head, struct statement* new){
+    if(head == NULL)
+        head = new;
+
+    else{
+        struct statement* looper = head;
+        while(looper->next != NULL) looper = looper->next;
+        looper->next = new;
+    }
+    return head;
+}
+struct statement* insert_return(struct expression* i_expr){
+    
+    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+    struct return_statement* new_return=(struct return_statement*)malloc(sizeof(struct return_statement));
+
+    new_return->expr = i_expr;
+    new->type = t_return;
+    new->statement_data.u_return = new_return;
+    new->next = NULL;
+   
+    return new;
+}
+struct statement* insert_if_statement(struct expression* i_expr, struct statement* i_if_body, struct statement* i_else_body){
+    
+    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+    struct if_statement* new_if=(struct if_statement*)malloc(sizeof(struct if_statement));
+
+    new_if->expr = i_expr;
+    new_if->if_body = i_if_body;
+    new_if->else_body = i_else_body;
+    new->type = t_if;
+    new->statement_data.u_if = new_if;
+    new->next = NULL;
+
+    return new;
+}
+
+struct statement* insert_while_statement(struct expression* i_expr, struct statement* i_while_body){
+    
+    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+    struct while_statement* new_while=(struct while_statement*)malloc(sizeof(struct while_statement));
+
+    new_while->expr = i_expr;
+    new_while->while_body = i_while_body;
+    new->type = t_while;
+    new->statement_data.u_while = new_while;
+    new->next = NULL;
+    
+    return new;
+}
+
+struct statement* insert_statlist(struct statement* i_statlist_body){
+    
+    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+    struct statlist_statement* new_statlist=(struct statlist_statement*)malloc(sizeof(struct statlist_statement));
+
+    new_statlist->stt = i_statlist_body;
+    new->statement_data.u_statlist = new_statlist;
+    new->type = t_statlist;
+    new->next = NULL;
+
+    return new;
+}
+
+struct statement* insert_expr_statement(struct expression* i_expr){
+
+    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+
+    new->statement_data.u_expr = i_expr;
+    new->next = NULL;
+    return new;
+}

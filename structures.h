@@ -67,11 +67,6 @@ struct function_body{
     }data_body;
     struct function_body* next;
 };
-
-struct statement{
-        ;
-};
-
 struct declaration{
     typespec_type type;
     struct declarator* decl;
@@ -81,7 +76,35 @@ struct declarator{
     char* id;
     struct expression* expr;
 };
+typedef enum{t_if, t_return, t_while, t_statlist, t_expression} stt_type;
+struct statement{
+    stt_type type;
+    union{
+        struct if_statement* u_if;
+        struct return_statement* u_return;
+        struct while_statement* u_while;
+        struct statlist_statement* u_statlist;
+        struct expression* u_expr;
+    } statement_data;
+    struct statement* next;
+};
 
+struct if_statement{
+    struct expression* expr;
+    struct statement* if_body;
+    struct statement* else_body;
+};
+struct return_statement{
+    struct expression* expr;
+};
+
+struct while_statement{
+    struct expression* expr;
+    struct statement* while_body;
+};
+struct statlist_statement{
+    struct statement* stt;
+};
 struct expression{
     ;
 };

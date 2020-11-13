@@ -142,18 +142,18 @@ Declarator: ID                                                                  
         |    ID ASSIGN Expr                                                     {$$=insert_decl($1,$3);}
         ;
 
-Statement:  Expr SEMI                                                           {$$=NULL;}
+Statement:  Expr SEMI                                                           {$$=insert_expr_statement($1);}
             | SEMI                                                              {$$=NULL;}
-            | LBRACE kleenClosureStatement RBRACE                               {$$=NULL;}        
-            | IF LPAR Expr RPAR Statement  %prec THEN                           {$$=NULL;}
-            | IF LPAR Expr RPAR Statement ELSE Statement                        {$$=NULL;}
-            | WHILE LPAR Expr RPAR Statement                                    {$$=NULL;}
-            | RETURN SEMI                                                       {$$=NULL;}
-            | RETURN Expr SEMI                                                  {$$=NULL;}
+            | LBRACE kleenClosureStatement RBRACE                               {$$=insert_statlist($2);}        
+            | IF LPAR Expr RPAR Statement  %prec THEN                           {$$=insert_if_statement($3,$5,NULL);}
+            | IF LPAR Expr RPAR Statement ELSE Statement                        {$$=insert_if_statement($3,$5,$7);}
+            | WHILE LPAR Expr RPAR Statement                                    {$$=insert_while_statement($3,$5);}
+            | RETURN SEMI                                                       {$$=insert_return(NULL);}
+            | RETURN Expr SEMI                                                  {$$=insert_return($2);}
             | LBRACE error RBRACE                                               {$$=NULL;}
             ;
 kleenClosureStatement:  /* Epsilon */                                           {$$=NULL;}
-                | kleenClosureStatement Statement                               {$$=NULL;}
+                | kleenClosureStatement Statement                               {$$=insert_statement($1,$2);}
                 ;
 
 Expr:   Expr ASSIGN Expr                                                        {$$=NULL;}
