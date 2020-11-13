@@ -54,7 +54,7 @@ struct program* insert_program_func_dec(struct function_declaration* i_f_dec, st
     }
     else
 
-    printf("asdasd\n");
+    //printf("asdasd\n");
     return new;
 }
 
@@ -215,6 +215,7 @@ struct parameter_list* insert_param_list_rem(struct parameter_list* head, struct
 struct function_body* insert_f_body_statement(struct statement* stt){
  struct function_body* new=(struct function_body*)malloc(sizeof(struct function_body));
 
+    //printf("%d", stt->type);
     new->type = t_statement;
     new->data_body.u_stt = stt;
     new->next = NULL;
@@ -266,6 +267,7 @@ struct declaration* insert_dec_rem(struct declaration* head, struct declarator* 
     
 }
 struct statement* insert_statement(struct statement* head, struct statement* new){
+
     if(head == NULL)
         head = new;
 
@@ -277,7 +279,7 @@ struct statement* insert_statement(struct statement* head, struct statement* new
     return head;
 }
 struct statement* insert_return(struct expression* i_expr){
-    
+    //printf("insert return\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct return_statement* new_return=(struct return_statement*)malloc(sizeof(struct return_statement));
 
@@ -289,7 +291,7 @@ struct statement* insert_return(struct expression* i_expr){
     return new;
 }
 struct statement* insert_if_statement(struct expression* i_expr, struct statement* i_if_body, struct statement* i_else_body){
-    
+    //printf("inser if\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct if_statement* new_if=(struct if_statement*)malloc(sizeof(struct if_statement));
 
@@ -299,12 +301,12 @@ struct statement* insert_if_statement(struct expression* i_expr, struct statemen
     new->type = t_if;
     new->statement_data.u_if = new_if;
     new->next = NULL;
-
+    //printf("after if %d\n", new->type);
     return new;
 }
 
 struct statement* insert_while_statement(struct expression* i_expr, struct statement* i_while_body){
-    
+    //printf("hello\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct while_statement* new_while=(struct while_statement*)malloc(sizeof(struct while_statement));
 
@@ -318,7 +320,7 @@ struct statement* insert_while_statement(struct expression* i_expr, struct state
 }
 
 struct statement* insert_statlist(struct statement* i_statlist_body){
-    
+    //printf("inser statlist\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct statlist_statement* new_statlist=(struct statlist_statement*)malloc(sizeof(struct statlist_statement));
 
@@ -331,9 +333,9 @@ struct statement* insert_statlist(struct statement* i_statlist_body){
 }
 
 struct statement* insert_expr_statement(struct expression* i_expr){
-
+    //printf("inser exprt\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
-
+    new->type = t_expression;
     new->statement_data.u_expr = i_expr;
     new->next = NULL;
     return new;

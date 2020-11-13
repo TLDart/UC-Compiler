@@ -122,9 +122,7 @@ void print_f_body(struct function_body* f_body, int depth){
     }
 }
 
-void print_statement(struct statement* stt, int depth){
-    ;
-}
+
 void print_declaration(struct declaration* dec, int depth){
     print_indentation(depth);
     printf("Declaration\n");
@@ -138,6 +136,104 @@ void print_declaration(struct declaration* dec, int depth){
 void print_declarator(struct declarator* decl, int depth){
     print_id(decl->id, depth);
     if (decl->expr != NULL){
-        ;//print_expr()
+       print_expression(decl->expr, depth +1);
     }
+    else{
+        //print_indentation(depth);
+    }
+}
+
+void print_statement(struct statement* stt, int depth){
+    //printf("asdasdasdasd %d\n", stt->type);
+    while(stt != NULL){
+        if(stt->type == t_if){
+            print_if(stt->statement_data.u_if, depth);
+        }
+        else if(stt->type == t_return){
+             //printf("tf xd\n");
+            print_return(stt->statement_data.u_return, depth);
+        }
+        else if(stt->type == t_while){
+            //printf("here\n");
+            print_while(stt->statement_data.u_while, depth);
+        }
+        else if(stt->type == t_statlist){
+            print_statlist(stt->statement_data.u_statlist, depth);
+        }
+        else if(stt->type == t_expression){
+            // printf("Here goes h");
+            print_expression(stt->statement_data.u_expr, depth);
+        }
+        stt = stt->next;
+    }
+
+}
+
+
+void print_if(struct if_statement* stt_if, int depth){
+    print_indentation(depth);
+    printf("If\n");
+    if(stt_if->expr !=NULL){
+        print_expression(stt_if->expr, depth);
+    }
+    else printf("Erro! A menos que as expressions ainda nao estejam feitas\n");
+    if(stt_if->if_body == NULL){
+        print_indentation(depth + 1);
+        printf("Null\n");
+    }
+    else{
+        print_statement(stt_if->if_body, depth + 1);
+    }
+    if(stt_if->else_body == NULL){
+        print_indentation(depth + 1);
+        printf("Null\n");
+    }
+    else{
+        print_statement(stt_if->else_body, depth + 1);
+    }
+}
+
+void print_return(struct return_statement* stt_ret, int depth){
+    print_indentation(depth);
+    printf("Return\n");
+    if(stt_ret->expr == NULL){
+        print_indentation(depth + 1);
+        printf("Null\n");
+    }
+    else{
+        //print_expression(stt_ret->expr, depth + 1);
+    }
+}
+
+void print_while(struct while_statement* stt_whi, int depth){
+     print_indentation(depth);
+    printf("While\n");
+    if(stt_whi->expr == NULL){
+        print_expression(stt_whi->expr, depth + 1);
+    }
+    else{
+        //print_expression(stt_whi->expr, depth + 1);
+    }
+    if(stt_whi->while_body == NULL){
+        print_indentation(depth + 1);
+        printf("Null Sometthing is wrong\n");
+    }
+    else{
+        print_statement(stt_whi->while_body, depth + 1);
+    }
+}
+void print_statlist(struct statlist_statement* stt_stl, int depth){
+    if(stt_stl->stt != NULL && stt_stl->stt->next){
+        print_indentation(depth);
+        printf("StatList\n");
+        print_statement(stt_stl->stt, depth +1);
+    }
+    else{
+        print_statement(stt_stl->stt, depth);
+    }
+}
+
+void print_expression(struct expression* expr, int depth){
+    print_indentation(depth);
+    printf("Here goes expression\n");
 }
