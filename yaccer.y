@@ -34,17 +34,21 @@ int syntax_error_counter = 0;
     struct function_body* i_f_body;
     struct parameter_declaration* i_param_dec;
     struct statement* i_stt;
+    struct expression* i_expr;
+    struct declarator* i_decl;
 }
 
 %type<prog> FunctionsAndDeclarations kleenClosureFDefFDecDec
 %type<i_f_def> FunctionDefinition
 %type<i_f_dec> FunctionDeclaration
-%type<i_dec> Declaration
+%type<i_dec> Declaration kleenClosureCommaDeclarator
 %type<integer> TypeSpec
 %type<i_f_body> FunctionBody DeclarationsAndStatements DeclarationsOrStatements
 %type<i_param_list> ParameterList kleenClosureCommaParameterDeclaration
 %type<i_param_dec> ParameterDeclaration
-%type<i_stt> Statement
+%type<i_stt> Statement kleenClosureStatement
+%type<i_expr> Expr 
+%type<i_decl> Declarator
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -121,10 +125,10 @@ ParameterDeclaration:   TypeSpec ID                                             
                 ;
 
 
-Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI             {$$=NULL;}
+Declaration:   TypeSpec Declarator kleenClosureCommaDeclarator SEMI                     {$$=insert_dec($1,$2,$3);}
         ;
-kleenClosureCommaDeclarator: /* Epsilon */                                      
-                |            kleenClosureCommaDeclarator COMMA Declarator       
+kleenClosureCommaDeclarator: /* Epsilon */                                              {$$=NULL;}
+                |            kleenClosureCommaDeclarator COMMA Declarator               {$$=insert_dec_rem($1,$3);}
                 ;
 
 TypeSpec: CHAR                                                                  {$$=0;}
@@ -134,13 +138,13 @@ TypeSpec: CHAR                                                                  
         | DOUBLE                                                                {$$=4;}
         ;
 
-Declarator: ID
-        |    ID ASSIGN Expr
+Declarator: ID                                                                  {$$=insert_decl($1, NULL);}
+        |    ID ASSIGN Expr                                                     {$$=insert_decl($1,$3);}
         ;
 
 Statement:  Expr SEMI                                                           {$$=NULL;}
             | SEMI                                                              {$$=NULL;}
-            | LBRACE kleenClosureStatement RBRACE                              {$$=NULL;}        
+            | LBRACE kleenClosureStatement RBRACE                               {$$=NULL;}        
             | IF LPAR Expr RPAR Statement  %prec THEN                           {$$=NULL;}
             | IF LPAR Expr RPAR Statement ELSE Statement                        {$$=NULL;}
             | WHILE LPAR Expr RPAR Statement                                    {$$=NULL;}
@@ -148,51 +152,51 @@ Statement:  Expr SEMI                                                           
             | RETURN Expr SEMI                                                  {$$=NULL;}
             | LBRACE error RBRACE                                               {$$=NULL;}
             ;
-kleenClosureStatement:  /* Epsilon */
-                | kleenClosureStatement Statement
+kleenClosureStatement:  /* Epsilon */                                           {$$=NULL;}
+                | kleenClosureStatement Statement                               {$$=NULL;}
                 ;
 
-Expr:   Expr ASSIGN Expr
-    |   Expr COMMA Expr
+Expr:   Expr ASSIGN Expr                                                        {$$=NULL;}
+    |   Expr COMMA Expr                                                         {$$=NULL;}
 
-    |   Expr PLUS Expr
-    |   Expr MINUS Expr
-    |   Expr MUL Expr
-    |   Expr DIV Expr
-    |   Expr MOD Expr
+    |   Expr PLUS Expr                                                          {$$=NULL;}
+    |   Expr MINUS Expr                                                         {$$=NULL;}
+    |   Expr MUL Expr                                                           {$$=NULL;}
+    |   Expr DIV Expr                                                           {$$=NULL;}
+    |   Expr MOD Expr                                                           {$$=NULL;}
 
-    |   Expr OR Expr
-    |   Expr AND Expr
-    |   Expr BITWISEAND Expr
-    |   Expr BITWISEOR Expr
-    |   Expr BITWISEXOR Expr
+    |   Expr OR Expr{$$=NULL;}
+    |   Expr AND Expr{$$=NULL;}
+    |   Expr BITWISEAND Expr{$$=NULL;}
+    |   Expr BITWISEOR Expr{$$=NULL;}
+    |   Expr BITWISEXOR Expr{$$=NULL;}
 
-    |   Expr EQ Expr
-    |   Expr NE Expr
-    |   Expr LE Expr
-    |   Expr GE Expr
-    |   Expr LT Expr
-    |   Expr GT Expr
+    |   Expr EQ Expr{$$=NULL;}
+    |   Expr NE Expr{$$=NULL;}
+    |   Expr LE Expr{$$=NULL;}
+    |   Expr GE Expr{$$=NULL;}
+    |   Expr LT Expr{$$=NULL;}
+    |   Expr GT Expr{$$=NULL;}
 
-    |   PLUS Expr
-    |   MINUS Expr
-    |   NOT Expr
+    |   PLUS Expr{$$=NULL;}
+    |   MINUS Expr{$$=NULL;}
+    |   NOT Expr{$$=NULL;}
 
-    |   ID LPAR Expr kleenClosureCommaExpr RPAR
-    |   ID LPAR RPAR
+    |   ID LPAR Expr kleenClosureCommaExpr RPAR{$$=NULL;}
+    |   ID LPAR RPAR{$$=NULL;}
 
-    |   ID
-    |   INTLIT
-    |   CHRLIT
-    |   REALLIT
+    |   ID{$$=NULL;}
+    |   INTLIT{$$=NULL;}
+    |   CHRLIT{$$=NULL;}
+    |   REALLIT{$$=NULL;}
 
-    |   LPAR Expr RPAR
-    |   ID LPAR error RPAR
-    |   LPAR error RPAR
+    |   LPAR Expr RPAR{$$=NULL;}
+    |   ID LPAR error RPAR{$$=NULL;}
+    |   LPAR error RPAR{$$=NULL;}
     ;
 
-kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA
-        |               kleenClosureCommaExpr COMMA Expr
+kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                     
+        |               kleenClosureCommaExpr COMMA Expr                
         ;
 
 

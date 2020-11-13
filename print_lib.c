@@ -128,5 +128,16 @@ void print_statement(struct statement* stt, int depth){
 void print_declaration(struct declaration* dec, int depth){
     print_indentation(depth);
     printf("Declaration\n");
-    ;
+    print_typespec(dec->type,depth + 1);
+    while(dec != NULL){
+        print_declarator(dec->decl, depth + 1);
+        dec = dec->next;
+    }
+}
+
+void print_declarator(struct declarator* decl, int depth){
+    print_id(decl->id, depth);
+    if (decl->expr != NULL){
+        ;//print_expr()
+    }
 }

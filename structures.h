@@ -32,7 +32,7 @@ struct program{
     struct program* next;
 };
 
-typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double} typespec_type;
+typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double, typespec_null} typespec_type;
 
 struct function_definition{
         typespec_type type;
@@ -73,7 +73,16 @@ struct statement{
 };
 
 struct declaration{
-    ;
+    typespec_type type;
+    struct declarator* decl;
+    struct declaration* next;
+};
+struct declarator{
+    char* id;
+    struct expression* expr;
 };
 
+struct expression{
+    ;
+};
 #endif

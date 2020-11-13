@@ -235,3 +235,33 @@ struct function_body* insert_f_body_multiple(struct function_body* f_b1, struct 
     temp->next = f_b2;
     return f_b1;
 }
+
+struct declarator* insert_decl(char* i_id, struct expression* i_expr){
+    struct declarator* new=(struct declarator*)malloc(sizeof(struct declarator));
+    new->id = (char*)strdup(i_id);
+    new->expr = i_expr;
+}
+struct declaration* insert_dec(int typespec,struct declarator* i_decl, struct declaration* i_dec){
+    struct declaration* new=(struct declaration*)malloc(sizeof(struct declaration));
+    new->type = typespec;
+    new->decl = i_decl;
+    new->next = i_dec;
+}
+
+struct declaration* insert_dec_rem(struct declaration* head, struct declarator* i_decl){
+    struct declaration* new=(struct declaration*)malloc(sizeof(struct declaration));
+
+    new->type = typespec_null;
+    new->decl = i_decl;
+
+   if(head == NULL)
+        head = new;
+
+    else{
+        struct declaration* looper = head;
+        while(looper->next != NULL) looper = looper->next;
+        looper->next = new;
+    }
+    return head;
+    
+}
