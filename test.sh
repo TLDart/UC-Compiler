@@ -6,7 +6,7 @@ If you use the same name for the log file changes will be overwriten
 This script takes 3 parameters, the name of your lex (.l) logfile name and test directory.
 COMMENT
 if [ "$#" -ne 3 ]; then
-    echo "There should be 2 parameters in this script, test directory and logfile name"
+    echo "There should be 3 parameters in this script, test directory and logfile name"
     exit 9
 fi
 echo "Error Reported Analysis" > $2.info
@@ -19,9 +19,10 @@ ls -a "$3"| grep  "\.c\|.uc" | while read -r line ; do
 		if [ "$found" ];
 		then
 			lex $1 
-			gcc lex.yy.c -o uccompiler
-			rm lex.yy.c
-			result=`./uccompiler -l < $3/$line | diff $3/$processed -`
+			yacc -d -v yaccer.y 
+			gcc lex.yy.c y.tab.c functions.c print_lib.c -o uccompiler && 
+			rm lex.yy.c y.tab.h y.tab.c 
+			result=`./uccompiler -t < $3/$line | diff $3/$processed -`
 			# result="./uccompiler -l < $3/$line | diff $3/$processed -"
 			if [ "$result" ]; 
 			then
