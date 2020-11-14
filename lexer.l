@@ -149,19 +149,12 @@ int main(int argc, char* argv[]) {
             break;
         case meta2:
             yyparse();
-            print_ast(myprog);
             break;
     }
-    
-    if(comment)
-        printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment);
-    return 0;
-}
-
-int yywrap() {
     if(sintaxTree && syntax_error_counter == 0){
+        print_ast(myprog);
         /*fazer aqui print_ast()*/
-       /*  printf("        Arvore dos deuses\n");
+        /*  printf("        Arvore dos deuses\n");
         printf("            /       \\\n");
         printf("           /         \\\n");
         printf("        LEFT         RIGHT\n");
@@ -170,6 +163,13 @@ int yywrap() {
         printf("     LEFT  RIGHT LEFT    RIGHT\n"); */
         //print_ast(myprog);
     }
+    
+    if(comment)
+        printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment);
+    return 0;
+}
+
+int yywrap() {
     return 1;
 }
 
