@@ -241,12 +241,14 @@ struct declarator* insert_decl(char* i_id, struct expression* i_expr){
     struct declarator* new=(struct declarator*)malloc(sizeof(struct declarator));
     new->id = (char*)strdup(i_id);
     new->expr = i_expr;
+    return new;
 }
 struct declaration* insert_dec(int typespec,struct declarator* i_decl, struct declaration* i_dec){
     struct declaration* new=(struct declaration*)malloc(sizeof(struct declaration));
     new->type = typespec;
     new->decl = i_decl;
     new->next = i_dec;
+    return new;
 }
 
 struct declaration* insert_dec_rem(struct declaration* head, struct declarator* i_decl){

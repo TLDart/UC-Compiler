@@ -1,6 +1,4 @@
+int a = 2;
 int main(void) {
-    if(x = 3){
-      if (1==a);
-
-  }
+  int a = -2/-2;
 }

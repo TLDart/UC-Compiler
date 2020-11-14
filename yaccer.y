@@ -81,6 +81,8 @@ int syntax_error_counter = 0;
 %left MINUS PLUS    // -    +
 %left MUL DIV MOD   // *    /   %
 %right NOT          // !1
+
+%left OP1
 //----------------- Higher Priority
 
 %%
@@ -176,8 +178,8 @@ Expression:             Expression OR Expression                                
         |               Expression BITWISEOR Expression                             {$$=insert_expression_op2($1,16,$3);}
         |               Expression LE Expression                                    {$$=insert_expression_op2($1,17,$3);}
 
-        |               PLUS Expression                                             {$$=insert_expression_op1(0,$2);}
-        |               MINUS Expression                                            {$$=insert_expression_op1(1,$2);}
+        |               PLUS Expression     %prec OP1                               {$$=insert_expression_op1(0,$2);}
+        |               MINUS Expression    %prec OP1                               {$$=insert_expression_op1(1,$2);}
         |               NOT Expression                                              {$$=insert_expression_op1(2,$2);}
 
         |               ID LPAR Expression kleenClosureCommaExpr RPAR               {$$=insert_expression_call($1,$3,$4);}
