@@ -17,7 +17,6 @@ void yyerror(char* s);
 extern int lines;
 extern int columns;
 extern char* yytext;
-extern int yyleng;
 extern struct program* myprog;
 int syntax_error_counter = 0;
 %}
@@ -46,10 +45,12 @@ int syntax_error_counter = 0;
 %type<i_f_body> FunctionBody DeclarationsAndStatements DeclarationsOrStatements
 %type<i_param_list> ParameterList kleenClosureCommaParameterDeclaration
 %type<i_param_dec> ParameterDeclaration
+%type<i_stt> ErrorOrStat
 %type<i_stt> Statement kleenClosureStatement
 %type<i_expr> Expression 
 %type<i_decl> Declarator
 %type<i_call> kleenClosureCommaExpr
+
 
 /* Tokens */
 
@@ -80,7 +81,7 @@ int syntax_error_counter = 0;
 %left MUL DIV MOD   // *    /   %
 %right NOT          // !1
 
-%left OP1           // Auxiliary 
+%left OP1 error_aux           // Auxiliary
 //----------------- Higher Priority
 
 %%
@@ -91,7 +92,7 @@ FunctionsAndDeclarations:       FunctionDefinition kleenClosureFDefFDecDec      
         |                       Declaration kleenClosureFDefFDecDec                 {$$=myprog=insert_program_dec($1,$2);}
         ;
 
-kleenClosureFDefFDecDec:        /* Epsilon */                                       {$$=NULL;}
+kleenClosureFDefFDecDec:        /* Epsilon */                                       {$$= NULL;}
         |                       kleenClosureFDefFDecDec FunctionDefinition          {$$=insert_program_func_def_rem($1,$2);}
         |                       kleenClosureFDefFDecDec FunctionDeclaration         {$$=insert_program_func_dec_rem($1,$2);}
         |                       kleenClosureFDefFDecDec Declaration                 {$$=insert_program_dec_rem($1,$2);}
@@ -109,7 +110,6 @@ DeclarationsAndStatements:      DeclarationsOrStatements                        
         ;
 DeclarationsOrStatements:       Statement                                           {$$=insert_f_body_statement($1);} 
         |                       Declaration                                         {$$=insert_f_body_declaration($1);} 
-        |                       error SEMI                                          {$$=insert_f_body_statement(NULL);}
         ;
 
 FunctionDeclaration:            TypeSpec ID LPAR ParameterList RPAR SEMI            {$$=insert_function_declaration($1,$2,$4);}
@@ -127,6 +127,7 @@ ParameterDeclaration:           TypeSpec ID                                     
 
 
 Declaration:      TypeSpec Declarator kleenClosureCommaDeclarator SEMI              {$$=insert_dec($1,$2,$3);}
+        |         error SEMI                                                        {$$=NULL;}
         ;
 kleenClosureCommaDeclarator: /* Epsilon */                                          {$$=NULL;}
         |            kleenClosureCommaDeclarator COMMA Declarator                   {$$=insert_dec_rem($1,$3);}
@@ -146,15 +147,19 @@ Declarator:             ID                                                      
 Statement:              Expression SEMI                                             {$$=insert_expr_statement($1);}
         |               SEMI                                                        {$$=NULL;}
         |               LBRACE kleenClosureStatement RBRACE                         {$$=insert_statlist($2);}        
-        |               IF LPAR Expression RPAR Statement  %prec THEN               {$$=insert_if_statement($3,$5,NULL);}
-        |               IF LPAR Expression RPAR Statement ELSE Statement            {$$=insert_if_statement($3,$5,$7);}
-        |               WHILE LPAR Expression RPAR Statement                        {$$=insert_while_statement($3,$5);}
+        |               IF LPAR Expression RPAR ErrorOrStat  %prec THEN             {$$=insert_if_statement($3,$5,NULL);}
+        |               IF LPAR Expression RPAR ErrorOrStat ELSE ErrorOrStat        {$$=insert_if_statement($3,$5,$7);}
+        |               WHILE LPAR Expression RPAR ErrorOrStat                      {$$=insert_while_statement($3,$5);}
         |               RETURN SEMI                                                 {$$=insert_return(NULL);}
         |               RETURN Expression SEMI                                      {$$=insert_return($2);}
         |               LBRACE error RBRACE                                         {$$=NULL;}
+        |               LBRACE RBRACE                                               {$$=NULL;}
         ;
-kleenClosureStatement:  /* Epsilon */                                               {$$=NULL;}
-        |               kleenClosureStatement Statement                             {$$=insert_statement($1,$2);}
+kleenClosureStatement:  ErrorOrStat                                                 {$$=$1;}
+        |               kleenClosureStatement ErrorOrStat                           {$$=insert_statement($1,$2);}
+        ;
+ErrorOrStat:            error SEMI                                                  {$$=NULL;}
+        |               Statement                                                   {$$=$1;}
         ;
 
 Expression:             Expression OR Expression                                    {$$=insert_expression_op2($1,0,$3);}
@@ -201,6 +206,6 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                              
 %%
 
 void yyerror(char *msg) {
-   printf ("Line %d, col %d: %s: %s\n" , lines, columns , msg , yytext);
+   printf ("Line %d, col %d: %s: %s\n" , lines, columns, msg , yytext);
    ++syntax_error_counter;
 }
