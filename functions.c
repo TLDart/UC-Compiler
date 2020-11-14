@@ -340,3 +340,93 @@ struct statement* insert_expr_statement(struct expression* i_expr){
     new->next = NULL;
     return new;
 }
+
+//new
+struct expression* insert_expression_op1(int operation, struct expression* arg){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct op1* new_op1 = (struct op1*) malloc(sizeof(struct op1));
+    new_op1->type = operation;
+    new_op1->exp = arg;
+    new_expr->expr_t = t_op1;
+    new_expr->expression_morphs.operation1 = new_op1; 
+    return new_expr;
+}
+
+
+struct expression* insert_expression_op2(struct expression* arg1, int operation, struct expression* arg2){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct op2* new_op2 = (struct op2*) malloc(sizeof(struct op2));
+    new_op2->type = operation;
+    new_op2->exp1 = arg1;
+    new_op2->exp2 = arg2;
+    new_expr->expr_t = t_op2;
+    new_expr->expression_morphs.operation2 = new_op2; 
+    return new_expr;
+}
+
+struct expression* insert_expression_call(char* id, struct expression* exp, struct call* exp_list){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct call* new_id_call = (struct call*) malloc(sizeof(struct call));
+    // Name
+    new_id_call->ct = call_name;
+    new_id_call->call_morphs.id = (char*) strdup(id);
+    if (exp == NULL && exp_list == NULL){
+        new_id_call->next_arg = NULL;
+    } else {
+        new_id_call->next_arg = (struct call*) malloc(sizeof(struct call));
+        // Expression
+        new_id_call->next_arg->ct = call_exp;
+        new_id_call->next_arg->call_morphs.exp = exp;
+        new_id_call->next_arg->next_arg = exp_list;
+    }
+    new_expr->expr_t = t_call;
+    new_expr->expression_morphs.c = new_id_call;
+    return new_expr;
+}
+//-======================================================================================
+struct expression* insert_expression_terminal_id_chrlit(char* id, int type){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
+    new_term->type = type;
+    new_term->terminal_morphs.id = (char*) strdup(id);
+    new_expr->expr_t = t_term;
+    new_expr->expression_morphs.t = new_term;
+    return new_expr;
+}
+struct expression* insert_expression_terminal_intlit(int id, int type){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
+    new_term->type = type;
+    new_term->terminal_morphs.integer = id;
+    new_expr->expr_t = t_term;
+    new_expr->expression_morphs.t = new_term;
+    return new_expr;
+}
+struct expression* insert_expression_terminal_reallit(double id, int type){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
+    new_term->type = type;
+    new_term->terminal_morphs.dfloat = id;
+    new_expr->expr_t = t_term;
+    new_expr->expression_morphs.t = new_term;
+    return new_expr;
+}
+
+//-======================================================================================
+
+struct call* insert_expression_kleen(struct call* head, struct expression* exp){
+    struct call* current;
+    if (head == NULL){
+        head = (struct call*) malloc(sizeof(struct call));
+        head->ct = call_exp;
+        head->call_morphs.exp = exp;
+        head->next_arg = NULL;     
+    } else {
+        for (current = head; current->next_arg; current = current->next_arg ) {}
+        current->next_arg = (struct call*) malloc(sizeof(struct call));
+        current->next_arg->ct = call_exp;
+        current->next_arg->call_morphs.exp = exp;
+        current->next_arg->next_arg = NULL;
+    }
+    return head;
+}

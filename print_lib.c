@@ -206,7 +206,7 @@ void print_return(struct return_statement* stt_ret, int depth){
 }
 
 void print_while(struct while_statement* stt_whi, int depth){
-     print_indentation(depth);
+    print_indentation(depth);
     printf("While\n");
     if(stt_whi->expr == NULL){
         print_expression(stt_whi->expr, depth + 1);

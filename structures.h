@@ -1,26 +1,6 @@
 #ifndef STRUCTURES_H
 #define STRUCTURES_H
 
-typedef enum {t_char, t_charlit, t_id, t_int, t_short, t_intlit, t_double, t_reallit,t_void} t_type;
-
-struct terminal{
-    t_type type;
-    char* id;
-};
-
-typedef enum{t_or, t_and, t_eq, t_ne, t_lt, t_gt, t_ge, t_add, t_sub, t_mul, t_div, t_mod, t_store, t_comma, t_bitwiseand, t_bitwisexor,t_bitwiseor} op2_type;
-
-struct op2{
-    op2_type type;
-    struct terminal *t1;
-    struct terminal *t2;
-};
-typedef enum{t_not, t_minus, t_plus} op1_type;
-struct op1{
-    op1_type type;
-    struct terminal *t1;
-};
-
 typedef enum{t_f_def, t_f_dec, t_dec} p_type;
 struct program{
     p_type type;
@@ -105,7 +85,55 @@ struct while_statement{
 struct statlist_statement{
     struct statement* stt;
 };
+
+typedef enum{t_op1, t_op2, t_term, t_call } expression_type;
 struct expression{
-    ;
+    expression_type expr_t;
+    union {
+        struct op1* operation1;
+        struct op2* operation2;
+        struct call* c;
+        struct terminal* t;  
+    } expression_morphs;
 };
+
+typedef enum {t_char, t_charlit, t_id, t_int, t_short, t_intlit, t_double, t_reallit,t_void} t_type;
+
+struct terminal{
+    t_type type;
+    union {
+        char* id;
+        int integer;
+        double dfloat;
+    }terminal_morphs;
+};
+
+typedef enum{t_not, t_minus, t_plus} op1_type;
+struct op1{
+    op1_type type;
+    struct expression* exp;
+};
+
+typedef enum{
+    t_or, t_and, t_eq, t_ne, t_lt, t_gt,
+    t_ge, t_add, t_sub, t_mul, t_div, t_mod, t_store, 
+    t_comma, t_bitwiseand, t_bitwisexor,t_bitwiseor,t_le
+} op2_type;
+
+struct op2{
+    op2_type type;
+    struct expression* exp1;
+    struct expression* exp2;
+};
+
+typedef enum {call_name, call_exp} call_type;
+struct call {
+    call_type ct;
+    union{
+        char* id;
+        struct expression* exp;
+    } call_morphs;
+    struct call* next_arg;
+};
+
 #endif
