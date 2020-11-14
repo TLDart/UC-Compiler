@@ -177,14 +177,14 @@ void print_if(struct if_statement* stt_if, int depth){
         print_expression(stt_if->expr, depth + 1);
     }
     else printf("Erro! A menos que as expressions ainda nao estejam feitas\n");
-    if(stt_if->if_body == NULL){
+    if(stt_if->if_body == NULL || (stt_if->if_body->type == t_statlist && stt_if->if_body->statement_data.u_statlist->stt == NULL)){
         print_indentation(depth + 1);
         printf("Null\n");
     }
     else{
         print_statement(stt_if->if_body, depth + 1);
     }
-    if(stt_if->else_body == NULL){
+    if(stt_if->else_body == NULL || (stt_if->else_body->type == t_statlist && stt_if->else_body->statement_data.u_statlist->stt == NULL)){
         print_indentation(depth + 1);
         printf("Null\n");
     }
@@ -214,9 +214,9 @@ void print_while(struct while_statement* stt_whi, int depth){
     else{
         print_expression(stt_whi->expr, depth + 1);
     }
-    if(stt_whi->while_body == NULL){
+    if(stt_whi->while_body == NULL || (stt_whi->while_body->type == t_statlist && stt_whi->while_body->statement_data.u_statlist->stt == NULL)){
         print_indentation(depth + 1);
-        printf("Null Sometthing is wrong\n");
+        printf("Null\n");
     }
     else{
         print_statement(stt_whi->while_body, depth + 1);

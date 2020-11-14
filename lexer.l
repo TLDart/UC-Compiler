@@ -114,9 +114,9 @@ MLCOMMENTE      "*/"
 <CHARAC>.                                                   {;}
 <CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns);++lines;columns = 0; BEGIN(0);}
 {REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; yylval.dfloat = atof(yytext); if(mf) return REALLIT;}
-{SIMPLECOMMENT}                                             {;if(mf) return SIMPLECOMMENT;}  
-{MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1; if(mf) return MLCOMMENTS;}
-<COMMENT>{MLCOMMENTE}                                       {comment = 0;columns += yyleng; BEGIN 0; if(mf) return MLCOMMENTE;}
+{SIMPLECOMMENT}                                             {;}  
+{MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1;}
+<COMMENT>{MLCOMMENTE}                                       {comment = 0;columns += yyleng; BEGIN 0;}
 <COMMENT>.                                                  {;columns += yyleng;}
 <COMMENT>\n|\r|\r\n	                                        {++lines;columns = 0;}
 [\t ]                                                       {columns += yyleng;}
