@@ -131,6 +131,8 @@ struct function_definition* insert_function_definition(int i_typespec, char* i_i
     new->id = (char*)strdup(i_id);
     new->param_list = i_param_list;
     new->f_body = i_f_body;
+
+    return new;
 }
 
 struct function_declaration* insert_function_declaration(int i_typespec, char* i_id, struct parameter_list* i_param_list){
@@ -154,6 +156,8 @@ struct function_declaration* insert_function_declaration(int i_typespec, char* i
 
     new->id = (char*)strdup(i_id);
     new->param_list = i_param_list;
+
+    return new;
 }
 
 struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id){
@@ -180,6 +184,8 @@ struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id){
     }
     else
         new->id = (char*)strdup(i_id);
+
+    return new;
 
 }
 struct parameter_list* insert_param_list(struct parameter_declaration* p_dec, struct parameter_list* rem){

@@ -17,6 +17,7 @@ void yyerror(char* s);
 extern int lines;
 extern int columns;
 extern char* yytext;
+extern int yyleng;
 extern struct program* myprog;
 int syntax_error_counter = 0;
 %}
@@ -90,7 +91,7 @@ FunctionsAndDeclarations:       FunctionDefinition kleenClosureFDefFDecDec      
         |                       Declaration kleenClosureFDefFDecDec                 {$$=myprog=insert_program_dec($1,$2);}
         ;
 
-kleenClosureFDefFDecDec:        /* Epsilon */                                       {$$= NULL;}
+kleenClosureFDefFDecDec:        /* Epsilon */                                       {$$=NULL;}
         |                       kleenClosureFDefFDecDec FunctionDefinition          {$$=insert_program_func_def_rem($1,$2);}
         |                       kleenClosureFDefFDecDec FunctionDeclaration         {$$=insert_program_func_dec_rem($1,$2);}
         |                       kleenClosureFDefFDecDec Declaration                 {$$=insert_program_dec_rem($1,$2);}
@@ -108,7 +109,7 @@ DeclarationsAndStatements:      DeclarationsOrStatements                        
         ;
 DeclarationsOrStatements:       Statement                                           {$$=insert_f_body_statement($1);} 
         |                       Declaration                                         {$$=insert_f_body_declaration($1);} 
-        |                       error SEMI                                          {$$=NULL;}
+        |                       error SEMI                                          {$$=insert_f_body_statement(NULL);}
         ;
 
 FunctionDeclaration:            TypeSpec ID LPAR ParameterList RPAR SEMI            {$$=insert_function_declaration($1,$2,$4);}
@@ -200,6 +201,6 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                              
 %%
 
 void yyerror(char *msg) {
-   printf ("Line %d, col %d: %s: %s\n" , lines, columns, msg , yytext);
+   printf ("Line %d, col %d: %s: %s\n" , lines, columns , msg , yytext);
    ++syntax_error_counter;
 }
