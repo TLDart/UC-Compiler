@@ -136,7 +136,7 @@ void print_declaration(struct declaration* dec, int depth){
 void print_declarator(struct declarator* decl, int depth){
     print_id(decl->id, depth);
     if (decl->expr != NULL){
-       print_expression(decl->expr, depth +1);
+       print_expression(decl->expr, depth);
     }
     else{
         //print_indentation(depth);
@@ -173,8 +173,8 @@ void print_statement(struct statement* stt, int depth){
 void print_if(struct if_statement* stt_if, int depth){
     print_indentation(depth);
     printf("If\n");
-    if(stt_if->expr !=NULL){
-        print_expression(stt_if->expr, depth);
+    if(stt_if->expr != NULL){
+        print_expression(stt_if->expr, depth + 1);
     }
     else printf("Erro! A menos que as expressions ainda nao estejam feitas\n");
     if(stt_if->if_body == NULL){
@@ -201,7 +201,7 @@ void print_return(struct return_statement* stt_ret, int depth){
         printf("Null\n");
     }
     else{
-        //print_expression(stt_ret->expr, depth + 1);
+        print_expression(stt_ret->expr, depth + 1);
     }
 }
 
@@ -212,7 +212,7 @@ void print_while(struct while_statement* stt_whi, int depth){
         print_expression(stt_whi->expr, depth + 1);
     }
     else{
-        //print_expression(stt_whi->expr, depth + 1);
+        print_expression(stt_whi->expr, depth + 1);
     }
     if(stt_whi->while_body == NULL){
         print_indentation(depth + 1);
@@ -233,7 +233,124 @@ void print_statlist(struct statlist_statement* stt_stl, int depth){
     }
 }
 
+// new
 void print_expression(struct expression* expr, int depth){
     print_indentation(depth);
-    printf("Here goes expression\n");
+    //printf("Here goes expression\n");
+    if (expr->expr_t == t_op1){
+        print_op1(expr->expression_morphs.operation1, depth);
+    } else if (expr->expr_t == t_op2){
+        print_op2(expr->expression_morphs.operation2, depth);
+    } else if (expr->expr_t == t_term){
+        print_term(expr->expression_morphs.t, depth);
+    } else if (expr->expr_t == t_call) {
+        print_call(expr->expression_morphs.c, depth);
+    }
+}
+
+
+void print_op1(struct op1* op, int depth){
+    switch (op->type){
+        case t_not:
+            printf("Not\n");
+            break;
+        case t_minus:
+            printf("Minus\n");
+            break;
+        case t_plus:
+            printf("Plus\n");
+            break;
+    }
+    print_expression(op->exp, depth + 1);
+}
+
+void print_op2(struct op2* op, int depth){
+    switch (op->type){
+        case t_or:
+            printf("Or\n");
+            break;
+        case t_and:
+            printf("And\n");
+            break;
+        case t_eq:
+            printf("Eq\n");
+            break;
+        case t_ne:
+            printf("Ne\n");
+            break;
+        case t_lt:
+            printf("Lt\n");
+            break;
+        case t_gt:
+            printf("Gt\n");
+            break;
+        case t_ge:
+            printf("Ge\n");
+            break;
+        case t_add:
+            printf("Add\n");
+            break;
+        case t_sub:
+            printf("Sub\n");
+            break;
+        case t_mul:
+            printf("Mul\n");
+            break;
+        case t_div:
+            printf("Div\n");
+            break;
+        case t_mod:
+            printf("Mod\n");    
+            break;
+        case t_store:
+            printf("Store\n");
+            break;
+        case t_comma:
+            printf("Comma\n");
+            break;
+        case t_bitwiseand:
+            printf("BitWiseAnd\n");    
+            break;
+        case t_bitwisexor:
+            printf("BitWiseXor\n");
+            break;
+        case t_bitwiseor:
+            printf("BitWiseOr\n");
+            break;
+        case t_le:
+            printf("Le\n");    
+            break;
+    }
+    print_expression(op->exp1, depth + 1);
+    print_expression(op->exp2, depth + 1);
+}
+
+void print_term(struct terminal* t, int depth){
+    switch (t->type){
+        case t_charlit:
+            printf("Chrlit('%s)\n",t->terminal_morphs.id);
+            break;
+        case t_id:
+            printf("Id(%s)\n",t->terminal_morphs.id);
+            break;
+        case t_intlit:
+            printf("Intlit(%d)\n",t->terminal_morphs.integer);
+            break;
+        case t_reallit:
+            printf("Reallit(%f)\n",t->terminal_morphs.dfloat);
+            break;
+    }
+}
+
+void print_call(struct call* c, int depth){
+    struct call* current;
+    for (current = c; current; current = current->next_arg){
+        if (current->ct == call_name) {
+            printf("Call\n");
+            print_indentation(depth + 1);
+            printf("Id(%s)\n",current->call_morphs.id);
+        } else if (current->ct == call_exp){
+            print_expression(current->call_morphs.exp, depth + 1);
+        }
+    }
 }

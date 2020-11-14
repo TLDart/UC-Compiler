@@ -18,3 +18,9 @@ void print_return(struct return_statement* stt_ret, int depth);
 void print_while(struct while_statement* stt_whi, int depth);
 void print_statlist(struct statlist_statement* stt_stl, int depth);
 void print_expression(struct expression* expr, int depth);
+//new
+void print_expression(struct expression* expr, int depth);
+void print_op1(struct op1* op, int depth);
+void print_op2(struct op2* op, int depth);
+void print_term(struct terminal* t, int depth);
+void print_call(struct call* c, int depth);

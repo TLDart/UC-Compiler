@@ -1,5 +1,6 @@
 int main(void) {
-  foo(1,2,3);
-  foo2((1,2),3);
-  if(a){d = 1; if(b) c = 2;1+1;}
+    if(x = 3){
+      if (1==a);
+
+  }
 }
