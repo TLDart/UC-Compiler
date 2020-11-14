@@ -328,13 +328,13 @@ void print_op2(struct op2* op, int depth){
 void print_term(struct terminal* t, int depth){
     switch (t->type){
         case t_charlit:
-            printf("Chrlit('%s)\n",t->terminal_morphs.id);
+            printf("ChrLit('%s)\n",t->terminal_morphs.id);
             break;
         case t_id:
             printf("Id(%s)\n",t->terminal_morphs.id);
             break;
         case t_intlit:
-            printf("Intlit(%d)\n",t->terminal_morphs.integer);
+            printf("IntLit(%d)\n",t->terminal_morphs.integer);
             break;
         case t_reallit:
             printf("Reallit(%f)\n",t->terminal_morphs.dfloat);
