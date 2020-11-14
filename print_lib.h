@@ -3,7 +3,6 @@ void print_ast(struct program* head);
 void print_program(struct program* head, int depth);
 void print_f_def(struct function_definition* f_dec, int depth);
 void print_f_dec(struct function_declaration* f_dec, int depth);
-void print_dec(struct declaration* f_dec, int depth);
 void print_typespec(typespec_type type, int depth);
 void print_id(char* id, int depth);
 void print_param_list(struct parameter_list* p_list, int depth);

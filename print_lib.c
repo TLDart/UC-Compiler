@@ -31,7 +31,7 @@ void print_program(struct program* head, int depth){
             print_f_dec(head->data_program.u_f_dec, depth +1);
         }
         else if(head->type == t_dec){
-            print_dec(head->data_program.u_dec, depth +1);
+            print_declaration(head->data_program.u_dec, depth +1);
         }
         head = head->next;
     }
@@ -60,10 +60,6 @@ void print_f_dec(struct function_declaration* f_dec, int depth){
     print_id(f_dec->id, depth +1);
 }
 
-void print_dec(struct declaration* f_dec, int depth){
-    print_indentation(depth);
-    printf("Declaration\n");
-}
 
 void print_typespec(typespec_type type, int depth){
     print_indentation(depth);
@@ -124,10 +120,11 @@ void print_f_body(struct function_body* f_body, int depth){
 
 
 void print_declaration(struct declaration* dec, int depth){
-    print_indentation(depth);
-    printf("Declaration\n");
-    print_typespec(dec->type,depth + 1);
+    struct declaration* head = dec;
     while(dec != NULL){
+        print_indentation(depth);
+        printf("Declaration\n");
+        print_typespec(head->type,depth + 1);
         print_declarator(dec->decl, depth + 1);
         dec = dec->next;
     }
@@ -337,7 +334,7 @@ void print_term(struct terminal* t, int depth){
             printf("IntLit(%d)\n",t->terminal_morphs.integer);
             break;
         case t_reallit:
-            printf("Reallit(%f)\n",t->terminal_morphs.dfloat);
+            printf("RealLit(%g)\n",t->terminal_morphs.dfloat);
             break;
     }
 }
