@@ -23,7 +23,6 @@ int syntax_error_counter = 0;
 
 %union{
     int integer;
-    double dfloat;
     char* string;
     struct program* prog;
     struct function_definition* i_f_def;
@@ -50,6 +49,7 @@ int syntax_error_counter = 0;
 %type<i_expr> Expression 
 %type<i_decl> Declarator
 %type<i_call> kleenClosureCommaExpr
+
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
@@ -57,11 +57,8 @@ int syntax_error_counter = 0;
         AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS
         RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE THEN
 
-// Tokens which yylval (Value) is necessary
-%token <integer>    INTLIT
-%token <dfloat>     REALLIT
-%token <string>     CHRLIT
-%token <string>     ID
+// Tokens which yylval (Value) is necessary    
+%token <string>     CHRLIT ID REALLIT INTLIT
 
 /* Associativity and Priority of Operators */
 
@@ -82,7 +79,7 @@ int syntax_error_counter = 0;
 %left MUL DIV MOD   // *    /   %
 %right NOT          // !1
 
-%left OP1
+%left OP1           // Auxiliary 
 //----------------- Higher Priority
 
 %%
@@ -178,17 +175,17 @@ Expression:             Expression OR Expression                                
         |               Expression BITWISEOR Expression                             {$$=insert_expression_op2($1,16,$3);}
         |               Expression LE Expression                                    {$$=insert_expression_op2($1,17,$3);}
 
-        |               PLUS Expression     %prec OP1                               {$$=insert_expression_op1(0,$2);}
+        |               NOT Expression                                              {$$=insert_expression_op1(0,$2);}
         |               MINUS Expression    %prec OP1                               {$$=insert_expression_op1(1,$2);}
-        |               NOT Expression                                              {$$=insert_expression_op1(2,$2);}
+        |               PLUS Expression     %prec OP1                               {$$=insert_expression_op1(2,$2);}
 
         |               ID LPAR Expression kleenClosureCommaExpr RPAR               {$$=insert_expression_call($1,$3,$4);}
         |               ID LPAR RPAR                                                {$$=insert_expression_call($1,NULL,NULL);}
 
-        |               CHRLIT                                                      {$$=insert_expression_terminal_id_chrlit($1,1);}
-        |               ID                                                          {$$=insert_expression_terminal_id_chrlit($1,2);}
-        |               INTLIT                                                      {$$=insert_expression_terminal_intlit($1,5);}
-        |               REALLIT                                                     {$$=insert_expression_terminal_reallit($1,7);}
+        |               CHRLIT                                                      {$$=insert_expression_terminal($1,1);}
+        |               ID                                                          {$$=insert_expression_terminal($1,2);}
+        |               INTLIT                                                      {$$=insert_expression_terminal($1,5);}
+        |               REALLIT                                                     {$$=insert_expression_terminal($1,7);}
 
         |               LPAR Expression RPAR                                        {$$=$2;}
         |               ID LPAR error RPAR                                          {$$=NULL;}

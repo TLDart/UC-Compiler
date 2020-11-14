@@ -27,7 +27,5 @@ struct statement* insert_expr_statement(struct expression* i_expr);
 struct expression* insert_expression_op1(int operation, struct expression* arg);
 struct expression* insert_expression_op2(struct expression* arg1, int operation, struct expression* arg2);
 struct expression* insert_expression_call(char* id, struct expression* exp, struct call* exp_list);
-struct expression* insert_expression_terminal_id_chrlit(char* id, int type);
-struct expression* insert_expression_terminal_intlit(int id, int type);
-struct expression* insert_expression_terminal_reallit(double id, int type);
+struct expression* insert_expression_terminal(char* id, int type);
 struct call* insert_expression_kleen(struct call* head, struct expression* exp);

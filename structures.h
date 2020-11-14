@@ -101,11 +101,7 @@ typedef enum {t_char, t_charlit, t_id, t_int, t_short, t_intlit, t_double, t_rea
 
 struct terminal{
     t_type type;
-    union {
-        char* id;
-        int integer;
-        double dfloat;
-    }terminal_morphs;
+    char* id;
 };
 
 typedef enum{t_not, t_minus, t_plus} op1_type;

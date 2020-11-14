@@ -385,36 +385,16 @@ struct expression* insert_expression_call(char* id, struct expression* exp, stru
     new_expr->expression_morphs.c = new_id_call;
     return new_expr;
 }
-//-======================================================================================
-struct expression* insert_expression_terminal_id_chrlit(char* id, int type){
-    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
-    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
-    new_term->type = type;
-    new_term->terminal_morphs.id = (char*) strdup(id);
-    new_expr->expr_t = t_term;
-    new_expr->expression_morphs.t = new_term;
-    return new_expr;
-}
-struct expression* insert_expression_terminal_intlit(int id, int type){
-    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
-    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
-    new_term->type = type;
-    new_term->terminal_morphs.integer = id;
-    new_expr->expr_t = t_term;
-    new_expr->expression_morphs.t = new_term;
-    return new_expr;
-}
-struct expression* insert_expression_terminal_reallit(double id, int type){
-    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
-    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
-    new_term->type = type;
-    new_term->terminal_morphs.dfloat = id;
-    new_expr->expr_t = t_term;
-    new_expr->expression_morphs.t = new_term;
-    return new_expr;
-}
 
-//-======================================================================================
+struct expression* insert_expression_terminal(char* id, int type){
+    struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
+    struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
+    new_term->type = type;
+    new_term->id = (char*) strdup(id);
+    new_expr->expr_t = t_term;
+    new_expr->expression_morphs.t = new_term;
+    return new_expr;
+}
 
 struct call* insert_expression_kleen(struct call* head, struct expression* exp){
     struct call* current;
