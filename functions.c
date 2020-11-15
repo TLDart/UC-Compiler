@@ -52,9 +52,9 @@ struct program* insert_program_func_dec(struct function_declaration* i_f_dec, st
     if(rem != NULL){
         new->next = rem;
     }
-    else
-
-    //printf("asdasd\n");
+    else{
+        //printf("asdasd\n");
+    }
     return new;
 }
 

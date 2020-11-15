@@ -338,6 +338,8 @@ void print_term(struct terminal* t, int depth){
         case t_reallit:
             printf("RealLit(%s)\n",t->id);
             break;
+        default:
+            break;
     }
 }
 
