@@ -112,7 +112,7 @@ MLCOMMENTE      "*/"
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?(\n|\r|\r\n)  {printf("Line %d, col %d: unterminated char constant\n",lines,columns - 1);++lines;columns = 1; BEGIN(0);}
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns - 1, yytext);columns+=yyleng;BEGIN(0);}
 <CHARAC>.                                                   {;}
-<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns - 1);++lines;columns = 1; BEGIN(0);}
+<CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns - 1);++lines;columns = 1; BEGIN(0); return 0;}
 {REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; yylval.string = (char*) strdup(yytext); if(mf) return REALLIT;}
 {SIMPLECOMMENT}                                             {;}  
 {MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1;}

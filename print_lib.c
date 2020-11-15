@@ -48,8 +48,12 @@ void print_f_def(struct function_definition* f_def, int depth){
         print_param_list( f_def->param_list, depth + 1);
 
     }
-    if(f_def->f_body != NULL)
+    if(f_def->f_body != NULL){
         print_f_body(f_def->f_body, depth + 1);
+    } else {
+        print_indentation(depth + 1);
+        printf("FuncBody\n");
+    }
 
 }
 void print_f_dec(struct function_declaration* f_dec, int depth){

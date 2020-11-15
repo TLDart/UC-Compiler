@@ -2,6 +2,6 @@
 
 lex uccompiler.l && 
 yacc -d -v uccompiler.y && 
-gcc -Wall lex.yy.c y.tab.c functions.c print_lib.c -o uccompiler && 
+gcc lex.yy.c y.tab.c functions.c print_lib.c -o uccompiler && 
 rm lex.yy.c y.tab.h y.tab.c &&
 cat $1 | ./uccompiler "${@:2}"
