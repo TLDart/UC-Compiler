@@ -1,0 +1,38 @@
+INT
+RESERVED(register)
+LPAR
+VOID
+RPAR
+LBRACE
+DOUBLE
+ID(variablename)
+ASSIGN
+REALLIT(123.2e-1)
+SEMI
+ID(variablename)
+ASSIGN
+ID(variablename)
+MUL
+INTLIT(2)
+SEMI
+CHAR
+ID(illegal)
+ASSIGN
+Line 12, col 17: invalid char constant ('\128')
+SEMI
+CHAR
+ID(legalescape)
+ASSIGN
+CHRLIT('\123')
+SEMI
+RBRACE
+CHRLIT('\\')
+Line 20, col 1: unterminated char constant
+CHRLIT('\n')
+CHRLIT('1')
+INTLIT(1)
+Line 22, col 5: invalid char constant ('1\'\1\'1')
+CHRLIT('a')
+CHRLIT('b')
+REALLIT(123124.e-1)
+Line 25, col 11: unterminated char constant

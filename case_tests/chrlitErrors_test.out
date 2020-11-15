@@ -1,0 +1,30 @@
+Line 1, col 1: invalid char constant ('')
+Line 1, col 3: unterminated char constant
+CHRLIT('"')
+Line 3, col 1: invalid char constant ('\\0')
+Line 4, col 1: invalid char constant ('\\9')
+Line 5, col 1: invalid char constant ('\9')
+Line 6, col 1: invalid char constant ('\99')
+Line 7, col 1: invalid char constant ('\009')
+Line 8, col 1: invalid char constant ('\999')
+Line 9, col 1: invalid char constant ('\9999')
+Line 10, col 1: unterminated char constant
+Line 11, col 1: invalid char constant ('\(')
+Line 12, col 1: invalid char constant ('\)')
+Line 13, col 1: unterminated char constant
+Line 14, col 1: unterminated char constant
+CHRLIT(')')
+CHRLIT('(')
+CHRLIT('(')
+CHRLIT(')')
+CHRLIT('(')
+CHRLIT(')')
+Line 17, col 16: invalid char constant ('((')
+Line 18, col 1: unterminated char constant
+CHRLIT('?')
+Line 20, col 1: invalid char constant ('ç')
+CHRLIT('|')
+Line 22, col 1: invalid char constant ('||')
+CHRLIT('|')
+CHRLIT('|')
+Line 23, col 1: unterminated char constant

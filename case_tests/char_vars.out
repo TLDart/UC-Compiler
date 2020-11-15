@@ -1,0 +1,31 @@
+Line 1, col 1: unterminated char constant
+CHRLIT('\\')
+Line 3, col 1: unterminated char constant
+Line 4, col 1: invalid char constant ('\\\\')
+Line 5, col 1: unterminated char constant
+CHRLIT('\\')
+Line 7, col 1: unterminated char constant
+Line 8, col 1: unterminated char constant
+Line 9, col 1: unterminated char constant
+Line 11, col 1: unterminated char constant
+Line 12, col 1: invalid char constant ('')
+Line 12, col 3: unterminated char constant
+Line 13, col 1: invalid char constant ('')
+Line 13, col 3: invalid char constant ('')
+Line 14, col 1: invalid char constant ('\'\'\\\'')
+Line 14, col 11: illegal character (\)
+Line 14, col 12: invalid char constant ('')
+Line 14, col 14: illegal character (\)
+CHRLIT('\n')
+CHRLIT('\'')
+Line 19, col 1: invalid char constant ('\t\t\t\t')
+CHRLIT('\n')
+Line 19, col 17: invalid char constant ('\\\\\' ')
+Line 19, col 26: illegal character (\)
+Line 19, col 27: illegal character (\)
+CHRLIT(' ')
+Line 19, col 31: illegal character (\)
+Line 19, col 32: unterminated char constant
+Line 21, col 1: unterminated char constant
+CHRLIT('"')
+CHRLIT('\"')

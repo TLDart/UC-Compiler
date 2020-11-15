@@ -1,0 +1,33 @@
+INT
+ID(main)
+LPAR
+RPAR
+LBRACE
+CHAR
+ID(a)
+ASSIGN
+Line 5, col 10: unterminated char constant
+IF
+LPAR
+ID(a)
+EQ
+INTLIT(1)
+RPAR
+LBRACE
+ID(printf)
+LPAR
+CHRLIT('1')
+RPAR
+SEMI
+RBRACE
+ELSE
+LBRACE
+Line 10, col 1: illegal character (#)
+ASSIGN
+ID(a)
+SEMI
+RBRACE
+RETURN
+REALLIT(0.012e-12)
+SEMI
+RBRACE

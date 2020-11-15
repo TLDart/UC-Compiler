@@ -1,0 +1,6 @@
+Line 1, col 1: invalid char constant ('ç')
+Line 2, col 1: invalid char constant ('   ')
+Line 3, col 1: unterminated char constant
+Line 4, col 1: unterminated char constant
+CHRLIT('~')
+Line 6, col 1: unterminated char constant

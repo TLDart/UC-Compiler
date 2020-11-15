@@ -1,0 +1,24 @@
+CHRLIT('A')
+CHRLIT(')')
+CHRLIT('|')
+CHRLIT('?')
+CHRLIT('z')
+CHRLIT('9')
+CHRLIT('\n')
+CHRLIT('\t')
+Line 9, col 1: unterminated char constant
+CHRLIT('\\')
+Line 11, col 1: unterminated char constant
+Line 12, col 1: invalid char constant ('\\\\')
+Line 13, col 1: unterminated char constant
+Line 14, col 1: unterminated char constant
+Line 15, col 1: unterminated char constant
+Line 16, col 1: unterminated char constant
+Line 17, col 1: unterminated char constant
+Line 18, col 1: unterminated char constant
+CHRLIT('\'')
+CHRLIT('\"')
+CHRLIT('\0')
+CHRLIT('\10')
+CHRLIT('\157')
+CHRLIT('	')

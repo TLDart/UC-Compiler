@@ -1,0 +1,27 @@
+NOT
+CHRLIT('2')
+CHRLIT('\\')
+Line 2, col 8: invalid char constant ('\\\'')
+Line 3, col 1: unterminated char constant
+CHRLIT('\n')
+INT
+ID(main)
+LPAR
+RPAR
+Line 6, col 1: invalid char constant ('\d')
+Line 6, col 5: invalid char constant ('\asdas')
+CHRLIT('\\')
+Line 6, col 17: invalid char constant ('\r')
+Line 6, col 21: illegal character (\)
+ID(r)
+Line 7, col 1: illegal character (\)
+ID(r)
+Line 7, col 3: illegal character (\)
+ID(n)
+Line 8, col 5: illegal character (\)
+ID(r)
+Line 8, col 7: illegal character (\)
+ID(n)
+CHRLIT('\\')
+CHRLIT('\'')
+CHRLIT('\"')

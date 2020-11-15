@@ -58,6 +58,8 @@ void print_f_dec(struct function_declaration* f_dec, int depth){
 
     print_typespec(f_dec->type, depth + 1);
     print_id(f_dec->id, depth +1);
+    if(f_dec->param_list != NULL)
+        print_param_list(f_dec->param_list, depth + 1);
 }
 
 

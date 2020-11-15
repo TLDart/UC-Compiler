@@ -1,0 +1,55 @@
+DIV
+ID(exemplo)
+Line 6, col 1: invalid char constant ('/0123')
+Line 7, col 1: invalid char constant ('\\\n')
+Line 8, col 1: invalid char constant ('\1239')
+Line 9, col 1: invalid char constant ('')
+CHRLIT('\113')
+Line 9, col 9: invalid char constant ('')
+Line 10, col 1: unterminated char constant
+RESERVED(float)
+ID(exemplo_1)
+LPAR
+VOID
+RPAR
+LBRACE
+INT
+ID(numero)
+ASSIGN
+INTLIT(1)
+SEMI
+IF
+LPAR
+ID(numbero)
+NE
+INTLIT(1)
+RPAR
+LBRACE
+ID(numero)
+ASSIGN
+INTLIT(1)
+SEMI
+RBRACE
+CHAR
+ID(nome)
+ASSIGN
+Line 21, col 14: illegal character (")
+ID(O_O)
+Line 21, col 18: illegal character (")
+SEMI
+DOUBLE
+ID(x)
+ASSIGN
+REALLIT(12.2)
+SEMI
+RETURN
+ID(numero)
+RBRACE
+VOID
+ID(exemplo_2)
+LPAR
+VOID
+RPAR
+LBRACE
+RBRACE
+Line 30, col 1: unterminated comment

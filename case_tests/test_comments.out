@@ -1,0 +1,15 @@
+MUL
+DIV
+ID(isto_esta_sem_par)
+ID(no_meio_de_2)
+ID(begin)
+ID(end)
+Line 36, col 1: illegal character (")
+ID(a)
+ID(f)
+DIV
+ID(h)
+DIV
+Line 39, col 2: illegal character (\)
+ID(n)
+Line 42, col 1: unterminated comment

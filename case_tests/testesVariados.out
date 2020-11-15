@@ -1,0 +1,66 @@
+CHRLIT('a')
+CHRLIT('_')
+CHRLIT('"')
+Line 5, col 1: invalid char constant ('´')
+CHRLIT('\\')
+Line 6, col 5: unterminated char constant
+CHRLIT('\"')
+Line 7, col 5: unterminated char constant
+CHRLIT('\1')
+CHRLIT('\12')
+Line 10, col 1: invalid char constant ('\1234')
+Line 11, col 1: invalid char constant ('\16asdasd')
+Line 12, col 1: invalid char constant ('\t\t')
+Line 13, col 1: invalid char constant ('\\1')
+Line 14, col 1: unterminated char constant
+CHRLIT('\n')
+CHRLIT('?')
+Line 17, col 1: invalid char constant ('')
+Line 17, col 3: unterminated char constant
+CHRLIT('#')
+CHRLIT('\123')
+CHRLIT('z')
+CHRLIT('Z')
+CHRLIT('	')
+CHRLIT(' ')
+REALLIT(2.)
+REALLIT(2.2)
+INTLIT(2)
+PLUS
+ID(E2)
+REALLIT(2.2)
+PLUS
+ID(e5)
+REALLIT(0.0e0)
+REALLIT(.2)
+MINUS
+ID(e1)
+REALLIT(.2)
+INT
+ID(main)
+LPAR
+RPAR
+LBRACE
+Line 36, col 2: illegal character (#)
+LT
+LT
+GT
+LT
+RESERVED(for)
+INT
+ID(a)
+ASSIGN
+INTLIT(5)
+SEMI
+ID(a)
+ASSIGN
+ID(a)
+PLUS
+INTLIT(1)
+SEMI
+RETURN
+ID(a)
+RESERVED(++)
+SEMI
+RBRACE
+Line 44, col 1: unterminated comment

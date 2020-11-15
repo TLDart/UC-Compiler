@@ -17,6 +17,7 @@ void yyerror(char* s);
 extern int lines;
 extern int columns;
 extern char* yytext;
+extern int yyleng;
 extern struct program* myprog;
 int syntax_error_counter = 0;
 %}
@@ -81,7 +82,7 @@ int syntax_error_counter = 0;
 %left MUL DIV MOD   // *    /   %
 %right NOT          // !1
 
-%left OP1 error_aux           // Auxiliary
+%left OP1 error_aux // Auxiliary
 //----------------- Higher Priority
 
 %%
@@ -206,6 +207,7 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                              
 %%
 
 void yyerror(char *msg) {
-   printf ("Line %d, col %d: %s: %s\n" , lines, columns, msg , yytext);
+        //printf("columns = %d; yyleng = %d\n",columns,yyleng);
+   printf ("Line %d, col %d: %s: %s\n" , lines, columns - yyleng, msg , yytext);
    ++syntax_error_counter;
 }

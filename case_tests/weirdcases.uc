@@ -11,5 +11,4 @@ chari char i
 '\9\''
 '\9'\'
 'int i = 1' 'bcs' '\'
-23456\'/* 
-'arigatou'
+'/* 

@@ -1,0 +1,13 @@
+CHRLIT('a')
+CHRLIT('\12')
+CHRLIT('\n')
+CHRLIT('\177')
+LT
+ASSIGN
+RESERVED(++)
+RESERVED(--)
+ID(j)
+RESERVED(++)
+SEMI
+ID(a)
+ID(fg)

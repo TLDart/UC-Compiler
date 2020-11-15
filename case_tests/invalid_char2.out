@@ -1,0 +1,64 @@
+ID(o)
+RESERVED(--)
+Line 2, col 1: invalid char constant ('\\\\')
+ID(asdasd)
+Line 3, col 1: invalid char constant ('\\\\')
+ID(asdasd)
+Line 4, col 1: invalid char constant ('\\\\')
+ID(asdasd)
+CHRLIT('\\')
+ID(asdasd)
+Line 6, col 1: unterminated char constant
+CHRLIT('\'')
+Line 8, col 1: unterminated char constant
+CHRLIT('\'')
+ID(asdasd)
+CHRLIT('\'')
+COMMA
+ID(asd)
+Line 11, col 5: invalid char constant ('\\\\')
+ID(asdas)
+Line 12, col 1: invalid char constant ('\\,')
+Line 13, col 1: unterminated char constant
+Line 14, col 1: unterminated char constant
+Line 15, col 1: invalid char constant ('asdasd\\')
+Line 15, col 12: invalid char constant ('asdasd')
+Line 16, col 1: unterminated char constant
+ID(sd)
+ID(asd)
+Line 18, col 5: unterminated char constant
+RESERVED(--)
+Line 19, col 4: unterminated char constant
+Line 20, col 1: invalid char constant ('\\,')
+ID(sdasd)
+Line 21, col 1: invalid char constant ('')
+Line 21, col 3: invalid char constant ('')
+Line 21, col 5: invalid char constant ('')
+Line 21, col 7: invalid char constant ('')
+Line 21, col 9: invalid char constant ('')
+Line 21, col 11: invalid char constant ('')
+Line 21, col 13: invalid char constant ('')
+Line 22, col 1: invalid char constant ('')
+Line 22, col 3: invalid char constant ('')
+CHRLIT('\'')
+Line 22, col 9: invalid char constant ('')
+Line 22, col 11: unterminated char constant
+Line 23, col 1: unterminated char constant
+Line 24, col 1: unterminated char constant
+Line 25, col 1: unterminated char constant
+Line 26, col 5: invalid char constant ('asd')
+Line 27, col 5: unterminated char constant
+CHRLIT('\\')
+Line 29, col 1: invalid char constant ('\\\\')
+ID(asdaso)
+Line 29, col 15: unterminated char constant
+Line 30, col 1: invalid char constant ('\\\\,')
+ID(asdaso)
+Line 30, col 16: invalid char constant ('\' asdsda ')
+Line 30, col 28: illegal character (\)
+Line 30, col 29: illegal character (\)
+COMMA
+Line 30, col 31: unterminated char constant
+Line 31, col 1: unterminated char constant
+Line 36, col 5: invalid char constant ('asd')
+CHRLIT('\\')

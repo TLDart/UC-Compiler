@@ -1,0 +1,26 @@
+Line 2, col 1: invalid char constant ('')
+Line 3, col 1: unterminated char constant
+Line 4, col 1: unterminated char constant
+Line 5, col 1: unterminated char constant
+Line 6, col 1: unterminated char constant
+Line 7, col 1: invalid char constant ('\'\'\\')
+CHRLIT('	')
+CHRLIT('\n')
+CHRLIT('\120')
+Line 11, col 1: invalid char constant ('\129')
+REALLIT(1.1E12)
+REALLIT(1.1e12)
+REALLIT(1.E12)
+REALLIT(1.)
+ID(E)
+REALLIT(.1e12)
+Line 19, col 1: illegal character (.)
+ID(e12)
+Line 20, col 1: illegal character (.)
+ID(e)
+REALLIT(.023)
+ID(eE)
+CHRLIT('a')
+CHRLIT('v')
+CHRLIT('/')
+DIV

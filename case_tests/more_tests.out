@@ -1,0 +1,31 @@
+CHRLIT('\\')
+INTLIT(3)
+ID(o)
+Line 1, col 8: unterminated char constant
+INTLIT(1)
+ID(o)
+Line 2, col 3: invalid char constant ('  \'')
+Line 2, col 9: illegal character (\)
+Line 2, col 10: invalid char constant ('')
+Line 3, col 1: invalid char constant ('char')
+Line 4, col 1: illegal character (?)
+INTLIT(123)
+Line 4, col 5: invalid char constant ('')
+ID(comp)
+Line 4, col 11: invalid char constant ('')
+MUL
+DIV
+Line 6, col 1: invalid char constant ('==')
+Line 6, col 5: illegal character (\)
+Line 6, col 6: invalid char constant ('')
+ID(__int_)
+ID(_)
+Line 8, col 1: illegal character (\)
+INTLIT(999)
+Line 9, col 1: illegal character (\)
+Line 9, col 2: unterminated char constant
+REALLIT(1.e9)
+Line 11, col 1: unterminated char constant
+INTLIT(0)
+ID(z)
+Line 12, col 3: unterminated char constant

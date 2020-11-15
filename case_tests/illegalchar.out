@@ -1,0 +1,60 @@
+LT
+GT
+ID(qwertyuiop)
+Line 1, col 13: illegal character (Ã)
+Line 1, col 14: illegal character (¡)
+ID(sdfghjkl)
+Line 1, col 23: illegal character (Ã)
+Line 1, col 24: illegal character (§)
+Line 1, col 25: illegal character (~)
+Line 1, col 26: illegal character (\)
+ID(zxcvbnm)
+COMMA
+Line 1, col 35: illegal character (.)
+MINUS
+ID(______j)
+NOT
+Line 1, col 45: illegal character (")
+Line 1, col 46: illegal character (#)
+Line 1, col 47: illegal character ($)
+MOD
+BITWISEAND
+DIV
+LPAR
+EQ
+Line 1, col 54: illegal character (?)
+MUL
+Line 1, col 56: illegal character (Â)
+Line 1, col 57: illegal character (´)
+Line 1, col 58: illegal character (\)
+Line 1, col 59: illegal character (~)
+Line 1, col 60: illegal character (@)
+OR
+BITWISEOR
+CHAR
+ID(elsewhileifshort)
+ID(inT)
+ID(intdoublereturnvoid)
+BITWISEXOR
+AND
+LE
+GE
+LBRACE
+RESERVED([)
+Line 4, col 7: illegal character (#)
+RBRACE
+NE
+RESERVED(++)
+RESERVED(--)
+INT
+DOUBLE
+RETURN
+VOID
+SHORT
+WHILE
+ELSE
+Line 6, col 7: illegal character (\)
+ID(tolelele)
+Line 8, col 6: illegal character (?)
+ID(wtf)
+Line 10, col 1: illegal character (#)

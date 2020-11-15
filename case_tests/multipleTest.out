@@ -1,0 +1,50 @@
+INT
+ID(main)
+LPAR
+VOID
+RPAR
+LBRACE
+INT
+ID(i)
+ASSIGN
+INTLIT(0)
+SEMI
+CHAR
+ID(a)
+ASSIGN
+Line 3, col 11: invalid char constant ('\'<=')
+CHAR
+ID(b)
+ASSIGN
+Line 4, col 11: unterminated char constant
+IF
+LPAR
+ID(i)
+EQ
+INTLIT(0)
+RPAR
+LBRACE
+ID(printf)
+LPAR
+Line 7, col 10: illegal character (")
+ID(ola)
+ID(o)
+ID(meu)
+ID(nome)
+Line 7, col 26: illegal character (Ã)
+Line 7, col 27: illegal character (©)
+ID(miguel)
+RPAR
+SEMI
+RBRACE
+DOUBLE
+ASSIGN
+REALLIT(2.0)
+SEMI
+CHRLIT('A')
+Line 12, col 2: unterminated char constant
+ID(adeus)
+Line 13, col 7: invalid char constant ('')
+ID(nao)
+Line 15, col 2: invalid char constant ('{d')
+RBRACE
