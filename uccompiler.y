@@ -88,119 +88,119 @@ int syntax_error_counter = 0;
 %%
 // test: ID ASSIGN INTLIT {printf("sucess\n");}
 
-FunctionsAndDeclarations:       FunctionDefinition kleenClosureFDefFDecDec          {$$=myprog=insert_program_func_def($1,$2);}
-        |                       FunctionDeclaration kleenClosureFDefFDecDec         {$$=myprog=insert_program_func_dec($1,$2);}
-        |                       Declaration kleenClosureFDefFDecDec                 {$$=myprog=insert_program_dec($1,$2);}
+FunctionsAndDeclarations:       FunctionDefinition kleenClosureFDefFDecDec          {if(syntax_error_counter == 0){$$=myprog=insert_program_func_def($1,$2);}}
+        |                       FunctionDeclaration kleenClosureFDefFDecDec         {if(syntax_error_counter == 0){$$=myprog=insert_program_func_dec($1,$2);}}
+        |                       Declaration kleenClosureFDefFDecDec                 {if(syntax_error_counter == 0){$$=myprog=insert_program_dec($1,$2);}}
         ;
 
-kleenClosureFDefFDecDec:        /* Epsilon */                                       {$$= NULL;}
-        |                       kleenClosureFDefFDecDec FunctionDefinition          {$$=insert_program_func_def_rem($1,$2);}
-        |                       kleenClosureFDefFDecDec FunctionDeclaration         {$$=insert_program_func_dec_rem($1,$2);}
-        |                       kleenClosureFDefFDecDec Declaration                 {$$=insert_program_dec_rem($1,$2);}
+kleenClosureFDefFDecDec:        /* Epsilon */                                       {if(syntax_error_counter == 0){$$= NULL;}}
+        |                       kleenClosureFDefFDecDec FunctionDefinition          {if(syntax_error_counter == 0){$$=insert_program_func_def_rem($1,$2);}}
+        |                       kleenClosureFDefFDecDec FunctionDeclaration         {if(syntax_error_counter == 0){$$=insert_program_func_dec_rem($1,$2);}}
+        |                       kleenClosureFDefFDecDec Declaration                 {if(syntax_error_counter == 0){$$=insert_program_dec_rem($1,$2);}}
         ;
 
-FunctionDefinition :            TypeSpec ID LPAR ParameterList RPAR FunctionBody    {$$=insert_function_definition($1,$2,$4,$6);}
+FunctionDefinition :            TypeSpec ID LPAR ParameterList RPAR FunctionBody    {if(syntax_error_counter == 0){$$=insert_function_definition($1,$2,$4,$6);}}
         ;
 
-FunctionBody:                   LBRACE RBRACE                                       {$$=NULL;} 
-        |                       LBRACE DeclarationsAndStatements RBRACE             {$$=$2;}
+FunctionBody:                   LBRACE RBRACE                                       {if(syntax_error_counter == 0){$$=NULL;}}
+        |                       LBRACE DeclarationsAndStatements RBRACE             {if(syntax_error_counter == 0){$$=$2;}}
         ;
 
-DeclarationsAndStatements:      DeclarationsOrStatements                            {$$=$1;}
-        |                       DeclarationsAndStatements DeclarationsOrStatements  {$$=insert_f_body_multiple($1,$2);} 
+DeclarationsAndStatements:      DeclarationsOrStatements                            {if(syntax_error_counter == 0){$$=$1;}}
+        |                       DeclarationsAndStatements DeclarationsOrStatements  {if(syntax_error_counter == 0){$$=insert_f_body_multiple($1,$2);}}
         ;
-DeclarationsOrStatements:       Statement                                           {$$=insert_f_body_statement($1);} 
-        |                       Declaration                                         {$$=insert_f_body_declaration($1);} 
-        ;
-
-FunctionDeclaration:            TypeSpec ID LPAR ParameterList RPAR SEMI            {$$=insert_function_declaration($1,$2,$4);}
+DeclarationsOrStatements:       Statement                                           {if(syntax_error_counter == 0){$$=insert_f_body_statement($1);} }
+        |                       Declaration                                         {if(syntax_error_counter == 0){$$=insert_f_body_declaration($1);} }
         ;
 
-ParameterList:    ParameterDeclaration kleenClosureCommaParameterDeclaration        {$$=insert_param_list($1, $2);}
-        ;
-kleenClosureCommaParameterDeclaration:  /* Epsilon */                               {$$=NULL;}
-        |       kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration    {$$=insert_param_list_rem($1,$3);}
+FunctionDeclaration:            TypeSpec ID LPAR ParameterList RPAR SEMI            {if(syntax_error_counter == 0){$$=insert_function_declaration($1,$2,$4);}}
         ;
 
-ParameterDeclaration:           TypeSpec ID                                         {$$=insert_param_dec($1,$2);}
-        |                       TypeSpec                                            {$$=insert_param_dec($1, NULL);}
+ParameterList:    ParameterDeclaration kleenClosureCommaParameterDeclaration        {if(syntax_error_counter == 0){$$=insert_param_list($1, $2);}}
+        ;
+kleenClosureCommaParameterDeclaration:  /* Epsilon */                               {if(syntax_error_counter == 0){$$=NULL;}}
+        |       kleenClosureCommaParameterDeclaration COMMA ParameterDeclaration    {if(syntax_error_counter == 0){$$=insert_param_list_rem($1,$3);}}
+        ;
+
+ParameterDeclaration:           TypeSpec ID                                         {if(syntax_error_counter == 0){$$=insert_param_dec($1,$2);}}
+        |                       TypeSpec                                            {if(syntax_error_counter == 0){$$=insert_param_dec($1, NULL);}}
         ;
 
 
-Declaration:      TypeSpec Declarator kleenClosureCommaDeclarator SEMI              {$$=insert_dec($1,$2,$3);}
-        |         error SEMI                                                        {$$=NULL;}
+Declaration:      TypeSpec Declarator kleenClosureCommaDeclarator SEMI              {if(syntax_error_counter == 0){$$=insert_dec($1,$2,$3);}}
+        |         error SEMI                                                        {if(syntax_error_counter == 0){$$=NULL;}}
         ;
-kleenClosureCommaDeclarator: /* Epsilon */                                          {$$=NULL;}
-        |            kleenClosureCommaDeclarator COMMA Declarator                   {$$=insert_dec_rem($1,$3);}
-        ;
-
-TypeSpec:               CHAR                                                        {$$=0;}
-        |               INT                                                         {$$=1;}
-        |               VOID                                                        {$$=2;}
-        |               SHORT                                                       {$$=3;}
-        |               DOUBLE                                                      {$$=4;}
+kleenClosureCommaDeclarator: /* Epsilon */                                          {if(syntax_error_counter == 0){$$=NULL;}}
+        |            kleenClosureCommaDeclarator COMMA Declarator                   {if(syntax_error_counter == 0){$$=insert_dec_rem($1,$3);}}
         ;
 
-Declarator:             ID                                                          {$$=insert_decl($1, NULL);}
-        |               ID ASSIGN Expression                                        {$$=insert_decl($1,$3);}
+TypeSpec:               CHAR                                                        {if(syntax_error_counter == 0){$$=0;}}
+        |               INT                                                         {if(syntax_error_counter == 0){$$=1;}}
+        |               VOID                                                        {if(syntax_error_counter == 0){$$=2;}}
+        |               SHORT                                                       {if(syntax_error_counter == 0){$$=3;}}
+        |               DOUBLE                                                      {if(syntax_error_counter == 0){$$=4;}}
         ;
 
-Statement:              Expression SEMI                                             {$$=insert_expr_statement($1);}
-        |               SEMI                                                        {$$=NULL;}
-        |               LBRACE kleenClosureStatement RBRACE                         {$$=insert_statlist($2);}        
-        |               IF LPAR Expression RPAR ErrorOrStat  %prec THEN             {$$=insert_if_statement($3,$5,NULL);}
-        |               IF LPAR Expression RPAR ErrorOrStat ELSE ErrorOrStat        {$$=insert_if_statement($3,$5,$7);}
-        |               WHILE LPAR Expression RPAR ErrorOrStat                      {$$=insert_while_statement($3,$5);}
-        |               RETURN SEMI                                                 {$$=insert_return(NULL);}
-        |               RETURN Expression SEMI                                      {$$=insert_return($2);}
-        |               LBRACE error RBRACE                                         {$$=NULL;}
-        |               LBRACE RBRACE                                               {$$=NULL;}
-        ;
-kleenClosureStatement:  ErrorOrStat                                                 {$$=$1;}
-        |               kleenClosureStatement ErrorOrStat                           {$$=insert_statement($1,$2);}
-        ;
-ErrorOrStat:            error SEMI                                                  {$$=NULL;}
-        |               Statement                                                   {$$=$1;}
+Declarator:             ID                                                          {if(syntax_error_counter == 0){$$=insert_decl($1, NULL);}}
+        |               ID ASSIGN Expression                                        {if(syntax_error_counter == 0){$$=insert_decl($1,$3);}}
         ;
 
-Expression:             Expression OR Expression                                    {$$=insert_expression_op2($1,0,$3);}
-        |               Expression AND Expression                                   {$$=insert_expression_op2($1,1,$3);}
-        |               Expression EQ Expression                                    {$$=insert_expression_op2($1,2,$3);}
-        |               Expression NE Expression                                    {$$=insert_expression_op2($1,3,$3);}
-        |               Expression LT Expression                                    {$$=insert_expression_op2($1,4,$3);}
-        |               Expression GT Expression                                    {$$=insert_expression_op2($1,5,$3);}
-        |               Expression GE Expression                                    {$$=insert_expression_op2($1,6,$3);}
-        |               Expression PLUS Expression                                  {$$=insert_expression_op2($1,7,$3);}
-        |               Expression MINUS Expression                                 {$$=insert_expression_op2($1,8,$3);}
-        |               Expression MUL Expression                                   {$$=insert_expression_op2($1,9,$3);}
-        |               Expression DIV Expression                                   {$$=insert_expression_op2($1,10,$3);}
-        |               Expression MOD Expression                                   {$$=insert_expression_op2($1,11,$3);}
-        |               Expression ASSIGN Expression                                {$$=insert_expression_op2($1,12,$3);}
-        |               Expression COMMA Expression                                 {$$=insert_expression_op2($1,13,$3);}
-        |               Expression BITWISEAND Expression                            {$$=insert_expression_op2($1,14,$3);}
-        |               Expression BITWISEXOR Expression                            {$$=insert_expression_op2($1,15,$3);}
-        |               Expression BITWISEOR Expression                             {$$=insert_expression_op2($1,16,$3);}
-        |               Expression LE Expression                                    {$$=insert_expression_op2($1,17,$3);}
+Statement:              Expression SEMI                                             {if(syntax_error_counter == 0){$$=insert_expr_statement($1);}}
+        |               SEMI                                                        {if(syntax_error_counter == 0){$$=NULL;}}
+        |               LBRACE kleenClosureStatement RBRACE                         {if(syntax_error_counter == 0){$$=insert_statlist($2);}}
+        |               IF LPAR Expression RPAR ErrorOrStat  %prec THEN             {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,NULL);}}
+        |               IF LPAR Expression RPAR ErrorOrStat ELSE ErrorOrStat        {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,$7);}}
+        |               WHILE LPAR Expression RPAR ErrorOrStat                      {if(syntax_error_counter == 0){$$=insert_while_statement($3,$5);}}
+        |               RETURN SEMI                                                 {if(syntax_error_counter == 0){$$=insert_return(NULL);}}
+        |               RETURN Expression SEMI                                      {if(syntax_error_counter == 0){$$=insert_return($2);}}
+        |               LBRACE error RBRACE                                         {if(syntax_error_counter == 0){$$=NULL;}}
+        |               LBRACE RBRACE                                               {if(syntax_error_counter == 0){$$=NULL;}}
+        ;
+kleenClosureStatement:  ErrorOrStat                                                 {if(syntax_error_counter == 0){$$=$1;}}
+        |               kleenClosureStatement ErrorOrStat                           {if(syntax_error_counter == 0){$$=insert_statement($1,$2);}}
+        ;
+ErrorOrStat:            error SEMI                                                  {if(syntax_error_counter == 0){$$=NULL;}}
+        |               Statement                                                   {if(syntax_error_counter == 0){$$=$1;}}
+        ;
 
-        |               NOT Expression                                              {$$=insert_expression_op1(0,$2);}
-        |               MINUS Expression    %prec OP1                               {$$=insert_expression_op1(1,$2);}
-        |               PLUS Expression     %prec OP1                               {$$=insert_expression_op1(2,$2);}
+Expression:             Expression OR Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,0,$3);}}
+        |               Expression AND Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,1,$3);}}
+        |               Expression EQ Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,2,$3);}}
+        |               Expression NE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,3,$3);}}
+        |               Expression LT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,4,$3);}}
+        |               Expression GT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,5,$3);}}
+        |               Expression GE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,6,$3);}}
+        |               Expression PLUS Expression                                  {if(syntax_error_counter == 0){$$=insert_expression_op2($1,7,$3);}}
+        |               Expression MINUS Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,8,$3);}}
+        |               Expression MUL Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,9,$3);}}
+        |               Expression DIV Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,10,$3);}}
+        |               Expression MOD Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,11,$3);}}
+        |               Expression ASSIGN Expression                                {if(syntax_error_counter == 0){$$=insert_expression_op2($1,12,$3);}}
+        |               Expression COMMA Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,13,$3);}}
+        |               Expression BITWISEAND Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,14,$3);}}
+        |               Expression BITWISEXOR Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,15,$3);}}
+        |               Expression BITWISEOR Expression                             {if(syntax_error_counter == 0){$$=insert_expression_op2($1,16,$3);}}
+        |               Expression LE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,17,$3);}}
 
-        |               ID LPAR Expression kleenClosureCommaExpr RPAR               {$$=insert_expression_call($1,$3,$4);}
-        |               ID LPAR RPAR                                                {$$=insert_expression_call($1,NULL,NULL);}
+        |               NOT Expression                                              {if(syntax_error_counter == 0){$$=insert_expression_op1(0,$2);}}
+        |               MINUS Expression    %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(1,$2);}}
+        |               PLUS Expression     %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(2,$2);}}
 
-        |               CHRLIT                                                      {$$=insert_expression_terminal($1,1);}
-        |               ID                                                          {$$=insert_expression_terminal($1,2);}
-        |               INTLIT                                                      {$$=insert_expression_terminal($1,5);}
-        |               REALLIT                                                     {$$=insert_expression_terminal($1,7);}
+        |               ID LPAR Expression kleenClosureCommaExpr RPAR               {if(syntax_error_counter == 0){$$=insert_expression_call($1,$3,$4);}}
+        |               ID LPAR RPAR                                                {if(syntax_error_counter == 0){$$=insert_expression_call($1,NULL,NULL);}}
 
-        |               LPAR Expression RPAR                                        {$$=$2;}
-        |               ID LPAR error RPAR                                          {$$=NULL;}
-        |               LPAR error RPAR                                             {$$=NULL;}
+        |               CHRLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,1);}}
+        |               ID                                                          {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,2);}}
+        |               INTLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,5);}}
+        |               REALLIT                                                     {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,7);}}
+
+        |               LPAR Expression RPAR                                        {if(syntax_error_counter == 0){$$=$2;}}
+        |               ID LPAR error RPAR                                          {if(syntax_error_counter == 0){$$=NULL;}}
+        |               LPAR error RPAR                                             {if(syntax_error_counter == 0){$$=NULL;}}
         
 
-kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                                  {$$=NULL;}  
-        |               kleenClosureCommaExpr COMMA Expression                      {$$=insert_expression_kleen($1,$3);}    
+kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                                  {if(syntax_error_counter == 0){$$=NULL;}}
+        |               kleenClosureCommaExpr COMMA Expression                      {if(syntax_error_counter == 0){$$=insert_expression_kleen($1,$3);}}  
         ;
 
 

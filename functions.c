@@ -29,7 +29,7 @@ struct program* insert_program_func_def_rem(struct program* head, struct functio
     new->next = NULL;
 
     if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct program* looper = head;
@@ -66,7 +66,7 @@ struct program* insert_program_func_dec_rem(struct program* head, struct functio
     new->next = NULL;
 
     if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct program* looper = head;
@@ -99,7 +99,7 @@ struct program* insert_program_dec_rem(struct program* head, struct declaration*
     new->next = NULL;
 
     if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct program* looper = head;
@@ -208,7 +208,7 @@ struct parameter_list* insert_param_list_rem(struct parameter_list* head, struct
     new->next = NULL;
 
     if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct parameter_list* looper = head;
@@ -264,7 +264,7 @@ struct declaration* insert_dec_rem(struct declaration* head, struct declarator* 
     new->decl = i_decl;
 
    if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct declaration* looper = head;
@@ -277,7 +277,7 @@ struct declaration* insert_dec_rem(struct declaration* head, struct declarator* 
 struct statement* insert_statement(struct statement* head, struct statement* new){
 
     if(head == NULL)
-        head = new;
+        return new;
 
     else{
         struct statement* looper = head;
@@ -403,12 +403,15 @@ struct expression* insert_expression_terminal(char* id, int type){
 }
 
 struct call* insert_expression_kleen(struct call* head, struct expression* exp){
+    struct call* aux;
     struct call* current;
+
     if (head == NULL){
-        head = (struct call*) malloc(sizeof(struct call));
-        head->ct = call_exp;
-        head->call_morphs.exp = exp;
-        head->next_arg = NULL;     
+        aux = (struct call*) malloc(sizeof(struct call));
+        aux->ct = call_exp;
+        aux->call_morphs.exp = exp;
+        aux->next_arg = NULL;
+        return aux;    
     } else {
         for (current = head; current->next_arg; current = current->next_arg ) {}
         current->next_arg = (struct call*) malloc(sizeof(struct call));
