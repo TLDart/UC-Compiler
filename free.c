@@ -15,7 +15,7 @@ void* free_program(struct program* myprog){
         free_function_definition(myprog->data_program.u_f_def);
     }   
     if(myprog->type == t_dec){
-        free_dec(myprog->data_program.u_dec);
+        free_declaration(myprog->data_program.u_dec);
     }
     myprog = myprog->next;
         free(current);
@@ -55,10 +55,10 @@ void free_param_declaration(struct parameter_declaration* head){
 void free_function_body(struct function_body* head){
     while(head != NULL){
         struct function_body* current = head;
-        if(head->type = t_statement){
+        if(head->type == t_statement){
             free_statement(head->data_body.u_stt);
         }
-        if(head->type = t_declaration){
+        if(head->type == t_declaration){
             free_declaration(head->data_body.u_dec);
         }
         head = head->next;
@@ -85,19 +85,19 @@ void free_declarator(struct declarator* head){
 void free_statement(struct statement* head){
     while(head != NULL){
         struct statement* current = head;
-        if(head->type = t_if){
+        if(head->type == t_if){
             free_if(head->statement_data.u_if);
         }
-        if(head->type = t_return){
+        if(head->type == t_return){
             free_return(head->statement_data.u_return);
         }
-        if(head->type = t_while){
+        if(head->type == t_while){
             free_while(head->statement_data.u_while);
         }
-        if(head->type = t_statlist){
+        if(head->type == t_statlist){
             free_statlist(head->statement_data.u_statlist);
         }
-        if(head->type = t_expression){
+        if(head->type == t_expression){
             free_expression(head->statement_data.u_expr);
         }
         head = head->next;
