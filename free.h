@@ -1,7 +1,7 @@
 #ifndef FREELIB_H
 #define FREELIB_H
 
-void* free_program(struct program* myprog);
+void free_program(struct program* myprog);
 void free_function_definition(struct function_definition* head);
 void free_function_declaration(struct function_declaration* head);
 void free_param_list(struct parameter_list* head);

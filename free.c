@@ -5,7 +5,7 @@
 
 
 
-void* free_program(struct program* myprog){
+void free_program(struct program* myprog){
     while(myprog != NULL){
     struct program* current = myprog;
     if(myprog->type == t_f_dec){
