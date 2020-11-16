@@ -329,15 +329,18 @@ struct statement* insert_while_statement(struct expression* i_expr, struct state
 
 struct statement* insert_statlist(struct statement* i_statlist_body){
     //printf("inser statlist\n");
-    struct statement* new=(struct statement*)malloc(sizeof(struct statement));
-    struct statlist_statement* new_statlist=(struct statlist_statement*)malloc(sizeof(struct statlist_statement));
+    if (i_statlist_body != NULL){
+        struct statement* new=(struct statement*)malloc(sizeof(struct statement));
+        struct statlist_statement* new_statlist=(struct statlist_statement*)malloc(sizeof(struct statlist_statement));
 
-    new_statlist->stt = i_statlist_body;
-    new->statement_data.u_statlist = new_statlist;
-    new->type = t_statlist;
-    new->next = NULL;
-
-    return new;
+        new_statlist->stt = i_statlist_body;
+        new->statement_data.u_statlist = new_statlist;
+        new->type = t_statlist;
+        new->next = NULL;
+        return new;
+    } else {
+        return NULL;
+    }
 }
 
 struct statement* insert_expr_statement(struct expression* i_expr){
