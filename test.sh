@@ -20,7 +20,7 @@ ls -a "$3"| grep  "\.c\|.uc" | while read -r line ; do
 		then
 			lex $1 
 			yacc -d -v uccompiler.y 
-			gcc lex.yy.c y.tab.c functions.c print_lib.c -o uccompiler && 
+			gcc lex.yy.c y.tab.c free.c functions.c print_lib.c -o uccompiler && 
 			rm lex.yy.c y.tab.h y.tab.c 
 			result=`./uccompiler -t < $3/$line | diff $3/$processed -`
 			 #result=`./uccompiler -l < $3/$line | diff $3/$processed -`

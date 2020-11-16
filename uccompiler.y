@@ -189,7 +189,7 @@ Expression:             Expression OR Expression                                
         |               ID LPAR Expression kleenClosureCommaExpr RPAR               {if(syntax_error_counter == 0){$$=insert_expression_call($1,$3,$4);}}
         |               ID LPAR RPAR                                                {if(syntax_error_counter == 0){$$=insert_expression_call($1,NULL,NULL);}}
 
-        |               CHRLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,1);}}
+        |               CHRLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,1);};}
         |               ID                                                          {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,2);}}
         |               INTLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,5);}}
         |               REALLIT                                                     {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,7);}}
@@ -208,6 +208,6 @@ kleenClosureCommaExpr:   /* Epsilon */ %prec COMMA                              
 
 void yyerror(char *msg) {
         //printf("columns = %d; yyleng = %d\n",columns,yyleng);
-   printf ("Line %d, col %d: %s: %s\n" , lines, columns - yyleng, msg , yytext);
-   ++syntax_error_counter;
+        printf ("Line %d, col %d: %s: %s\n" , lines, columns - yyleng, msg , yytext);
+        ++syntax_error_counter;
 }

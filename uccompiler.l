@@ -50,6 +50,7 @@ MLCOMMENTE      "*/"
     #include "y.tab.h"
     #include "structures.h"
     #include "print_lib.h"
+    #include "free.h"
 
     extern int syntax_error_counter;
     
@@ -164,7 +165,7 @@ int main(int argc, char* argv[]) {
         printf("     LEFT  RIGHT LEFT    RIGHT\n"); */
         //print_ast(myprog);
     }
-    
+    free_program(myprog);
     if(comment)
         printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment-1);
     return 0;
