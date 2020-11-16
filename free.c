@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "structures.h"
 #include "free.h"
-
+#include "structures.h"
 
 
 void* free_program(struct program* myprog){
@@ -131,54 +130,5 @@ void free_statlist(struct statlist_statement* head){
     if(head != NULL){
         free_statement(head->stt);
         free(head);
-    }
-}
-
-//new 
-
-void free_expression(struct expression* expr){
-    if (expr != NULL){
-        if (expr->expr_t == t_op1){
-            free_op1(expr->expression_morphs.operation1);
-        } else if (expr->expr_t == t_op2){
-            free_op2(expr->expression_morphs.operation2);
-        } else if (expr->expr_t == t_term){
-            free_term(expr->expression_morphs.t);
-        } else if (expr->expr_t == t_call) {
-            free_call(expr->expression_morphs.c);
-        }
-        free(expr);
-    }
-}
-
-void free_op1(struct op1* op){
-    if (op != NULL){
-        free_expression(op->exp);
-        free(op);
-    }
-}
-void free_op2(struct op2* op){
-    if (op != NULL){
-        free_expression(op->exp1);
-        free_expression(op->exp2);
-        free(op);
-    }
-}
-
-void free_term(struct terminal* t){
-    if (t != NULL){
-        free(t->id);
-        free(t);
-    }
-}
-void free_call(struct call* c){
-    if (c != NULL){
-        free_call(c->next_arg);
-        if (c->ct == call_name){
-            free(c->call_morphs.id);
-        } else if (c->ct == call_exp) {
-            free_expression(c->call_morphs.exp);
-        }
-        free(c);
     }
 }
