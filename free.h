@@ -20,5 +20,4 @@ void free_op1(struct op1* op);
 void free_op2(struct op2* op);
 void free_term(struct terminal* t);
 void free_call(struct call* c);
-
 #endif
