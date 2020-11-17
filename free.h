@@ -14,13 +14,10 @@ void free_if(struct if_statement* head);
 void free_return(struct return_statement* head);
 void free_while(struct while_statement* head);
 void free_statlist(struct statlist_statement* head);
-
-
-
-
-
-
-
-
-
+/*new*/ 
+void free_expression(struct expression* expr);
+void free_op1(struct op1* op);
+void free_op2(struct op2* op);
+void free_term(struct terminal* t);
+void free_call(struct call* c);
 #endif
