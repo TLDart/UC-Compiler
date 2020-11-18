@@ -1,9 +1,4 @@
-#include "structures.h"
 #include "functions.h"
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-
 
 //Func Definition
 struct program* insert_program_func_def(struct function_definition* i_f_def, struct program* rem){

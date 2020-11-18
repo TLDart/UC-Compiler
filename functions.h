@@ -1,3 +1,10 @@
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "structures.h"
 
 struct program* insert_program_func_def(struct function_definition* i_f_def, struct program* rem);
@@ -29,3 +36,5 @@ struct expression* insert_expression_op2(struct expression* arg1, int operation,
 struct expression* insert_expression_call(char* id, struct expression* exp, struct call* exp_list);
 struct expression* insert_expression_terminal(char* id, int type);
 struct call* insert_expression_kleen(struct call* head, struct expression* exp);
+
+#endif

@@ -1,8 +1,4 @@
-#include "structures.h"
 #include "print_lib.h"
-#include <stdlib.h>
-#include <stdio.h>
-
 
 void print_indentation(int depth){
     for(int i = 0; i < depth*2; i++)

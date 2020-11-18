@@ -1,3 +1,11 @@
+#ifndef PRINTLIB_H
+#define PRINTLIB_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "structures.h"
+
 void print_indentation(int depth);
 void print_ast(struct program* head);
 void print_program(struct program* head, int depth);
@@ -23,3 +31,4 @@ void print_op1(struct op1* op, int depth);
 void print_op2(struct op2* op, int depth);
 void print_term(struct terminal* t, int depth);
 void print_call(struct call* c, int depth);
+#endif

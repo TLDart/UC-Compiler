@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include "structures.h"
 #include "free.h"
-
-
 
 void free_program(struct program* myprog){
     while(myprog != NULL){
