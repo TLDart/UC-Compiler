@@ -1,6 +1,11 @@
 #ifndef FREELIB_H
 #define FREELIB_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "structures.h"
+
 void free_program(struct program* myprog);
 void free_function_definition(struct function_definition* head);
 void free_function_declaration(struct function_declaration* head);
