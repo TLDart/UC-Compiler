@@ -355,3 +355,78 @@ void print_call(struct call* c, int depth){
         }
     }
 }
+
+
+
+//------------------------------------------------------------------------------------------------------------------//
+//Printing the symbol table
+
+void showTable(struct scope* head){
+    while(head){
+        if(strcmp(head->name, "Global") == 0){
+            printf("===== Global Symbol Table =====\n");
+            printf("putchar\tint(int)\n");
+            printf("putchar\tint(void)\n");
+        }
+        else{
+            printf("===== Function %s Symbol Table =====\n",head->name);
+        }
+        print_scope(head->symtab);
+        head = head->next;
+    }
+}
+void print_scope(struct sym_element* head){
+    printf("Scope head is null\n");
+    while(head){
+        print_sym_element(head);
+        head = head->next;
+    }
+}
+
+void print_sym_element(struct sym_element* s_el){
+    if(s_el->name)
+        printf("%s\t", s_el->name);
+    if(s_el->type == s_function){
+        print_scope_f_dec(s_el->sym_f);
+        //printf("is func\n");
+    }
+    else{
+        print_s_type(s_el->type);
+
+        if(s_el->parameter == 1){
+            printf("\tparam");
+        }
+        printf("\n");
+    }
+}
+
+void print_scope_f_dec(struct sym_function* sf){
+    print_s_type(sf->return_value); 
+    printf("(");
+    while(sf->params){
+        print_s_type(sf->params->param_type);
+        if(sf->params->next !=NULL) printf(",");
+        sf->params = sf->params->next;
+    }
+    printf(")");
+        printf("\n");
+}
+
+void print_s_type(s_types s){
+        if(s == s_char){
+            printf("char");
+        }
+        if(s == s_int){
+            printf("int");
+        }
+        if(s == s_void){
+            printf("void");
+        }
+        if(s == s_short){
+            printf("short");
+        }
+        if(s == s_double){
+            printf("double");
+        }
+
+}

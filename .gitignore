@@ -4,3 +4,4 @@ lex.yy.c
 *.info
 .history
 y.output
+.vscode

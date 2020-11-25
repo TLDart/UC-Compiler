@@ -51,6 +51,9 @@ MLCOMMENTE      "*/"
     #include "structures.h"
     #include "print_lib.h"
     #include "free.h"
+    #include "symbol_table.h"
+    #include "semantics.h"
+
 
     extern int syntax_error_counter;
     
@@ -62,7 +65,7 @@ MLCOMMENTE      "*/"
     int linecomment = 0;
     int colcomment = 0;
     struct program* myprog;
-
+    struct scope* scope_head = NULL;
     typedef enum {meta1, meta2} meta_flag;
 
     meta_flag mf;
@@ -154,6 +157,8 @@ int main(int argc, char* argv[]) {
             break;
     }
     if(sintaxTree && syntax_error_counter == 0){
+        int errorcount = check_program(myprog);
+        showTable(scope_head);
         print_ast(myprog);
         /*fazer aqui print_ast()*/
         /*  printf("        Arvore dos deuses\n");
