@@ -376,7 +376,6 @@ void showTable(struct scope* head){
     }
 }
 void print_scope(struct sym_element* head){
-    printf("Scope head is null\n");
     while(head){
         print_sym_element(head);
         head = head->next;

@@ -50,17 +50,16 @@ struct sym_element* get_token_by_name(struct sym_element* head, char* name){
 
 struct sym_element* insert_sym_element(struct sym_element* head,struct sym_element* new){
     if(head == NULL){
-        printf("Is inside head null\n");
         return new;
     }
     if(strcmp(new->name, "return") == 0){ // Insert return first
-        printf("Is inside return\n");
+        //printf("Is inside return\n");
         new->next = head;
     }
     else{
-    printf("Is inside else\n");
+    //printf("Is inside else\n");
         if(new != NULL){
-            printf("%s\n", new->name);
+            //printf("%s\n", new->name);
         }
         struct sym_element* looper = head;
         while(looper->next){
@@ -77,7 +76,7 @@ struct sym_element* create_sym_element(char* name, s_types type, struct sym_func
     new->name = (char*)strdup(name);
     new->type = type;
     new->sym_f = f;
-    new->parameter = 0;
+    new->parameter = parameter;
     new->next = NULL;
 
     return new;
