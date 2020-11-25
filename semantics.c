@@ -6,6 +6,7 @@ int check_program(struct program* head){
     int scope = 0;
 
     scope_head = create_scope(scope_head,"Global");
+	insert_default_values(scope_head);
         while(head != NULL){
             if(head->type == t_f_def){
                count += check_f_def(head->data_program.u_f_def);
@@ -21,6 +22,25 @@ int check_program(struct program* head){
     return count;
 }
 
+void insert_default_values(struct scope* head){
+    struct function_declaration* new=(struct function_declaration*)malloc(sizeof(struct function_declaration));
+    struct parameter_list* newplist=(struct parameter_list*)malloc(sizeof(struct parameter_list));
+    struct parameter_declaration* newpdec=(struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
+	
+	newpdec->id = NULL;
+	newpdec->type = t_typespec_int;
+	newplist->p_dec = newpdec;
+	newplist->next = NULL;
+	new->param_list = newplist;
+	head->symtab= insert_sym_element(head->symtab, create_sym_element("putchar", s_function,create_sym_f_param(new), 0));
+    newpdec=(struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
+	newpdec->id = NULL;
+	newpdec->type = t_typespec_void;
+	newplist->p_dec = newpdec;
+	newplist->next = NULL;
+	new->param_list = newplist;
+	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0));
+}
 
 int check_f_dec(struct function_declaration* f_dec, char *name){
     struct scope* s= get_scope_by_name(scope_head, name);

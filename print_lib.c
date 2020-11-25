@@ -365,8 +365,6 @@ void showTable(struct scope* head){
     while(head){
         if(strcmp(head->name, "Global") == 0){
             printf("===== Global Symbol Table =====\n");
-            printf("putchar\tint(int)\n");
-            printf("putchar\tint(void)\n");
         }
         else{
             printf("===== Function %s Symbol Table =====\n",head->name);

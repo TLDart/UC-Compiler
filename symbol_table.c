@@ -52,7 +52,7 @@ struct sym_element* insert_sym_element(struct sym_element* head,struct sym_eleme
     if(head == NULL){
         return new;
     }
-    if(strcmp(new->name, "return") == 0){ // Insert return first
+    if(new->name && strcmp(new->name, "return") == 0){ // Insert return first
         //printf("Is inside return\n");
         new->next = head;
     }
@@ -72,8 +72,10 @@ struct sym_element* insert_sym_element(struct sym_element* head,struct sym_eleme
 
 struct sym_element* create_sym_element(char* name, s_types type, struct sym_function* f, int parameter){
     struct sym_element* new=(struct sym_element*)malloc(sizeof(struct sym_element));
-
-    new->name = (char*)strdup(name);
+    if(name == NULL)
+        new->name = NULL;
+    else
+        new->name = (char*)strdup(name);
     new->type = type;
     new->sym_f = f;
     new->parameter = parameter;

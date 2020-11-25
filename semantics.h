@@ -6,6 +6,7 @@ extern struct scope* scope_head;
 
 
 int check_program(struct program* head);
+void insert_default_values(struct scope* head);
 int check_f_dec(struct function_declaration* f_dec,char *name);
 int check_dec(struct declaration* dec, char* name);
 int check_f_def(struct function_definition* fdef);
