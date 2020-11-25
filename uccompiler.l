@@ -52,18 +52,23 @@ MLCOMMENTE      "*/"
     #include "print_lib.h"
     #include "free.h"
 
+    #define STDT_PRINT 0
+    #define NOTED_PRINT 1
+
     extern int syntax_error_counter;
     
     int lines = 1;
     int columns = 1;
     int verbose = 0;
     int sintaxTree = 0;
+    int ASTnoted = 0;
     int comment = 0;
     int linecomment = 0;
     int colcomment = 0;
+    int semantic_errors = 0;
     struct program* myprog;
 
-    typedef enum {meta1, meta2} meta_flag;
+    typedef enum {meta1, meta2, meta3} meta_flag;
 
     meta_flag mf;
 %}
@@ -129,7 +134,7 @@ MLCOMMENTE      "*/"
 
 int main(int argc, char* argv[]) {
     /* [Se nenhuma flag for passada] : */ 
-    mf = meta2; //isto é supostor ir atualizando para ficar sempre a ultima meta por default
+    mf = meta3; //isto é supostor ir atualizando para ficar sempre a ultima meta por default
     for(int i = 1; i < argc; i++){
         if(strcmp("-l", argv[i]) == 0){
             verbose = 1;
@@ -144,30 +149,40 @@ int main(int argc, char* argv[]) {
         else if(strcmp("-e2", argv[i]) == 0){
             mf = meta2;
         }
+        else if(strcmp("-s",argv[i]) == 0){
+            ASTnoted = 1;
+            mf = meta3;
+        }
     }
     switch(mf){
         case meta1:
             yylex();
             break;
-        case meta2:
+        case meta2: case meta3:
             yyparse();
             break;
     }
-    if(sintaxTree && syntax_error_counter == 0){
-        print_ast(myprog);
-        /*fazer aqui print_ast()*/
-        /*  printf("        Arvore dos deuses\n");
-        printf("            /       \\\n");
-        printf("           /         \\\n");
-        printf("        LEFT         RIGHT\n");
-        printf("        /  \\        /    \\\n");
-        printf("       /    \\      /      \\\n");
-        printf("     LEFT  RIGHT LEFT    RIGHT\n"); */
-        //print_ast(myprog);
+
+    if(mf == meta3){
+        //TODO: CHECK PROGRAM (error prints)
+        semantic_errors += /* checkprogram thingy */ ;
+        //TODO: SCOPES > ELEMENT TABLE PRINT!!!
     }
+
+    /* AST | AST-noted print */
+    if(sintaxTree && syntax_error_counter == 0){ // AST
+        print_ast(myprog, STDT_PRINT);
+                                                // not sure about this!!!!!
+    } else if (ASTnoted && (syntax_error_counter + semantic_errors) == 0) { // AST-noted
+        print_ast(myprog, NOTED_PRINT);
+    }
+
+    /* Free */
     free_program(myprog);
+    
     if(comment)
         printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment-1);
+    
     return 0;
 }
 

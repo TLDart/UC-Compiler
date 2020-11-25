@@ -6,7 +6,7 @@ void print_indentation(int depth){
 }
 
 
-void print_ast(struct program* head){
+void print_ast(struct program* head, int noted){
     if(head != NULL){
         print_program(head, 0);
     }
