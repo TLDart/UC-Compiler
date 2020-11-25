@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "structures.h"
+#include "symbol_table.h"
 
 void print_indentation(int depth);
 void print_ast(struct program* head);
@@ -31,4 +33,12 @@ void print_op1(struct op1* op, int depth);
 void print_op2(struct op2* op, int depth);
 void print_term(struct terminal* t, int depth);
 void print_call(struct call* c, int depth);
+
+// Print Symbol Table
+
+void showTable(struct scope* head);
+void print_scope(struct sym_element* head);
+void print_sym_element(struct sym_element* s_el);
+void print_scope_f_dec(struct sym_function* sf);
+void print_s_type(s_types s);
 #endif

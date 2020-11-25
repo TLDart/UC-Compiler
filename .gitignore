@@ -1,6 +1,7 @@
 uccompiler
 lex.yy.c
 *.swp*
-log.info
+*.info
 .history
 y.output
+.vscode

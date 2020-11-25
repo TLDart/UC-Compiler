@@ -51,6 +51,9 @@ MLCOMMENTE      "*/"
     #include "structures.h"
     #include "print_lib.h"
     #include "free.h"
+    #include "symbol_table.h"
+    #include "semantics.h"
+
 
     #define STDT_PRINT 0
     #define NOTED_PRINT 1
@@ -67,7 +70,7 @@ MLCOMMENTE      "*/"
     int colcomment = 0;
     int semantic_errors = 0;
     struct program* myprog;
-
+    struct scope* scope_head = NULL;
     typedef enum {meta1, meta2, meta3} meta_flag;
 
     meta_flag mf;
@@ -164,9 +167,8 @@ int main(int argc, char* argv[]) {
     }
 
     if(mf == meta3){
-        //TODO: CHECK PROGRAM (error prints)
-        semantic_errors += /* checkprogram thingy */ ;
-        //TODO: SCOPES > ELEMENT TABLE PRINT!!!
+        semantic_errors += check_program(myprog); ;
+        showTable(scope_head);
     }
 
     /* AST | AST-noted print */
@@ -182,7 +184,6 @@ int main(int argc, char* argv[]) {
     
     if(comment)
         printf("Line %d, col %d: unterminated comment\n", linecomment, colcomment-1);
-    
     return 0;
 }
 

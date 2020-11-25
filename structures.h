@@ -15,16 +15,16 @@ struct program{
 typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double, typespec_null} typespec_type;
 
 struct function_definition{
-        typespec_type type;
-        char* id;
-        struct parameter_list* param_list; 
-        struct function_body* f_body;
+    typespec_type type;
+    char* id;
+    struct parameter_list* param_list; 
+    struct function_body* f_body;
 };
 
 struct function_declaration{
-        typespec_type type;
-        char* id;
-        struct parameter_list* param_list; 
+    typespec_type type;
+    char* id;
+    struct parameter_list* param_list; 
 };
 
 struct parameter_list{
