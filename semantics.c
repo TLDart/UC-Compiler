@@ -162,7 +162,7 @@ int check_f_body(struct function_body* head, char *name){
 	int ec = 0;
 	while(head != NULL){
         if(head->type == t_statement){
-            //ec += check_statement(head->data_body.u_stt);
+            ec += check_statement(head->data_body.u_stt);
         }
         if(head->type == t_declaration){
             ec += check_dec(head->data_body.u_dec, name);
@@ -172,3 +172,51 @@ int check_f_body(struct function_body* head, char *name){
 	return ec;
 }
 
+int check_statement(struct statement* head){
+    int ec = 0;
+    while(head != NULL){
+        if(head->type == t_if){
+            ec += check_if(head->statement_data.u_if);
+        }
+        if(head->type == t_return){
+            //ec += check_return(head->statement_data.u_return);
+            //Prolly need to change this here
+        }
+        if(head->type == t_while){
+            ec += check_while(head->statement_data.u_while);
+        }
+        if(head->type == t_statlist){
+            ec += check_statlist(head->statement_data.u_statlist);
+        }
+        if(head->type == t_expression){
+            //ec += check_expression(head->statement_data.u_expr);
+        }
+        head = head->next;
+    }
+    return ec;
+}
+
+int check_if(struct if_statement* head){
+    int ec = 0;
+    if(head != NULL){
+        //ec += check_expression(head->expr);
+        ec += check_statement(head->if_body);
+        ec += check_statement(head->else_body);
+    }
+    return ec;
+}
+int check_while(struct while_statement* head){
+    int ec = 0;
+    if(head != NULL){
+        //ec += check_expression(head->expr);
+        ec += check_statement(head->while_body);
+    }
+    return ec;
+}
+int check_statlist(struct statlist_statement* head){
+    int ec = 0;
+    if(head != NULL){
+        ec += check_statement(head->stt);
+    }
+    return ec;
+}
