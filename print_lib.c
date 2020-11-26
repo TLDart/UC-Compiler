@@ -367,7 +367,7 @@ void showTable(struct scope* head){
             printf("===== Global Symbol Table =====\n");
         }
         else{
-            printf("===== Function %s Symbol Table =====\n",head->name);
+            printf("\n===== Function %s Symbol Table =====\n",head->name);
         }
         print_scope(head->symtab);
         head = head->next;

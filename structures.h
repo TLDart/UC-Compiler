@@ -12,6 +12,7 @@ struct program{
     struct program* next;
 };
 
+// Nao mexer senão fica tudo lixado!!!!!
 typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double, typespec_null} typespec_type;
 
 struct function_definition{

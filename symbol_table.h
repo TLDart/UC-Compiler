@@ -14,7 +14,7 @@ struct scope{
     struct scope* next;
 };
 
-typedef enum {s_char ,s_int, s_void, s_short, s_double, s_return, s_function} s_types;
+typedef enum {s_char ,s_int, s_void, s_short, s_double, s_return, s_function} s_types; // Nao mexer senão fica tudo lixado!!!!!
 
 struct sym_element{
     s_types type;

@@ -19,7 +19,7 @@ struct scope* get_scope_by_name(struct scope* head, char* name){
 }
 
 struct scope* create_scope(struct scope* head, char* name){
-        struct scope* new=(struct scope*)malloc(sizeof(struct scope));
+        struct scope* new = (struct scope*)malloc(sizeof(struct scope));
 
         new->name = (char*)strdup(name);
         new->id = 0;
@@ -41,11 +41,13 @@ struct scope* create_scope(struct scope* head, char* name){
 
 struct sym_element* get_token_by_name(struct sym_element* head, char* name){
     while(head){
+        // printf("head->name: %s\n",head->name);
         if(strcmp(head->name, name) == 0){
             return head;
         }
         head = head ->next;
     }
+    return NULL;
 }
 
 struct sym_element* insert_sym_element(struct sym_element* head,struct sym_element* new){

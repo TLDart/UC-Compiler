@@ -76,6 +76,9 @@ MLCOMMENTE      "*/"
     meta_flag mf;
 %}
 
+%option nounput
+%option noinput
+
 %x COMMENT CHARAC
 
 %%
