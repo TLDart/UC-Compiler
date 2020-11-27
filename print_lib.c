@@ -488,13 +488,13 @@ s_types get_op2_type(struct op2* op, char* local_scope_name){
 
     switch (op->type) {
         case t_or: case t_and: case t_eq:case t_ne: case t_lt: case t_gt: case t_ge:
-        case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le:
+        case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le: case t_mod:
             return s_int;
         case t_store:
             return t_exp1;
         case t_comma:
             return t_exp2;
-        case t_add: case t_sub: case t_mul: case t_div: case t_mod:
+        case t_add: case t_sub: case t_mul: case t_div: 
             // char < short < int < double  
             if (t_exp1 == t_exp2){
                 return t_exp1;
