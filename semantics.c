@@ -64,7 +64,8 @@ int check_dec(struct declaration* dec, char *name){
     struct declaration* current = dec;
     while(current){
         if(get_token_by_name(s->symtab, current->decl->id)){ //TODO: Isto só vê no próprio scope, não sei se para o tratamento de erros não é necessário ver também no global 
-            printf("Is this a double declaration?\n");
+            printf ("Line %d, col %d: Symbol %s is already defined\n" , lines, columns - yyleng, current->decl->id);
+            ec++;
         } else {
             //printf("Is inserting element\n");
             s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->id, dec->type, NULL, 0));
@@ -162,7 +163,7 @@ int check_f_body(struct function_body* head, char *name){
 	int ec = 0;
 	while(head != NULL){
         if(head->type == t_statement){
-            ec += check_statement(head->data_body.u_stt);
+            ec += check_statement(head->data_body.u_stt, name);
         }
         if(head->type == t_declaration){
             ec += check_dec(head->data_body.u_dec, name);
@@ -172,99 +173,99 @@ int check_f_body(struct function_body* head, char *name){
 	return ec;
 }
 
-int check_statement(struct statement* head){
+int check_statement(struct statement* head, char* name){
     int ec = 0;
     while(head != NULL){
         if(head->type == t_if){
-            ec += check_if(head->statement_data.u_if);
+            ec += check_if(head->statement_data.u_if, name);
         }
         if(head->type == t_return){
-            ec += check_return(head->statement_data.u_return);
+            ec += check_return(head->statement_data.u_return, name);
         }
         if(head->type == t_while){
-            ec += check_while(head->statement_data.u_while);
+            ec += check_while(head->statement_data.u_while, name);
         }
         if(head->type == t_statlist){
-            ec += check_statlist(head->statement_data.u_statlist);
+            ec += check_statlist(head->statement_data.u_statlist, name);
         }
         if(head->type == t_expression){
-            ec += check_expression(head->statement_data.u_expr);
+            ec += check_expression(head->statement_data.u_expr, name);
         }
         head = head->next;
     }
     return ec;
 }
 
-int check_return(struct return_statement* rs) {
+int check_return(struct return_statement* rs, char* name) {
     int ec = 0;
     //TODO: Verificar se o valor da expressão retornada é igual ao daquele que foi declarado/definido
     if (rs != NULL) {
-        ec += check_expression(rs->expr);
+        ec += check_expression(rs->expr, name);
     }
     return ec;
 }
 
-int check_if(struct if_statement* head){
+int check_if(struct if_statement* head, char* name){
     int ec = 0;
     if(head != NULL){
-        ec += check_expression(head->expr);
-        ec += check_statement(head->if_body);
-        ec += check_statement(head->else_body);
+        ec += check_expression(head->expr, name);
+        ec += check_statement(head->if_body, name);
+        ec += check_statement(head->else_body, name);
     }
     return ec;
 }
-int check_while(struct while_statement* head){
+int check_while(struct while_statement* head, char* name){
     int ec = 0;
     if(head != NULL){
-        ec += check_expression(head->expr);
-        ec += check_statement(head->while_body);
+        ec += check_expression(head->expr, name);
+        ec += check_statement(head->while_body, name);
     }
     return ec;
 }
-int check_statlist(struct statlist_statement* head){
+int check_statlist(struct statlist_statement* head, char* name){
     int ec = 0;
     if(head != NULL){
-        ec += check_statement(head->stt);
+        ec += check_statement(head->stt, name);
     }
     return ec;
 }
 
-int check_expression(struct expression* exp){
+int check_expression(struct expression* exp, char* name){
     if(exp != NULL){
         switch (exp->expr_t) {
             case t_op1:
-                return check_op1(exp->expression_morphs.operation1);
+                return check_op1(exp->expression_morphs.operation1, name);
             case t_op2:
-                return check_op2(exp->expression_morphs.operation2);
+                return check_op2(exp->expression_morphs.operation2, name);
             case t_term:
-                return check_terminal(exp->expression_morphs.t);
+                return check_terminal(exp->expression_morphs.t, name);
             case t_call:
-                return check_call(exp->expression_morphs.c);
+                return check_call(exp->expression_morphs.c, name);
         }
     }
     return 0;
 }
 
-int check_op1(struct op1* op) {
+int check_op1(struct op1* op, char* name) {
     //TODO: Compatibilidade de Operadores
     int ec = 0;
     if (op != NULL){
-        ec += check_expression(op->exp);
+        ec += check_expression(op->exp, name);
     }
     return ec;
 }
 
-int check_op2(struct op2* op) {
+int check_op2(struct op2* op, char* name) {
     //TODO: Compatibilidade de Operadores
     int ec = 0;
     if (op != NULL){
-        ec += check_expression(op->exp1);
-        ec += check_expression(op->exp2);
+        ec += check_expression(op->exp1, name);
+        ec += check_expression(op->exp2, name);
     }
     return ec;
 }
 
-int check_terminal(struct terminal* t) {
+int check_terminal(struct terminal* t, char* name) {
     if (t == NULL) {
         printf("TEMPORARY Falta o terminal para o operador!");
         return 1;
@@ -272,7 +273,7 @@ int check_terminal(struct terminal* t) {
     return 0;
 }
 
-int check_call(struct call* c) {
+int check_call(struct call* c, char* name) {
     int ec = 0;
     while(c) {
         switch (c->ct) {
@@ -280,7 +281,7 @@ int check_call(struct call* c) {
                 ec += (c->call_morphs.id == NULL ? 1 : 0);
                 break;
             case call_exp:
-                ec += check_expression(c->call_morphs.exp);
+                ec += check_expression(c->call_morphs.exp, name);
                 break;   
         }
         c = c->next_arg;
