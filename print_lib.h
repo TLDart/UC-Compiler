@@ -42,6 +42,12 @@ void print_sym_element(struct sym_element* s_el);
 void print_scope_f_dec(struct sym_function* sf);
 void print_s_type(s_types s);
 
-// Print AST-noted 
-void print_id_ast_noted(char* id,char* local_scope_name);
+// gets for Print AST-noted 
+s_types get_expression_type(struct expression* exp, char* local_scope_name);
+s_types get_op1_type(struct op1* op, char* local_scope_name);
+s_types get_op2_type(struct op2* op, char* local_scope_name);
+s_types get_terminal_type(struct terminal* t, char* local_scope_name);
+s_types get_call_type(struct call* c, char* local_scope_name);
+s_types get_id_type(char* id, char* local_scope_name);
+
 #endif

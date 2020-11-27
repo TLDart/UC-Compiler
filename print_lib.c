@@ -252,17 +252,19 @@ void print_op1(struct op1* op, int depth,char* local_scope_name){
     switch (op->type){
         case t_not:
             printf("Not");
-            printf("\n");
             break;
         case t_minus:
             printf("Minus");
-            printf("\n");
             break;
         case t_plus:
             printf("Plus");
-            printf("\n");
             break;
     }
+    if (ASTnoted) {
+        printf(" - ");
+        print_s_type(get_op1_type(op,local_scope_name));
+    }
+    printf("\n");
     print_expression(op->exp, depth + 1,local_scope_name);
 }
 
@@ -270,81 +272,64 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
     switch (op->type){
         case t_or:
             printf("Or");
-            printf("\n");
             break;
         case t_and:
             printf("And");
-            printf("\n");
             break;
         case t_eq:
             printf("Eq");
-            printf("\n");
             break;
         case t_ne:
             printf("Ne");
-            printf("\n");
             break;
         case t_lt:
             printf("Lt");
-            printf("\n");
             break;
         case t_gt:
             printf("Gt");
-            printf("\n");
             break;
         case t_ge:
             printf("Ge");
-            printf("\n");
             break;
         case t_add:
             printf("Add");
-            printf("\n");
             break;
         case t_sub:
             printf("Sub");
-            printf("\n");
             break;
         case t_mul:
             printf("Mul");
-            printf("\n");
             break;
         case t_div:
             printf("Div");
-            printf("\n");
             break;
         case t_mod:
-            printf("Mod");   
-            printf("\n"); 
+            printf("Mod");
             break;
         case t_store:
             printf("Store");
-            if (ASTnoted){
-                printf(" - ");
-                //TODO: Fazer uma função "get_type() para deduzir qual o tipo de (1+1.0) + 'A'  "  
-            }
-            printf("\n");
             break;
         case t_comma:
             printf("Comma");
-            printf("\n");
             break;
         case t_bitwiseand:
-            printf("BitWiseAnd"); 
-            printf("\n");   
+            printf("BitWiseAnd");  
             break;
         case t_bitwisexor:
             printf("BitWiseXor");
-            printf("\n");
             break;
         case t_bitwiseor:
             printf("BitWiseOr");
-            printf("\n");
             break;
         case t_le:
             printf("Le");
-            printf("\n");    
             break;
     }
+    if (ASTnoted) {
+        printf(" - ");
+        print_s_type(get_op2_type(op,local_scope_name));
+    }
+    printf("\n");
     print_expression(op->exp1, depth + 1, local_scope_name);
     print_expression(op->exp2, depth + 1, local_scope_name);
 }
@@ -353,29 +338,24 @@ void print_term(struct terminal* t, int depth, char* local_scope_name){
     switch (t->type){
         case t_charlit:
             printf("ChrLit('%s)",t->id);
-            if (ASTnoted) printf(" - int");
-            printf("\n");
             break;
         case t_id:
             printf("Id(%s)",t->id);
-            if (ASTnoted){
-                print_id_ast_noted(t->id,local_scope_name);
-                printf("\n");   
-            }
             break;
         case t_intlit:
             printf("IntLit(%s)",t->id);
-            if (ASTnoted) printf(" - int");
-            printf("\n");
             break;
         case t_reallit:
             printf("RealLit(%s)",t->id);
-            if (ASTnoted) printf(" - double");
-            printf("\n");
             break;
         default:
             break;
     }
+    if (ASTnoted){
+        printf(" - ");
+        print_s_type(get_terminal_type(t,local_scope_name));
+    }
+    printf("\n");
 }
 
 void print_call(struct call* c, int depth, char* local_scope_name){
@@ -385,13 +365,15 @@ void print_call(struct call* c, int depth, char* local_scope_name){
             printf("Call");
             if (ASTnoted) {
                 printf(" - ");   
-                print_s_type(search_symbol(scope_head,current->call_morphs.id, local_scope_name)->sym_f->return_value);   
+                // print_s_type(search_symbol(scope_head,current->call_morphs.id, local_scope_name)->sym_f->return_value);
+                print_s_type(get_call_type(current,local_scope_name));   
             }
             printf("\n");
             print_indentation(depth + 1);
             printf("Id(%s)",current->call_morphs.id);
             if(ASTnoted){
-                print_id_ast_noted(current->call_morphs.id,local_scope_name);
+                printf(" - ");
+                print_s_type(get_id_type(current->call_morphs.id,local_scope_name));
             }
             printf("\n");
         } else if (current->ct == call_exp){
@@ -472,32 +454,114 @@ void print_s_type(s_types s){
         if(s == s_double){
             printf("double");
         }
-
 }
 
-void print_id_ast_noted(char* id,char* local_scope_name){
-    struct sym_element* symbol = search_symbol(scope_head,id, local_scope_name);
-    switch (symbol->type) {
-        case s_char: 
-            printf(" - char");
-            break;
-        case s_int:
-            printf(" - int");
-            break; 
-        case s_void:
-            printf(" - void");
-            break;
-        case s_short:
-            printf(" - short");
-            break;
-        case s_double:
-            printf(" - double");
-            break;
+//======================================================================================
+s_types get_expression_type(struct expression* exp, char* local_scope_name){
+    switch (exp->expr_t){
+        case t_op1:
+            return get_op1_type(exp->expression_morphs.operation1,local_scope_name);
+        case t_op2:
+            return get_op2_type(exp->expression_morphs.operation2,local_scope_name); 
+        case t_term:
+            return get_terminal_type(exp->expression_morphs.t, local_scope_name);
+        case t_call:
+            return get_call_type(exp->expression_morphs.c, local_scope_name);
+    }
+    printf("Não devia ter acontecido!!\n");
+    return s_void;
+}
+
+s_types get_op1_type(struct op1* op, char* local_scope_name) {
+    switch (op->type){
+        case t_not:
+            return s_int;
+        default:
+            return get_expression_type(op->exp,local_scope_name);
+    }
+}
+    
+
+s_types get_op2_type(struct op2* op, char* local_scope_name){
+    s_types t_exp1 = get_expression_type(op->exp1, local_scope_name);
+    s_types t_exp2 = get_expression_type(op->exp2, local_scope_name);
+
+    switch (op->type) {
+        case t_or: case t_and: case t_eq:case t_ne: case t_lt: case t_gt: case t_ge:
+        case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le:
+            return s_int;
+        case t_store:
+            return t_exp1;
+        case t_comma:
+            return t_exp2;
+        case t_add: case t_sub: case t_mul: case t_div: case t_mod:
+            // char < short < int < double  
+            if (t_exp1 == t_exp2){
+                return t_exp1;
+            } else {
+                if (t_exp1 == s_char){ 
+                    return t_exp2;
+                } else if (t_exp1 == s_double) {
+                    return t_exp1;
+                } else if (t_exp1 == s_short) {
+                    if (t_exp2 == s_int || t_exp2 == s_double) {
+                        return t_exp2;
+                    }
+                    return t_exp1;
+                } else if (t_exp1 == s_int) {
+                    if (t_exp2 == s_double){
+                        return t_exp2;
+                    }
+                    return t_exp1;
+                } else {
+                    printf("Não devia ter acontecido!!\n");
+                    return s_void;
+                }
+            }
+
+    }
+    printf("Não devia ter acontecido!!\n");
+    return s_void;  
+}
+
+s_types get_terminal_type(struct terminal* t, char* local_scope_name){
+    switch (t->type) {
+        case t_charlit:
+            return s_int;
+        case t_id:
+            return get_id_type(t->id,local_scope_name);
+        case t_intlit:
+            return s_int;
+        case t_reallit:
+            return s_double;
+        default:
+            printf("Não devia ter acontecido!!\n");
+            return s_void;
+    }
+}
+
+s_types get_call_type(struct call* c, char* local_scope_name){
+    struct sym_element* sym_elem = NULL;
+    if ((sym_elem = search_symbol(scope_head,c->call_morphs.id, local_scope_name))) {
+        return sym_elem->sym_f->return_value;
+    }
+    printf("Nao devia chegar aqui!!\n");
+    return s_void;
+}
+
+s_types get_id_type(char* id, char* local_scope_name){
+    struct sym_element* sym_elem = NULL;
+    if((sym_elem = search_symbol(scope_head,id,local_scope_name))){
+        switch (sym_elem->type){
+        case s_char: case s_int: case s_void: case s_short: case s_double:
+            return sym_elem->type;
         case s_function:
-            printf(" - ");
-            print_scope_f_dec(symbol->sym_f);
-            break;
+            print_scope_f_dec(sym_elem->sym_f);
+            return s_function;
         default:
             break;
+        }
     }
+    printf("Nao devia chegar aqui!!\n");
+    return s_void;
 }
