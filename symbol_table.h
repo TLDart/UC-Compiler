@@ -42,6 +42,7 @@ struct sym_element* get_token_by_name(struct sym_element* head, char* name);
 struct sym_element* insert_sym_element(struct sym_element* head,struct sym_element* new);
 struct sym_element* create_sym_element(char* name, s_types type, struct sym_function* f, int parameter);
 struct sym_function* create_sym_f_param(struct function_declaration* f);
+struct sym_element* search_symbol(struct scope* head, char* sym_name, char* local_scope_name);
 
 
 #endif

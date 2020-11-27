@@ -108,8 +108,17 @@ struct sym_function* create_sym_f_param(struct function_declaration* f){
         p = p->next;
     }
     return new;
-
 }
 
+struct sym_element* search_symbol(struct scope* head, char* sym_name, char* local_scope_name){
+    struct sym_element* se = NULL;
+    if ((se = get_token_by_name(get_scope_by_name(head,local_scope_name)->symtab,sym_name))) {
+        // printf("debug:[@LOCAL]");
+    } 
+    else if ((se = get_token_by_name(get_scope_by_name(head,"Global")->symtab,sym_name))) {
+        // printf("[debug:@GLOBAL]");
+    }
+    return se;
+}
 
 

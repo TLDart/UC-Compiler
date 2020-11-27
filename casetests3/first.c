@@ -1,4 +1,3 @@
-int main(void);
 int main(void) {
   char i = 'A';
   while (i <= 'Z')

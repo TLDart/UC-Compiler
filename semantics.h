@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "symbol_table.h"
+#include "print_lib.h"
 
 extern struct scope* scope_head;
 

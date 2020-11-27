@@ -6,7 +6,7 @@ void print_indentation(int depth){
 }
 
 
-void print_ast(struct program* head, int noted){
+void print_ast(struct program* head){
     if(head != NULL){
         print_program(head, 0);
     }
@@ -27,7 +27,7 @@ void print_program(struct program* head, int depth){
             print_f_dec(head->data_program.u_f_dec, depth +1);
         }
         else if(head->type == t_dec){
-            print_declaration(head->data_program.u_dec, depth +1);
+            print_declaration(head->data_program.u_dec, depth +1, "Global");
         }
         head = head->next;
     }
@@ -45,7 +45,7 @@ void print_f_def(struct function_definition* f_def, int depth){
 
     }
     if(f_def->f_body != NULL){
-        print_f_body(f_def->f_body, depth + 1);
+        print_f_body(f_def->f_body, depth + 1, f_def->id);
     } else {
         print_indentation(depth + 1);
         printf("FuncBody\n");
@@ -105,63 +105,63 @@ void print_param_dec(struct parameter_declaration* p_dec, int depth){
         }
 }
 
-void print_f_body(struct function_body* f_body, int depth){
+void print_f_body(struct function_body* f_body, int depth, char* local_scope_name){
     print_indentation(depth);
     printf("FuncBody\n");
     while(f_body != NULL){
         if(f_body->type == t_statement){
-            print_statement(f_body->data_body.u_stt, depth + 1);
+            print_statement(f_body->data_body.u_stt, depth + 1, local_scope_name);
         }
         
         else if(f_body->type == t_declaration){
-            print_declaration(f_body->data_body.u_dec, depth + 1);
+            print_declaration(f_body->data_body.u_dec, depth + 1,local_scope_name);
         }
         f_body = f_body->next;
     }
 }
 
 
-void print_declaration(struct declaration* dec, int depth){
+void print_declaration(struct declaration* dec, int depth, char* local_scope_name){
     struct declaration* head = dec;
     while(dec != NULL){
         print_indentation(depth);
         printf("Declaration\n");
         print_typespec(head->type,depth + 1);
-        print_declarator(dec->decl, depth + 1);
+        print_declarator(dec->decl, depth + 1,local_scope_name);
         dec = dec->next;
     }
 }
 
-void print_declarator(struct declarator* decl, int depth){
+void print_declarator(struct declarator* decl, int depth, char* local_scope_name){
     print_id(decl->id, depth);
     if (decl->expr != NULL){
-       print_expression(decl->expr, depth);
+       print_expression(decl->expr, depth, local_scope_name);
     }
     else{
         //print_indentation(depth);
     }
 }
 
-void print_statement(struct statement* stt, int depth){
+void print_statement(struct statement* stt, int depth, char* local_scope_name){
     //printf("asdasdasdasd %d\n", stt->type);
     while(stt != NULL){
         if(stt->type == t_if){
-            print_if(stt->statement_data.u_if, depth);
+            print_if(stt->statement_data.u_if, depth, local_scope_name);
         }
         else if(stt->type == t_return){
              //printf("tf xd\n");
-            print_return(stt->statement_data.u_return, depth);
+            print_return(stt->statement_data.u_return, depth, local_scope_name);
         }
         else if(stt->type == t_while){
             //printf("here\n");
-            print_while(stt->statement_data.u_while, depth);
+            print_while(stt->statement_data.u_while, depth, local_scope_name);
         }
         else if(stt->type == t_statlist){
-            print_statlist(stt->statement_data.u_statlist, depth);
+            print_statlist(stt->statement_data.u_statlist, depth, local_scope_name);
         }
         else if(stt->type == t_expression){
             // printf("Here goes h");
-            print_expression(stt->statement_data.u_expr, depth);
+            print_expression(stt->statement_data.u_expr, depth,local_scope_name);
         }
         stt = stt->next;
     }
@@ -169,11 +169,11 @@ void print_statement(struct statement* stt, int depth){
 }
 
 
-void print_if(struct if_statement* stt_if, int depth){
+void print_if(struct if_statement* stt_if, int depth, char* local_scope_name){
     print_indentation(depth);
     printf("If\n");
     if(stt_if->expr != NULL){
-        print_expression(stt_if->expr, depth + 1);
+        print_expression(stt_if->expr, depth + 1, local_scope_name);
     }
     else printf("Erro! A menos que as expressions ainda nao estejam feitas\n");
     if(stt_if->if_body == NULL || (stt_if->if_body->type == t_statlist && stt_if->if_body->statement_data.u_statlist->stt == NULL)){
@@ -181,18 +181,18 @@ void print_if(struct if_statement* stt_if, int depth){
         printf("Null\n");
     }
     else{
-        print_statement(stt_if->if_body, depth + 1);
+        print_statement(stt_if->if_body, depth + 1,local_scope_name);
     }
     if(stt_if->else_body == NULL || (stt_if->else_body->type == t_statlist && stt_if->else_body->statement_data.u_statlist->stt == NULL)){
         print_indentation(depth + 1);
         printf("Null\n");
     }
     else{
-        print_statement(stt_if->else_body, depth + 1);
+        print_statement(stt_if->else_body, depth + 1,local_scope_name);
     }
 }
 
-void print_return(struct return_statement* stt_ret, int depth){
+void print_return(struct return_statement* stt_ret, int depth,char* local_scope_name){
     print_indentation(depth);
     printf("Return\n");
     if(stt_ret->expr == NULL){
@@ -200,158 +200,202 @@ void print_return(struct return_statement* stt_ret, int depth){
         printf("Null\n");
     }
     else{
-        print_expression(stt_ret->expr, depth + 1);
+        print_expression(stt_ret->expr, depth + 1, local_scope_name);
     }
 }
 
-void print_while(struct while_statement* stt_whi, int depth){
+void print_while(struct while_statement* stt_whi, int depth, char* local_scope_name){
     print_indentation(depth);
     printf("While\n");
     if(stt_whi->expr == NULL){
-        print_expression(stt_whi->expr, depth + 1);
+        print_expression(stt_whi->expr, depth + 1,local_scope_name);
     }
     else{
-        print_expression(stt_whi->expr, depth + 1);
+        print_expression(stt_whi->expr, depth + 1,local_scope_name);
     }
     if(stt_whi->while_body == NULL || (stt_whi->while_body->type == t_statlist && stt_whi->while_body->statement_data.u_statlist->stt == NULL)){
         print_indentation(depth + 1);
         printf("Null\n");
     }
     else{
-        print_statement(stt_whi->while_body, depth + 1);
+        print_statement(stt_whi->while_body, depth + 1,local_scope_name);
     }
 }
-void print_statlist(struct statlist_statement* stt_stl, int depth){
+void print_statlist(struct statlist_statement* stt_stl, int depth, char* local_scope_name){
     if(stt_stl->stt != NULL && stt_stl->stt->next){
         print_indentation(depth);
         printf("StatList\n");
-        print_statement(stt_stl->stt, depth +1);
+        print_statement(stt_stl->stt, depth +1, local_scope_name);
     }
     else{
-        print_statement(stt_stl->stt, depth);
+        print_statement(stt_stl->stt, depth, local_scope_name);
     }
 }
 
 // new
-void print_expression(struct expression* expr, int depth){
+void print_expression(struct expression* expr, int depth,char* local_scope_name){
     print_indentation(depth);
     //printf("Here goes expression\n");
     if (expr->expr_t == t_op1){
-        print_op1(expr->expression_morphs.operation1, depth);
+        print_op1(expr->expression_morphs.operation1, depth,local_scope_name);
     } else if (expr->expr_t == t_op2){
-        print_op2(expr->expression_morphs.operation2, depth);
+        print_op2(expr->expression_morphs.operation2, depth, local_scope_name);
     } else if (expr->expr_t == t_term){
-        print_term(expr->expression_morphs.t, depth);
+        print_term(expr->expression_morphs.t, depth, local_scope_name);
     } else if (expr->expr_t == t_call) {
-        print_call(expr->expression_morphs.c, depth);
+        print_call(expr->expression_morphs.c, depth, local_scope_name);
     }
 }
 
 
-void print_op1(struct op1* op, int depth){
+void print_op1(struct op1* op, int depth,char* local_scope_name){
     switch (op->type){
         case t_not:
-            printf("Not\n");
+            printf("Not");
+            printf("\n");
             break;
         case t_minus:
-            printf("Minus\n");
+            printf("Minus");
+            printf("\n");
             break;
         case t_plus:
-            printf("Plus\n");
+            printf("Plus");
+            printf("\n");
             break;
     }
-    print_expression(op->exp, depth + 1);
+    print_expression(op->exp, depth + 1,local_scope_name);
 }
 
-void print_op2(struct op2* op, int depth){
+void print_op2(struct op2* op, int depth, char* local_scope_name){
     switch (op->type){
         case t_or:
-            printf("Or\n");
+            printf("Or");
+            printf("\n");
             break;
         case t_and:
-            printf("And\n");
+            printf("And");
+            printf("\n");
             break;
         case t_eq:
-            printf("Eq\n");
+            printf("Eq");
+            printf("\n");
             break;
         case t_ne:
-            printf("Ne\n");
+            printf("Ne");
+            printf("\n");
             break;
         case t_lt:
-            printf("Lt\n");
+            printf("Lt");
+            printf("\n");
             break;
         case t_gt:
-            printf("Gt\n");
+            printf("Gt");
+            printf("\n");
             break;
         case t_ge:
-            printf("Ge\n");
+            printf("Ge");
+            printf("\n");
             break;
         case t_add:
-            printf("Add\n");
+            printf("Add");
+            printf("\n");
             break;
         case t_sub:
-            printf("Sub\n");
+            printf("Sub");
+            printf("\n");
             break;
         case t_mul:
-            printf("Mul\n");
+            printf("Mul");
+            printf("\n");
             break;
         case t_div:
-            printf("Div\n");
+            printf("Div");
+            printf("\n");
             break;
         case t_mod:
-            printf("Mod\n");    
+            printf("Mod");   
+            printf("\n"); 
             break;
         case t_store:
-            printf("Store\n");
+            printf("Store");
+            if (ASTnoted){
+                printf(" - ");
+                //TODO: Fazer uma função "get_type() para deduzir qual o tipo de (1+1.0) + 'A'  "  
+            }
+            printf("\n");
             break;
         case t_comma:
-            printf("Comma\n");
+            printf("Comma");
+            printf("\n");
             break;
         case t_bitwiseand:
-            printf("BitWiseAnd\n");    
+            printf("BitWiseAnd"); 
+            printf("\n");   
             break;
         case t_bitwisexor:
-            printf("BitWiseXor\n");
+            printf("BitWiseXor");
+            printf("\n");
             break;
         case t_bitwiseor:
-            printf("BitWiseOr\n");
+            printf("BitWiseOr");
+            printf("\n");
             break;
         case t_le:
-            printf("Le\n");    
+            printf("Le");
+            printf("\n");    
             break;
     }
-    print_expression(op->exp1, depth + 1);
-    print_expression(op->exp2, depth + 1);
+    print_expression(op->exp1, depth + 1, local_scope_name);
+    print_expression(op->exp2, depth + 1, local_scope_name);
 }
 
-void print_term(struct terminal* t, int depth){
+void print_term(struct terminal* t, int depth, char* local_scope_name){
     switch (t->type){
         case t_charlit:
-            printf("ChrLit('%s)\n",t->id);
+            printf("ChrLit('%s)",t->id);
+            if (ASTnoted) printf(" - int");
+            printf("\n");
             break;
         case t_id:
-            printf("Id(%s)\n",t->id);
+            printf("Id(%s)",t->id);
+            if (ASTnoted){
+                print_id_ast_noted(t->id,local_scope_name);
+                printf("\n");   
+            }
             break;
         case t_intlit:
-            printf("IntLit(%s)\n",t->id);
+            printf("IntLit(%s)",t->id);
+            if (ASTnoted) printf(" - int");
+            printf("\n");
             break;
         case t_reallit:
-            printf("RealLit(%s)\n",t->id);
+            printf("RealLit(%s)",t->id);
+            if (ASTnoted) printf(" - double");
+            printf("\n");
             break;
         default:
             break;
     }
 }
 
-void print_call(struct call* c, int depth){
+void print_call(struct call* c, int depth, char* local_scope_name){
     struct call* current;
     for (current = c; current; current = current->next_arg){
         if (current->ct == call_name) {
-            printf("Call\n");
+            printf("Call");
+            if (ASTnoted) {
+                printf(" - ");   
+                print_s_type(search_symbol(scope_head,current->call_morphs.id, local_scope_name)->sym_f->return_value);   
+            }
+            printf("\n");
             print_indentation(depth + 1);
-            printf("Id(%s)\n",current->call_morphs.id);
+            printf("Id(%s)",current->call_morphs.id);
+            if(ASTnoted){
+                print_id_ast_noted(current->call_morphs.id,local_scope_name);
+            }
+            printf("\n");
         } else if (current->ct == call_exp){
-            print_expression(current->call_morphs.exp, depth + 1);
+            print_expression(current->call_morphs.exp, depth + 1,local_scope_name);
         }
     }
 }
@@ -362,21 +406,23 @@ void print_call(struct call* c, int depth){
 //Printing the symbol table
 
 void showTable(struct scope* head){
-    while(head){
-        if(strcmp(head->name, "Global") == 0){
+    struct scope* current = head;
+    while(current){
+        if(strcmp(current->name, "Global") == 0){
             printf("===== Global Symbol Table =====\n");
         }
         else{
-            printf("\n===== Function %s Symbol Table =====\n",head->name);
+            printf("\n===== Function %s Symbol Table =====\n",current->name);
         }
-        print_scope(head->symtab);
-        head = head->next;
+        print_scope(current->symtab);
+        current = current->next;
     }
 }
 void print_scope(struct sym_element* head){
-    while(head){
-        print_sym_element(head);
-        head = head->next;
+    struct sym_element* current = head;
+    while(current){
+        print_sym_element(current);
+        current = current->next;
     }
 }
 
@@ -385,6 +431,7 @@ void print_sym_element(struct sym_element* s_el){
         printf("%s\t", s_el->name);
     if(s_el->type == s_function){
         print_scope_f_dec(s_el->sym_f);
+        printf("\n");
         //printf("is func\n");
     }
     else{
@@ -398,15 +445,15 @@ void print_sym_element(struct sym_element* s_el){
 }
 
 void print_scope_f_dec(struct sym_function* sf){
+    struct sym_f_param* current = sf->params;
     print_s_type(sf->return_value); 
     printf("(");
-    while(sf->params){
-        print_s_type(sf->params->param_type);
-        if(sf->params->next !=NULL) printf(",");
-        sf->params = sf->params->next;
+    while(current){
+        print_s_type(current->param_type);
+        if(current->next != NULL) printf(",");
+        current = current->next;
     }
     printf(")");
-        printf("\n");
 }
 
 void print_s_type(s_types s){
@@ -426,4 +473,31 @@ void print_s_type(s_types s){
             printf("double");
         }
 
+}
+
+void print_id_ast_noted(char* id,char* local_scope_name){
+    struct sym_element* symbol = search_symbol(scope_head,id, local_scope_name);
+    switch (symbol->type) {
+        case s_char: 
+            printf(" - char");
+            break;
+        case s_int:
+            printf(" - int");
+            break; 
+        case s_void:
+            printf(" - void");
+            break;
+        case s_short:
+            printf(" - short");
+            break;
+        case s_double:
+            printf(" - double");
+            break;
+        case s_function:
+            printf(" - ");
+            print_scope_f_dec(symbol->sym_f);
+            break;
+        default:
+            break;
+    }
 }

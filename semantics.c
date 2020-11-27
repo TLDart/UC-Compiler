@@ -90,7 +90,7 @@ int check_f_def(struct function_definition* fdef){
         /* Checking Return Value */
         table_element = get_token_by_name(global_scope->symtab,s->name);
         if ((int) table_element->sym_f->return_value == (int) fdef->type) {
-            printf("TEMPORARY: Return types match in Declaration and Definition\n");
+            // printf("TEMPORARY: Return types match in Declaration and Definition\n");
         } else {
             printf("TEMPORARY: Return types don't match!\n"); 
             ec++;
@@ -109,7 +109,7 @@ int check_f_def(struct function_definition* fdef){
             current_def = current_def->next;
         }
         if(len_declaration == len_definition){
-            printf("TEMPORARY: Equal number of args in Declaration and Definition\n");
+            // printf("TEMPORARY: Equal number of args in Declaration and Definition\n");
             current_dec = table_element->sym_f->params;
             current_def = fdef->param_list;
             while (current_dec && current_def) {

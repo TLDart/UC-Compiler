@@ -148,6 +148,7 @@ int main(int argc, char* argv[]) {
         }
         else if(strcmp("-t", argv[i]) == 0){
             sintaxTree = 1;	
+            mf = meta2;
         }
         else if(strcmp("-e1", argv[i]) == 0){
             mf = meta1;	
@@ -170,16 +171,18 @@ int main(int argc, char* argv[]) {
     }
 
     if(mf == meta3){
-        semantic_errors += check_program(myprog); ;
+        semantic_errors += check_program(myprog);
+        if (semantic_errors > 0) printf("Total semantic_errors: %d\n",semantic_errors);
         showTable(scope_head);
+        printf("\n");
     }
 
     /* AST | AST-noted print */
     if(sintaxTree && syntax_error_counter == 0){ // AST
-        print_ast(myprog, STDT_PRINT);
+        print_ast(myprog);
                                                 // not sure about this!!!!!
     } else if (ASTnoted && (syntax_error_counter + semantic_errors) == 0) { // AST-noted
-        print_ast(myprog, NOTED_PRINT);
+        print_ast(myprog);
     }
 
     /* Free */
