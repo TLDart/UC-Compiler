@@ -15,16 +15,31 @@ struct program{
 // Nao mexer senão fica tudo lixado!!!!!
 typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double, typespec_null} typespec_type;
 
-struct function_definition{
+struct tpspec{
     typespec_type type;
+    int lines, cols;
+};
+
+struct info{
     char* id;
+    int lines;
+    int cols;
+};
+
+struct oplines{
+    int lines, cols;
+};
+
+struct function_definition{
+    struct tpspec *tsp;
+    struct info* info;
     struct parameter_list* param_list; 
     struct function_body* f_body;
 };
 
 struct function_declaration{
-    typespec_type type;
-    char* id;
+    struct tpspec *tsp;
+    struct info* info; 
     struct parameter_list* param_list; 
 };
 
@@ -34,8 +49,8 @@ struct parameter_list{
 };
 
 struct parameter_declaration{
-    typespec_type type;
-    char* id;
+    struct tpspec *tsp;
+    struct info* info;
 };
 
 typedef enum {t_statement, t_declaration} f_body_type;
@@ -49,12 +64,12 @@ struct function_body{
     struct function_body* next;
 };
 struct declaration{
-    typespec_type type;
+    struct tpspec *tsp;
     struct declarator* decl;
     struct declaration* next;
 };
 struct declarator{
-    char* id;
+    struct info* info;
     struct expression* expr;
 };
 typedef enum{t_if, t_return, t_while, t_statlist, t_expression} stt_type;
@@ -102,12 +117,13 @@ typedef enum {t_char, t_charlit, t_id, t_int, t_short, t_intlit, t_double, t_rea
 
 struct terminal{
     t_type type;
-    char* id;
+    struct info* info;
 };
 
 typedef enum{t_not, t_minus, t_plus} op1_type;
 struct op1{
     op1_type type;
+    int cols, lines;
     struct expression* exp;
 };
 
@@ -119,6 +135,7 @@ typedef enum{
 
 struct op2{
     op2_type type;
+    int cols, lines;
     struct expression* exp1;
     struct expression* exp2;
 };
@@ -127,7 +144,7 @@ typedef enum {call_name, call_exp} call_type;
 struct call {
     call_type ct;
     union{
-        char* id;
+        struct info* info;
         struct expression* exp;
     } call_morphs;
     struct call* next_arg;

@@ -38,14 +38,14 @@ void print_f_def(struct function_definition* f_def, int depth){
     print_indentation(depth);
     printf("FuncDefinition\n");
 
-    print_typespec(f_def->type, depth + 1);
-    print_id(f_def->id, depth +1);
+    print_typespec(f_def->tsp, depth + 1);
+    print_id(f_def->info->id, depth +1);
     if(f_def->param_list != NULL){
         print_param_list( f_def->param_list, depth + 1);
 
     }
     if(f_def->f_body != NULL){
-        print_f_body(f_def->f_body, depth + 1, f_def->id);
+        print_f_body(f_def->f_body, depth + 1, f_def->info->id);
     } else {
         print_indentation(depth + 1);
         printf("FuncBody\n");
@@ -56,30 +56,31 @@ void print_f_dec(struct function_declaration* f_dec, int depth){
     print_indentation(depth);
     printf("FuncDeclaration\n");
 
-    print_typespec(f_dec->type, depth + 1);
-    print_id(f_dec->id, depth +1);
+    print_typespec(f_dec->tsp, depth + 1);
+    print_id(f_dec->info->id, depth +1);
     if(f_dec->param_list != NULL)
         print_param_list(f_dec->param_list, depth + 1);
 }
 
 
-void print_typespec(typespec_type type, int depth){
+void print_typespec(struct tpspec* tsp, int depth){
     print_indentation(depth);
-    if(type == t_typespec_char){
+    if(tsp->type == t_typespec_char){
         printf("Char\n");
     }
-    if(type == t_typespec_int){
+    if(tsp->type == t_typespec_int){
         printf("Int\n");
     }
-    if(type == t_typespec_void){
+    if(tsp->type == t_typespec_void){
         printf("Void\n");
     }
-    if(type == t_typespec_short){
+    if(tsp->type == t_typespec_short){
         printf("Short\n");
     }
-    if(type == t_typespec_double){
+    if(tsp->type == t_typespec_double){
         printf("Double\n");
     }
+   // printf("Line %d Col %d\n", tsp->lines, tsp->cols);
 }
 
 void print_id(char* id, int depth){
@@ -99,9 +100,9 @@ void print_param_list(struct parameter_list* p_list, int depth){
 void print_param_dec(struct parameter_declaration* p_dec, int depth){
         print_indentation(depth);
         printf("ParamDeclaration\n");
-            print_typespec(p_dec->type, depth + 1);
-        if(p_dec->id != NULL){
-            print_id(p_dec->id, depth + 1);
+            print_typespec(p_dec->tsp, depth + 1);
+        if(p_dec->info != NULL){
+            print_id(p_dec->info->id, depth + 1);
         }
 }
 
@@ -126,14 +127,14 @@ void print_declaration(struct declaration* dec, int depth, char* local_scope_nam
     while(dec != NULL){
         print_indentation(depth);
         printf("Declaration\n");
-        print_typespec(head->type,depth + 1);
+        print_typespec(head->tsp,depth + 1);
         print_declarator(dec->decl, depth + 1,local_scope_name);
         dec = dec->next;
     }
 }
 
 void print_declarator(struct declarator* decl, int depth, char* local_scope_name){
-    print_id(decl->id, depth);
+    print_id(decl->info->id, depth);
     if (decl->expr != NULL){
        print_expression(decl->expr, depth, local_scope_name);
     }
@@ -260,6 +261,7 @@ void print_op1(struct op1* op, int depth,char* local_scope_name){
             printf("Plus");
             break;
     }
+    //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
         print_s_type(get_op1_type(op,local_scope_name));
@@ -325,6 +327,7 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
             printf("Le");
             break;
     }
+    //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
         print_s_type(get_op2_type(op,local_scope_name));
@@ -337,16 +340,19 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
 void print_term(struct terminal* t, int depth, char* local_scope_name){
     switch (t->type){
         case t_charlit:
-            printf("ChrLit('%s)",t->id);
+            printf("ChrLit('%s)",t->info->id);
+            //printf("ChrLit('%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_id:
-            printf("Id(%s)",t->id);
+            printf("Id(%s)",t->info->id);
+            //printf("Id(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_intlit:
-            printf("IntLit(%s)",t->id);
+            printf("IntLit(%s)",t->info->id);
+            //printf("IntLit(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_reallit:
-            printf("RealLit(%s)",t->id);
+            printf("RealLit(%s)",t->info->id);
             break;
         default:
             break;
@@ -370,10 +376,10 @@ void print_call(struct call* c, int depth, char* local_scope_name){
             }
             printf("\n");
             print_indentation(depth + 1);
-            printf("Id(%s)",current->call_morphs.id);
+            printf("Id(%s)",current->call_morphs.info->id);
             if(ASTnoted){
                 printf(" - ");
-                print_s_type(get_id_type(current->call_morphs.id,local_scope_name));
+                print_s_type(get_id_type(current->call_morphs.info->id,local_scope_name));
             }
             printf("\n");
         } else if (current->ct == call_exp){
@@ -529,7 +535,7 @@ s_types get_terminal_type(struct terminal* t, char* local_scope_name){
         case t_charlit:
             return s_int;
         case t_id:
-            return get_id_type(t->id,local_scope_name);
+            return get_id_type(t->info->id,local_scope_name);
         case t_intlit:
             return s_int;
         case t_reallit:
@@ -542,7 +548,7 @@ s_types get_terminal_type(struct terminal* t, char* local_scope_name){
 
 s_types get_call_type(struct call* c, char* local_scope_name){
     struct sym_element* sym_elem = NULL;
-    if ((sym_elem = search_symbol(scope_head,c->call_morphs.id, local_scope_name))) {
+    if ((sym_elem = search_symbol(scope_head,c->call_morphs.info->id, local_scope_name))) {
         return sym_elem->sym_f->return_value;
     }
     printf("Nao devia chegar aqui!!\n");

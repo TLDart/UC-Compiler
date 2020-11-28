@@ -89,13 +89,13 @@ struct sym_element* create_sym_element(char* name, s_types type, struct sym_func
 struct sym_function* create_sym_f_param(struct function_declaration* f){
     struct sym_function* new=(struct sym_function*)malloc(sizeof(struct sym_function));
 
-    new->return_value = (s_types) f->type;
+    new->return_value = (s_types) f->tsp->type;
     new->params = NULL;
     struct parameter_list* p = f->param_list;
     struct sym_f_param* params_tp = new->params;
     while(p){
         struct sym_f_param* new2=(struct sym_f_param*)malloc(sizeof(struct sym_f_param));
-        new2->param_type = (s_types) p->p_dec->type;
+        new2->param_type = (s_types) p->p_dec->tsp->type;
         new2->next = NULL;
         if(params_tp == NULL){
             params_tp = new2;
