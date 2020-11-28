@@ -25,7 +25,7 @@ void insert_default_values(struct scope* head){
     struct parameter_list* newplist = (struct parameter_list*)malloc(sizeof(struct parameter_list));
     struct parameter_declaration* newpdec = (struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
 	
-	newpdec->id = NULL;
+	newpdec->info->id = NULL;
 	newpdec->type = t_typespec_int;
 	newplist->p_dec = newpdec;
 	newplist->next = NULL;
@@ -34,7 +34,7 @@ void insert_default_values(struct scope* head){
 	head->symtab= insert_sym_element(head->symtab, create_sym_element("putchar", s_function,create_sym_f_param(new), 0));
 
     newpdec=(struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
-	newpdec->id = NULL;
+	newpdec->info->id = NULL;
 	newpdec->type = t_typespec_void;
 	newplist->p_dec = newpdec;
 	newplist->next = NULL;
@@ -47,13 +47,13 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
 
-    if (get_token_by_name(s->symtab, f_dec->id)) {
+    if (get_token_by_name(s->symtab, f_dec->info->id)) {
         //TODO: Verificar assinatura
         printf("Is this a double declaration?\n");
     } else {
-        s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->id, s_function, create_sym_f_param(f_dec), 0));
+        s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0));
         //create a local scope to respect the order of functions
-        create_scope(scope_head, f_dec->id);  
+        create_scope(scope_head, f_dec->info->id);  
     }
     return ec;
 }
@@ -64,12 +64,12 @@ int check_dec(struct declaration* dec, char *name){
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
     while(current){
-        if(get_token_by_name(s->symtab, current->decl->id)){ //TODO: Isto só vê no próprio scope, não sei se para o tratamento de erros não é necessário ver também no global 
-            printf ("Line %d, col %d: Symbol %s is already defined\n" , lines, columns - yyleng, current->decl->id);
+        if(get_token_by_name(s->symtab, current->decl->info->id)){ //TODO: Isto só vê no próprio scope, não sei se para o tratamento de erros não é necessário ver também no global 
+            printf ("Line %d, col %d: Symbol %s is already defined\n" , lines, columns - yyleng, current->decl->info->id);
             ec++;
         } else {
             //printf("Is inserting element\n");
-            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->id, dec->type, NULL, 0));
+            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id, dec->type, NULL, 0));
         }
         current = current->next;
     }
@@ -85,7 +85,7 @@ int check_f_def(struct function_definition* fdef){
     struct parameter_list* current_def;
     struct sym_element* table_element;
     struct scope* global_scope = get_scope_by_name(scope_head,"Global");
-    struct scope* s = get_scope_by_name(scope_head, fdef->id);
+    struct scope* s = get_scope_by_name(scope_head, fdef->info->id);
     struct function_declaration* f_dec = (struct function_declaration*) malloc(sizeof(struct function_declaration));
 
     if (s) { //meaning that it found a correct reference
@@ -123,19 +123,19 @@ int check_f_def(struct function_definition* fdef){
                 current_def = current_def->next;   
             }
         } else {
-            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n",lines, columns - yyleng, fdef->id, len_definition, len_declaration);
+            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n",lines, columns - yyleng, fdef->info->id, len_definition, len_declaration);
             ec++;
         }
     } else { //Meaning that it did not find a valid definition
         f_dec->type = fdef->type;
-        f_dec->id = fdef->id;
+        f_dec->info->id = fdef->info->id;
         f_dec->param_list = fdef->param_list;
-        global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->id, s_function, create_sym_f_param(f_dec), 0));
-		create_scope(scope_head, fdef->id);
+        global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0));
+		create_scope(scope_head, fdef->info->id);
     }
-    ec += check_return_type(fdef->type, fdef->id);
-    ec += check_param_list(fdef->param_list, fdef->id);
-    ec += check_f_body(fdef->f_body,fdef->id);
+    ec += check_return_type(fdef->type, fdef->info->id);
+    ec += check_param_list(fdef->param_list, fdef->info->id);
+    ec += check_f_body(fdef->f_body,fdef->info->id);
 	return ec;
 }
 
@@ -152,8 +152,8 @@ int check_param_list(struct parameter_list* pl, char* name){
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
 	while (pl) {
-        if (pl->p_dec->id != NULL) {
-            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->id,pl->p_dec->type, NULL, 1));	
+        if (pl->p_dec->info->id != NULL) {
+            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,pl->p_dec->type, NULL, 1));	
         }
 		pl = pl->next;
 	}
@@ -279,7 +279,7 @@ int check_call(struct call* c, char* name) {
     while(c) {
         switch (c->ct) {
             case call_name:
-                ec += (c->call_morphs.id == NULL ? 1 : 0);
+                ec += (c->call_morphs.info->id == NULL ? 1 : 0);
                 break;
             case call_exp:
                 ec += check_expression(c->call_morphs.exp, name);

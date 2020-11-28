@@ -1,5 +1,13 @@
 #include "functions.h"
 
+struct info* getInfo(char* name, int lines, int cols){
+	struct info* new=(struct info*)malloc(sizeof(struct info));
+    new->id = (char*) strdup(name);
+    new->cols = cols;
+    new->lines = lines;
+    return new;
+}
+
 //Func Definition
 struct program* insert_program_func_def(struct function_definition* i_f_def, struct program* rem){
 	struct program* new=(struct program*)malloc(sizeof(struct program));
@@ -104,7 +112,7 @@ struct program* insert_program_dec_rem(struct program* head, struct declaration*
     return head;
 }
 
-struct function_definition* insert_function_definition(int i_typespec, char* i_id, struct parameter_list* i_param_list, struct function_body* i_f_body){
+struct function_definition* insert_function_definition(int i_typespec, struct info* i_id, struct parameter_list* i_param_list, struct function_body* i_f_body){
     struct function_definition* new = (struct function_definition*)malloc(sizeof(struct function_definition));
 
     if(i_typespec == 0){
@@ -123,14 +131,14 @@ struct function_definition* insert_function_definition(int i_typespec, char* i_i
          new->type = t_typespec_double;
     }
 
-    new->id = (char*)strdup(i_id);
+    new->info = i_id;
     new->param_list = i_param_list;
     new->f_body = i_f_body;
 
     return new;
 }
 
-struct function_declaration* insert_function_declaration(int i_typespec, char* i_id, struct parameter_list* i_param_list){
+struct function_declaration* insert_function_declaration(int i_typespec, struct info* i_id, struct parameter_list* i_param_list){
     struct function_declaration* new = (struct function_declaration*)malloc(sizeof(struct function_declaration));
 
     if(i_typespec == 0){
@@ -149,13 +157,13 @@ struct function_declaration* insert_function_declaration(int i_typespec, char* i
          new->type = t_typespec_double;
     }
 
-    new->id = (char*)strdup(i_id);
+    new->info = i_id;
     new->param_list = i_param_list;
 
     return new;
 }
 
-struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id){
+struct parameter_declaration* insert_param_dec(int i_typespec, struct info* i_id){
     struct parameter_declaration* new = (struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
 
     if(i_typespec == 0){
@@ -175,10 +183,11 @@ struct parameter_declaration* insert_param_dec(int i_typespec, char* i_id){
     }
 
     if(i_id == NULL){
-        new->id = NULL;
+        new->info = NULL;
     }
     else
-        new->id = (char*)strdup(i_id);
+        new->info = i_id;
+        //new->id = (char*)strdup(i_id);
 
     return new;
 
@@ -238,9 +247,9 @@ struct function_body* insert_f_body_multiple(struct function_body* f_b1, struct 
     return f_b1;
 }
 
-struct declarator* insert_decl(char* i_id, struct expression* i_expr){
+struct declarator* insert_decl(struct info* i_id, struct expression* i_expr){
     struct declarator* new=(struct declarator*)malloc(sizeof(struct declarator));
-    new->id = (char*)strdup(i_id);
+    new->info = i_id;
     new->expr = i_expr;
     return new;
 }
@@ -370,12 +379,12 @@ struct expression* insert_expression_op2(struct expression* arg1, int operation,
     return new_expr;
 }
 
-struct expression* insert_expression_call(char* id, struct expression* exp, struct call* exp_list){
+struct expression* insert_expression_call(struct info* id, struct expression* exp, struct call* exp_list){
     struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
     struct call* new_id_call = (struct call*) malloc(sizeof(struct call));
     // Name
     new_id_call->ct = call_name;
-    new_id_call->call_morphs.id = (char*) strdup(id);
+    new_id_call->call_morphs.info = id;
     if (exp == NULL && exp_list == NULL){
         new_id_call->next_arg = NULL;
     } else {
@@ -390,11 +399,11 @@ struct expression* insert_expression_call(char* id, struct expression* exp, stru
     return new_expr;
 }
 
-struct expression* insert_expression_terminal(char* id, int type){
+struct expression* insert_expression_terminal(struct info* info, int type){
     struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
     struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
     new_term->type = type;
-    new_term->id = (char*) strdup(id);
+    new_term->info = info;//(char*) strdup(id);
     new_expr->expr_t = t_term;
     new_expr->expression_morphs.t = new_term;
     return new_expr;

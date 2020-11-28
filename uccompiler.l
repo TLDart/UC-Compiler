@@ -53,6 +53,7 @@ MLCOMMENTE      "*/"
     #include "free.h"
     #include "symbol_table.h"
     #include "semantics.h"
+    #include "functions.h"
 
 
     #define STDT_PRINT 0
@@ -117,15 +118,15 @@ MLCOMMENTE      "*/"
 {RPAR}                                                      {if(verbose) printf("RPAR\n");columns += yyleng; if(mf) return RPAR;}
 {SEMI}                                                      {if(verbose) printf("SEMI\n");columns += yyleng; if(mf) return SEMI;}
 {RESERVED}                                                  {if(verbose) printf("RESERVED(%s)\n",yytext);columns += yyleng; if(mf) return RESERVED;}
-{ID}                                                        {if(verbose) printf("ID(%s)\n",yytext);columns += yyleng; yylval.string = (char*) strdup(yytext); if(mf) return ID;}
-{INTLIT}                                                    {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng; yylval.string = (char*)strdup(yytext); if(mf) return INTLIT;}
+{ID}                                                        {if(verbose) printf("ID(%s)\n",yytext);columns += yyleng; yylval.info = getInfo(yytext, lines,columns);if(mf) return ID;}
+{INTLIT}                                                    {if(verbose) printf("INTLIT(%s)\n",yytext);columns += yyleng; yylval.info = getInfo(yytext, lines,columns); if(mf) return INTLIT;}
 \'                                                          {BEGIN(CHARAC);columns++;}
-<CHARAC>{CHRLIT}                                            {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0); yylval.string = yytext; if(mf) return CHRLIT;}
+<CHARAC>{CHRLIT}                                            {if(verbose) printf("CHRLIT('%s)\n",yytext);columns += yyleng;BEGIN(0);yylval.info = getInfo(yytext, lines,columns) ; if(mf) return CHRLIT;}
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?(\n|\r|\r\n)  {printf("Line %d, col %d: unterminated char constant\n",lines,columns - 1);++lines;columns = 1; BEGIN(0);}
 <CHARAC>((\\)?[^\'\n\\\r]|(\\\\)*(\\')?)*(\\)?\'            {printf("Line %d, col %d: invalid char constant ('%s)\n",lines,columns - 1, yytext);columns+=yyleng;BEGIN(0);}
 <CHARAC>.                                                   {;}
 <CHARAC><<EOF>>                                             {printf("Line %d, col %d: unterminated char constant\n",lines,columns - 1);++lines;columns = 1; BEGIN(0); return 0;}
-{REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng; yylval.string = (char*) strdup(yytext); if(mf) return REALLIT;}
+{REALLIT}                                                   {if(verbose) printf("REALLIT(%s)\n",yytext);columns += yyleng;yylval.info = getInfo(yytext, lines,columns); if(mf) return REALLIT;}
 {SIMPLECOMMENT}                                             {;}  
 {MLCOMMENTS}                                                {BEGIN(COMMENT);columns += yyleng; comment = 1;linecomment = lines;colcomment = columns - 1;}
 <COMMENT>{MLCOMMENTE}                                       {comment = 0;columns += yyleng; BEGIN 0;}
@@ -176,9 +177,9 @@ int main(int argc, char* argv[]) {
         showTable(scope_head);
         printf("\n");
     }
-
     /* AST | AST-noted print */
     if(sintaxTree && syntax_error_counter == 0){ // AST
+        printf("not working\n");
         print_ast(myprog);
                                                 // not sure about this!!!!!
     } else if (ASTnoted && (syntax_error_counter + semantic_errors) == 0) { // AST-noted

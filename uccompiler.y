@@ -23,6 +23,7 @@ int syntax_error_counter = 0;
 %}
 
 %union{
+	struct info* info;
     int integer;
     char* string;
     struct program* prog;
@@ -61,7 +62,7 @@ int syntax_error_counter = 0;
         RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE THEN
 
 // Tokens which yylval (Value) is necessary    
-%token <string>     CHRLIT ID REALLIT INTLIT
+%token <info>     CHRLIT ID REALLIT INTLIT
 
 /* Associativity and Priority of Operators */
 

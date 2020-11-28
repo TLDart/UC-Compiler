@@ -19,7 +19,7 @@ void free_program(struct program* myprog){
 
 void free_function_definition(struct function_definition* head){
     if(head != NULL){
-        free(head->id);
+        //TODOfree(head->id);
         free_param_list(head->param_list);
         free_function_body(head->f_body);
         free(head);
@@ -28,7 +28,7 @@ void free_function_definition(struct function_definition* head){
 
 void free_function_declaration(struct function_declaration* head){
     if(head != NULL){
-        free(head->id);
+        //TODOfree(head->id);
         free_param_list(head->param_list);
         free(head);
     }
@@ -43,7 +43,7 @@ void free_param_list(struct parameter_list* head){
 }
 void free_param_declaration(struct parameter_declaration* head){
     if(head != NULL){
-       free(head->id);
+       //TODOfree(head->id);
        free(head);
     }
 }
@@ -71,7 +71,7 @@ void free_declaration(struct declaration* head){
 
 void free_declarator(struct declarator* head){
     if(head != NULL){
-        free(head->id);
+        //TODOfree(head->id);
         free_expression(head->expr);
         free(head);
     }
@@ -164,7 +164,7 @@ void free_op2(struct op2* op){
 
 void free_term(struct terminal* t){
     if (t != NULL){
-        free(t->id);
+        //TODOfree(t->id);
         free(t);
     }
 }
@@ -172,7 +172,7 @@ void free_call(struct call* c){
     if (c != NULL){
         free_call(c->next_arg);
         if (c->ct == call_name){
-            free(c->call_morphs.id);
+            //TODOfree(c->call_morphs.id);
         } else if (c->ct == call_exp) {
             free_expression(c->call_morphs.exp);
         }
