@@ -69,7 +69,7 @@ int check_dec(struct declaration* dec, char *name){
             ec++;
         } else {
             //printf("Is inserting element\n");
-            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->id, dec->type, NULL, 0));
+            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->id, (s_types) dec->type, NULL, 0));
         }
         current = current->next;
     }
@@ -143,7 +143,7 @@ int check_return_type(typespec_type typ, char *name){
 	//TODO check possible errors here
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
-	head->symtab = insert_sym_element(head->symtab, create_sym_element("return", typ, NULL, 0));
+	head->symtab = insert_sym_element(head->symtab, create_sym_element("return", (s_types) typ, NULL, 0));
 	return ec; 
 }
 
@@ -153,7 +153,7 @@ int check_param_list(struct parameter_list* pl, char* name){
 	struct scope *head = get_scope_by_name(scope_head,name);
 	while (pl) {
         if (pl->p_dec->id != NULL) {
-            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->id,pl->p_dec->type, NULL, 1));	
+            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->id,(s_types)pl->p_dec->type, NULL, 1));	
         }
 		pl = pl->next;
 	}

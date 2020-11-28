@@ -491,7 +491,7 @@ s_types get_op2_type(struct op2* op, char* local_scope_name){
         case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le: case t_mod:
             return s_int;
         case t_store:
-            return t_exp1;
+            return t_exp1; //TODO: está mal!! 
         case t_comma:
             return t_exp2;
         case t_add: case t_sub: case t_mul: case t_div: 
