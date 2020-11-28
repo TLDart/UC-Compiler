@@ -24,6 +24,7 @@ int syntax_error_counter = 0;
 
 %union{
 	struct info* info;
+	struct oplines* opl;
     int integer;
     char* string;
     struct program* prog;
@@ -58,12 +59,13 @@ int syntax_error_counter = 0;
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
-%token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID BITWISEAND BITWISEOR BITWISEXOR
-        AND ASSIGN MUL COMMA DIV EQ GE GT LBRACE LE LPAR LT MINUS MOD NE NOT OR PLUS
+%token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID
+        LBRACE LPAR   
         RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE THEN
 
 // Tokens which yylval (Value) is necessary    
 %token <info>     CHRLIT ID REALLIT INTLIT
+%token <opl> OR AND EQ NE LT GT GE PLUS MINUS MUL DIV MOD ASSIGN COMMA BITWISEAND BITWISEOR BITWISEXOR LE NOT 
 
 /* Associativity and Priority of Operators */
 
@@ -165,28 +167,28 @@ ErrorOrStat:            error SEMI                                              
         |               Statement                                                   {if(syntax_error_counter == 0){$$=$1;}}
         ;
 
-Expression:             Expression OR Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,0,$3);}}
-        |               Expression AND Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,1,$3);}}
-        |               Expression EQ Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,2,$3);}}
-        |               Expression NE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,3,$3);}}
-        |               Expression LT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,4,$3);}}
-        |               Expression GT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,5,$3);}}
-        |               Expression GE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,6,$3);}}
-        |               Expression PLUS Expression                                  {if(syntax_error_counter == 0){$$=insert_expression_op2($1,7,$3);}}
-        |               Expression MINUS Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,8,$3);}}
-        |               Expression MUL Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,9,$3);}}
-        |               Expression DIV Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,10,$3);}}
-        |               Expression MOD Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,11,$3);}}
-        |               Expression ASSIGN Expression                                {if(syntax_error_counter == 0){$$=insert_expression_op2($1,12,$3);}}
-        |               Expression COMMA Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,13,$3);}}
-        |               Expression BITWISEAND Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,14,$3);}}
-        |               Expression BITWISEXOR Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,15,$3);}}
-        |               Expression BITWISEOR Expression                             {if(syntax_error_counter == 0){$$=insert_expression_op2($1,16,$3);}}
-        |               Expression LE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,17,$3);}}
+Expression:             Expression OR Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,0,$3);}}
+        |               Expression AND Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,1,$3);}}
+        |               Expression EQ Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,2,$3);}}
+        |               Expression NE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,3,$3);}}
+        |               Expression LT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,4,$3);}}
+        |               Expression GT Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,5,$3);}}
+        |               Expression GE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,6,$3);}}
+        |               Expression PLUS Expression                                  {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,7,$3);}}
+        |               Expression MINUS Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,8,$3);}}
+        |               Expression MUL Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,9,$3);}}
+        |               Expression DIV Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,10,$3);}}
+        |               Expression MOD Expression                                   {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,11,$3);}}
+        |               Expression ASSIGN Expression                                {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,12,$3);}}
+        |               Expression COMMA Expression                                 {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,13,$3);}}
+        |               Expression BITWISEAND Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,14,$3);}}
+        |               Expression BITWISEXOR Expression                            {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,15,$3);}}
+        |               Expression BITWISEOR Expression                             {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,16,$3);}}
+        |               Expression LE Expression                                    {if(syntax_error_counter == 0){$$=insert_expression_op2($1,$2,17,$3);}}
 
-        |               NOT Expression                                              {if(syntax_error_counter == 0){$$=insert_expression_op1(0,$2);}}
-        |               MINUS Expression    %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(1,$2);}}
-        |               PLUS Expression     %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(2,$2);}}
+        |               NOT Expression                                              {if(syntax_error_counter == 0){$$=insert_expression_op1(0,$1,$2);}}
+        |               MINUS Expression    %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(1,$1,$2);}}
+        |               PLUS Expression     %prec OP1                               {if(syntax_error_counter == 0){$$=insert_expression_op1(2,$1,$2);}}
 
         |               ID LPAR Expression kleenClosureCommaExpr RPAR               {if(syntax_error_counter == 0){$$=insert_expression_call($1,$3,$4);}}
         |               ID LPAR RPAR                                                {if(syntax_error_counter == 0){$$=insert_expression_call($1,NULL,NULL);}}

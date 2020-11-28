@@ -7,6 +7,7 @@
 
 #include "structures.h"
 
+struct oplines* getopl(int lines, int cols);
 struct info* getInfo(char* name, int lines, int cols);
 struct program* insert_program_func_def(struct function_definition* i_f_def, struct program* rem);
 struct program* insert_program_func_def_rem(struct program* head, struct function_definition* i_f_def);
@@ -33,8 +34,8 @@ struct statement* insert_while_statement(struct expression* i_expr, struct state
 struct statement* insert_statlist(struct statement* i_statlist_body);
 struct statement* insert_expr_statement(struct expression* i_expr);
 //new
-struct expression* insert_expression_op1(int operation, struct expression* arg);
-struct expression* insert_expression_op2(struct expression* arg1, int operation, struct expression* arg2);
+struct expression* insert_expression_op1(int operation,struct oplines* opl, struct expression* arg);
+struct expression* insert_expression_op2(struct expression* arg1,struct  oplines* opl, int operation, struct expression* arg2);
 struct expression* insert_expression_call(struct info* id, struct expression* exp, struct call* exp_list);
 struct expression* insert_expression_terminal(struct info* id, int type);
 struct call* insert_expression_kleen(struct call* head, struct expression* exp);

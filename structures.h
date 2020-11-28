@@ -26,6 +26,10 @@ struct info{
     int cols;
 };
 
+struct oplines{
+    int lines, cols;
+};
+
 struct function_definition{
     struct tpspec *tsp;
     struct info* info;

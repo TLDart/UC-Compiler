@@ -80,11 +80,11 @@ void print_typespec(struct tpspec* tsp, int depth){
     if(tsp->type == t_typespec_double){
         printf("Double\n");
     }
-    printf("Line %d Col %d\n", tsp->lines, tsp->cols);
+   // printf("Line %d Col %d\n", tsp->lines, tsp->cols);
 }
 
 void print_id(char* id, int depth){
-    pirint_indentation(depth);
+    print_indentation(depth);
     printf("Id(%s)\n",id);
 }
 
@@ -261,6 +261,7 @@ void print_op1(struct op1* op, int depth,char* local_scope_name){
             printf("Plus");
             break;
     }
+    //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
         print_s_type(get_op1_type(op,local_scope_name));
@@ -326,6 +327,7 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
             printf("Le");
             break;
     }
+    //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
         print_s_type(get_op2_type(op,local_scope_name));
@@ -338,16 +340,16 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
 void print_term(struct terminal* t, int depth, char* local_scope_name){
     switch (t->type){
         case t_charlit:
-            //printf("ChrLit('%s)",t->info->id);
-            printf("ChrLit('%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
+            printf("ChrLit('%s)",t->info->id);
+            //printf("ChrLit('%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_id:
-            //printf("Id(%s)",t->info->id);
-            printf("Id(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
+            printf("Id(%s)",t->info->id);
+            //printf("Id(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_intlit:
-            //printf("IntLit(%s)",t->info->id);
-            printf("IntLit(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
+            printf("IntLit(%s)",t->info->id);
+            //printf("IntLit(%s) Line %d Col %d",t->info->id, t->info->lines, t->info->cols);
             break;
         case t_reallit:
             printf("RealLit(%s)",t->info->id);

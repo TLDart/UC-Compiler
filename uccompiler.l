@@ -93,27 +93,27 @@ MLCOMMENTE      "*/"
 {DOUBLE}                                                    {if(verbose) printf("DOUBLE\n");columns += yyleng; if(mf) return DOUBLE;}
 {RETURN}                                                    {if(verbose) printf("RETURN\n");columns += yyleng; if(mf) return RETURN;}
 {VOID}                                                      {if(verbose) printf("VOID\n");columns += yyleng; if(mf) return VOID;}
-{BITWISEAND}                                                {if(verbose) printf("BITWISEAND\n");columns += yyleng; if(mf) return BITWISEAND;}
-{BITWISEOR}                                                 {if(verbose) printf("BITWISEOR\n");columns += yyleng; if(mf) return BITWISEOR;}
-{BITWISEXOR}                                                {if(verbose) printf("BITWISEXOR\n");columns += yyleng; if(mf) return BITWISEXOR;}
-{AND}                                                       {if(verbose) printf("AND\n");columns += yyleng; if(mf) return AND;}
-{ASSIGN}                                                    {if(verbose) printf("ASSIGN\n");columns += yyleng; if(mf) return ASSIGN;}
-{MUL}                                                       {if(verbose) printf("MUL\n");columns += yyleng; if(mf) return MUL;}
-{COMMA}                                                     {if(verbose) printf("COMMA\n");columns += yyleng; if(mf) return COMMA;}
-{DIV}                                                       {if(verbose) printf("DIV\n");columns += yyleng; if(mf) return DIV;}
-{EQ}                                                        {if(verbose) printf("EQ\n");columns += yyleng; if(mf) return EQ;}
-{GE}                                                        {if(verbose) printf("GE\n");columns += yyleng; if(mf) return GE;}
-{GT}                                                        {if(verbose) printf("GT\n");columns += yyleng; if(mf) return GT;}
+{BITWISEAND}                                                {if(verbose) printf("BITWISEAND\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return BITWISEAND;}
+{BITWISEOR}                                                 {if(verbose) printf("BITWISEOR\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return BITWISEOR;}
+{BITWISEXOR}                                                {if(verbose) printf("BITWISEXOR\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return BITWISEXOR;}
+{AND}                                                       {if(verbose) printf("AND\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return AND;}
+{ASSIGN}                                                    {if(verbose) printf("ASSIGN\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return ASSIGN;}
+{MUL}                                                       {if(verbose) printf("MUL\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return MUL;}
+{COMMA}                                                     {if(verbose) printf("COMMA\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return COMMA;}
+{DIV}                                                       {if(verbose) printf("DIV\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return DIV;}
+{EQ}                                                        {if(verbose) printf("EQ\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return EQ;}
+{GE}                                                        {if(verbose) printf("GE\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return GE;}
+{GT}                                                        {if(verbose) printf("GT\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return GT;}
 {LBRACE}                                                    {if(verbose) printf("LBRACE\n");columns += yyleng; if(mf) return LBRACE;}
-{LE}                                                        {if(verbose) printf("LE\n");columns += yyleng; if(mf) return LE;}
-{LPAR}                                                      {if(verbose) printf("LPAR\n");columns += yyleng; if(mf) return LPAR;}
-{LT}                                                        {if(verbose) printf("LT\n");columns += yyleng; if(mf) return LT;}
-{MINUS}                                                     {if(verbose) printf("MINUS\n");columns += yyleng; if(mf) return MINUS;}
-{MOD}                                                       {if(verbose) printf("MOD\n");columns += yyleng; if(mf) return MOD;}
-{NE}                                                        {if(verbose) printf("NE\n");columns += yyleng; if(mf) return NE;}
-{NOT}                                                       {if(verbose) printf("NOT\n");columns += yyleng; if(mf) return NOT;}
-{OR}                                                        {if(verbose) printf("OR\n");columns += yyleng; if(mf) return OR;}
-{PLUS}                                                      {if(verbose) printf("PLUS\n");columns += yyleng; if(mf) return PLUS;}
+{LE}                                                        {if(verbose) printf("LE\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return LE;}
+{LPAR}                                                      {if(verbose) printf("LPAR\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return LPAR;}
+{LT}                                                        {if(verbose) printf("LT\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return LT;}
+{MINUS}                                                     {if(verbose) printf("MINUS\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return MINUS;}
+{MOD}                                                       {if(verbose) printf("MOD\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return MOD;}
+{NE}                                                        {if(verbose) printf("NE\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return NE;}
+{NOT}                                                       {if(verbose) printf("NOT\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return NOT;}
+{OR}                                                        {if(verbose) printf("OR\n");columns += yyleng; yylval.opl = getopl(lines,columns - yyleng); if(mf) return OR;}
+{PLUS}                                                      {if(verbose) printf("PLUS\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return PLUS;}
 {RBRACE}                                                    {if(verbose) printf("RBRACE\n");columns += yyleng; if(mf) return RBRACE;}
 {RPAR}                                                      {if(verbose) printf("RPAR\n");columns += yyleng; if(mf) return RPAR;}
 {SEMI}                                                      {if(verbose) printf("SEMI\n");columns += yyleng; if(mf) return SEMI;}

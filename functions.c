@@ -8,6 +8,13 @@ struct info* getInfo(char* name, int lines, int cols){
     return new;
 }
 
+struct oplines* getopl(int lines, int cols){
+	struct oplines* new=(struct oplines*)malloc(sizeof(struct oplines));
+    new->cols = cols;
+    new->lines = lines;
+    return new;
+}
+
 //Func Definition
 struct program* insert_program_func_def(struct function_definition* i_f_def, struct program* rem){
 	struct program* new=(struct program*)malloc(sizeof(struct program));
@@ -344,9 +351,13 @@ struct statement* insert_expr_statement(struct expression* i_expr){
 }
 
 //new
-struct expression* insert_expression_op1(int operation, struct expression* arg){
+struct expression* insert_expression_op1(int operation,struct oplines* opl, struct expression* arg){
     struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
     struct op1* new_op1 = (struct op1*) malloc(sizeof(struct op1));
+
+
+    new_op1->lines = opl->lines;
+    new_op1->cols = opl->cols;
     new_op1->type = operation;
     new_op1->exp = arg;
     new_expr->expr_t = t_op1;
@@ -355,9 +366,13 @@ struct expression* insert_expression_op1(int operation, struct expression* arg){
 }
 
 
-struct expression* insert_expression_op2(struct expression* arg1, int operation, struct expression* arg2){
+struct expression* insert_expression_op2(struct expression* arg1,struct oplines* opl, int operation, struct expression* arg2){
     struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
     struct op2* new_op2 = (struct op2*) malloc(sizeof(struct op2));
+
+    new_op2->lines = opl->lines;
+    new_op2->cols = opl->cols;
+
     new_op2->type = operation;
     new_op2->exp1 = arg1;
     new_op2->exp2 = arg2;
