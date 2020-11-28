@@ -144,12 +144,12 @@ struct tpspec* insert_tpspec(int i_typespec, int lines, int cols){
     new-> cols = cols;
 
     return new;
+
 }
 
 
 struct function_definition* insert_function_definition(struct tpspec* tsp, struct info* i_id, struct parameter_list* i_param_list, struct function_body* i_f_body){
     struct function_definition* new = (struct function_definition*)malloc(sizeof(struct function_definition));
-
     new->tsp = tsp;
     new->info = i_id;
     new->param_list = i_param_list;

@@ -153,8 +153,18 @@ int check_f_def(struct function_definition* fdef){
             ec++;
         }
     } else { //Meaning that it did not find a valid definition
-        f_dec->tsp->type = fdef->tsp->type;
-        f_dec->info->id = fdef->info->id;
+        struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
+        tpsp->type = fdef->tsp->type;
+        tpsp->lines = fdef->tsp->lines;
+        tpsp->cols = fdef->tsp->cols;
+
+        struct info* infor = (struct info*) malloc(sizeof(struct info));
+        infor->id = fdef->info->id;
+        infor->lines = fdef->info->lines;
+        infor->cols = fdef->info->cols;
+
+        f_dec->tsp = tpsp;
+        f_dec->info = infor;
         f_dec->param_list = fdef->param_list;
         global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0));
 		create_scope(scope_head, fdef->info->id);
@@ -178,7 +188,7 @@ int check_param_list(struct parameter_list* pl, char* name){
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
 	while (pl) {
-        if (pl->p_dec->info->id != NULL) {
+        if (pl->p_dec->info && pl->p_dec->info->id != NULL) {//TODO this can be fucked
             head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,pl->p_dec->tsp->type, NULL, 1));	
         }
 		pl = pl->next;
