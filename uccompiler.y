@@ -27,6 +27,7 @@ int syntax_error_counter = 0;
     int integer;
     char* string;
     struct program* prog;
+	struct tpspec* i_tsp;
     struct function_definition* i_f_def;
     struct function_declaration* i_f_dec;
     struct declaration* i_dec;
@@ -43,7 +44,6 @@ int syntax_error_counter = 0;
 %type<i_f_def> FunctionDefinition
 %type<i_f_dec> FunctionDeclaration
 %type<i_dec> Declaration kleenClosureCommaDeclarator
-%type<integer> TypeSpec
 %type<i_f_body> FunctionBody DeclarationsAndStatements DeclarationsOrStatements
 %type<i_param_list> ParameterList kleenClosureCommaParameterDeclaration
 %type<i_param_dec> ParameterDeclaration
@@ -52,6 +52,7 @@ int syntax_error_counter = 0;
 %type<i_expr> Expression 
 %type<i_decl> Declarator
 %type<i_call> kleenClosureCommaExpr
+%type<i_tsp> TypeSpec
 
 
 /* Tokens */
@@ -135,11 +136,11 @@ kleenClosureCommaDeclarator: /* Epsilon */                                      
         |            kleenClosureCommaDeclarator COMMA Declarator                   {if(syntax_error_counter == 0){$$=insert_dec_rem($1,$3);}}
         ;
 
-TypeSpec:               CHAR                                                        {if(syntax_error_counter == 0){$$=0;}}
-        |               INT                                                         {if(syntax_error_counter == 0){$$=1;}}
-        |               VOID                                                        {if(syntax_error_counter == 0){$$=2;}}
-        |               SHORT                                                       {if(syntax_error_counter == 0){$$=3;}}
-        |               DOUBLE                                                      {if(syntax_error_counter == 0){$$=4;}}
+TypeSpec:               CHAR                                                        {if(syntax_error_counter == 0){$$=insert_tpspec(0, lines, columns - yyleng);} }
+        |               INT                                                         {if(syntax_error_counter == 0){$$=insert_tpspec(1, lines, columns - yyleng);}}
+        |               VOID                                                        {if(syntax_error_counter == 0){$$=insert_tpspec(2, lines, columns - yyleng);}}
+        |               SHORT                                                       {if(syntax_error_counter == 0){$$=insert_tpspec(3, lines, columns - yyleng);}}
+        |               DOUBLE                                                      {if(syntax_error_counter == 0){$$=insert_tpspec(4, lines, columns - yyleng);}}
         ;
 
 Declarator:             ID                                                          {if(syntax_error_counter == 0){$$=insert_decl($1, NULL);}}
@@ -190,7 +191,7 @@ Expression:             Expression OR Expression                                
         |               ID LPAR Expression kleenClosureCommaExpr RPAR               {if(syntax_error_counter == 0){$$=insert_expression_call($1,$3,$4);}}
         |               ID LPAR RPAR                                                {if(syntax_error_counter == 0){$$=insert_expression_call($1,NULL,NULL);}}
 
-        |               CHRLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,1);};}
+        |               CHRLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,1);}}
         |               ID                                                          {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,2);}}
         |               INTLIT                                                      {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,5);}}
         |               REALLIT                                                     {if(syntax_error_counter == 0){$$=insert_expression_terminal($1,7);}}

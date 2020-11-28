@@ -112,8 +112,8 @@ struct program* insert_program_dec_rem(struct program* head, struct declaration*
     return head;
 }
 
-struct function_definition* insert_function_definition(int i_typespec, struct info* i_id, struct parameter_list* i_param_list, struct function_body* i_f_body){
-    struct function_definition* new = (struct function_definition*)malloc(sizeof(struct function_definition));
+struct tpspec* insert_tpspec(int i_typespec, int lines, int cols){
+    struct tpspec* new = (struct tpspec*)malloc(sizeof(struct tpspec));
 
     if(i_typespec == 0){
          new->type = t_typespec_char;
@@ -130,7 +130,20 @@ struct function_definition* insert_function_definition(int i_typespec, struct in
     if(i_typespec == 4){
          new->type = t_typespec_double;
     }
+    if(i_typespec == 5){
+         new->type = typespec_null;
+    }
+    new->lines = lines;
+    new-> cols = cols;
 
+    return new;
+}
+
+
+struct function_definition* insert_function_definition(struct tpspec* tsp, struct info* i_id, struct parameter_list* i_param_list, struct function_body* i_f_body){
+    struct function_definition* new = (struct function_definition*)malloc(sizeof(struct function_definition));
+
+    new->tsp = tsp;
     new->info = i_id;
     new->param_list = i_param_list;
     new->f_body = i_f_body;
@@ -138,50 +151,20 @@ struct function_definition* insert_function_definition(int i_typespec, struct in
     return new;
 }
 
-struct function_declaration* insert_function_declaration(int i_typespec, struct info* i_id, struct parameter_list* i_param_list){
+struct function_declaration* insert_function_declaration(struct tpspec* tsp, struct info* i_id, struct parameter_list* i_param_list){
     struct function_declaration* new = (struct function_declaration*)malloc(sizeof(struct function_declaration));
 
-    if(i_typespec == 0){
-         new->type = t_typespec_char;
-    }
-    if(i_typespec == 1){
-         new->type = t_typespec_int;
-    }
-    if(i_typespec == 2){
-         new->type = t_typespec_void;
-    }
-    if(i_typespec == 3){
-         new->type = t_typespec_short;
-    }
-    if(i_typespec == 4){
-         new->type = t_typespec_double;
-    }
-
+    new->tsp = tsp;
     new->info = i_id;
     new->param_list = i_param_list;
 
     return new;
 }
 
-struct parameter_declaration* insert_param_dec(int i_typespec, struct info* i_id){
+struct parameter_declaration* insert_param_dec(struct tpspec* tsp, struct info* i_id){
     struct parameter_declaration* new = (struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
 
-    if(i_typespec == 0){
-         new->type = t_typespec_char;
-    }
-    if(i_typespec == 1){
-         new->type = t_typespec_int;
-    }
-    if(i_typespec == 2){
-         new->type = t_typespec_void;
-    }
-    if(i_typespec == 3){
-         new->type = t_typespec_short;
-    }
-    if(i_typespec == 4){
-         new->type = t_typespec_double;
-    }
-
+    new->tsp = tsp;
     if(i_id == NULL){
         new->info = NULL;
     }
@@ -253,9 +236,9 @@ struct declarator* insert_decl(struct info* i_id, struct expression* i_expr){
     new->expr = i_expr;
     return new;
 }
-struct declaration* insert_dec(int typespec,struct declarator* i_decl, struct declaration* i_dec){
+struct declaration* insert_dec(struct tpspec* tsp,struct declarator* i_decl, struct declaration* i_dec){
     struct declaration* new=(struct declaration*)malloc(sizeof(struct declaration));
-    new->type = typespec;
+    new->tsp = tsp;
     new->decl = i_decl;
     new->next = i_dec;
     return new;
@@ -263,8 +246,12 @@ struct declaration* insert_dec(int typespec,struct declarator* i_decl, struct de
 
 struct declaration* insert_dec_rem(struct declaration* head, struct declarator* i_decl){
     struct declaration* new=(struct declaration*)malloc(sizeof(struct declaration));
+    struct tpspec* newtsp=(struct tpspec*)malloc(sizeof(struct tpspec));
 
-    new->type = typespec_null;
+    newtsp->type = typespec_null;
+    newtsp->lines = -1;
+    newtsp->cols = -1;
+    new->tsp = newtsp;
     new->decl = i_decl;
 
    if(head == NULL)
@@ -399,7 +386,7 @@ struct expression* insert_expression_call(struct info* id, struct expression* ex
     return new_expr;
 }
 
-struct expression* insert_expression_terminal(struct info* info, int type){
+struct expression* insert_expression_terminal(struct info* info,int type){
     struct expression* new_expr = (struct expression*) malloc(sizeof(struct expression));
     struct terminal* new_term = (struct terminal*) malloc(sizeof(struct terminal));
     new_term->type = type;

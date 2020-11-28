@@ -15,6 +15,11 @@ struct program{
 // Nao mexer senão fica tudo lixado!!!!!
 typedef enum {t_typespec_char,t_typespec_int,t_typespec_void,t_typespec_short,t_typespec_double, typespec_null} typespec_type;
 
+struct tpspec{
+    typespec_type type;
+    int lines, cols;
+};
+
 struct info{
     char* id;
     int lines;
@@ -22,14 +27,14 @@ struct info{
 };
 
 struct function_definition{
-    typespec_type type;
+    struct tpspec *tsp;
     struct info* info;
     struct parameter_list* param_list; 
     struct function_body* f_body;
 };
 
 struct function_declaration{
-    typespec_type type;
+    struct tpspec *tsp;
     struct info* info; 
     struct parameter_list* param_list; 
 };
@@ -40,7 +45,7 @@ struct parameter_list{
 };
 
 struct parameter_declaration{
-    typespec_type type;
+    struct tpspec *tsp;
     struct info* info;
 };
 
@@ -55,7 +60,7 @@ struct function_body{
     struct function_body* next;
 };
 struct declaration{
-    typespec_type type;
+    struct tpspec *tsp;
     struct declarator* decl;
     struct declaration* next;
 };
@@ -114,6 +119,7 @@ struct terminal{
 typedef enum{t_not, t_minus, t_plus} op1_type;
 struct op1{
     op1_type type;
+    int cols, lines;
     struct expression* exp;
 };
 
@@ -125,6 +131,7 @@ typedef enum{
 
 struct op2{
     op2_type type;
+    int cols, lines;
     struct expression* exp1;
     struct expression* exp2;
 };

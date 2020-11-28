@@ -24,22 +24,48 @@ void insert_default_values(struct scope* head){
     struct function_declaration* new = (struct function_declaration*)malloc(sizeof(struct function_declaration));
     struct parameter_list* newplist = (struct parameter_list*)malloc(sizeof(struct parameter_list));
     struct parameter_declaration* newpdec = (struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
-	
-	newpdec->info->id = NULL;
-	newpdec->type = t_typespec_int;
+    struct info* newinfo = (struct info*)malloc(sizeof(struct info));
+    struct tpspec* newtspec = (struct tpspec*)malloc(sizeof(struct tpspec));
+
+    newtspec->type = t_typespec_int;
+    newtspec->lines = -1;
+    newtspec->cols = -1;
+
+	newpdec->tsp = newtspec;
 	newplist->p_dec = newpdec;
 	newplist->next = NULL;
 	new->param_list = newplist;
-    new->type = t_typespec_int;  // return value
+
+    newtspec = (struct tpspec*)malloc(sizeof(struct tpspec));
+
+    newtspec->type = t_typespec_int;
+    newtspec->lines = -1;
+    newtspec->cols = -1;
+
+    new->tsp = newtspec;  // return value
 	head->symtab= insert_sym_element(head->symtab, create_sym_element("putchar", s_function,create_sym_f_param(new), 0));
 
     newpdec=(struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
-	newpdec->info->id = NULL;
-	newpdec->type = t_typespec_void;
+    newinfo = (struct info*)malloc(sizeof(struct info));
+    newinfo->id = NULL;	
+	newpdec->info = newinfo;
+
+    newtspec = (struct tpspec*)malloc(sizeof(struct tpspec));
+
+    newtspec->type = t_typespec_void;
+    newtspec->lines = -1;
+    newtspec->cols = -1;
+	newpdec->tsp = newtspec;
 	newplist->p_dec = newpdec;
 	newplist->next = NULL;
 	new->param_list = newplist;
-    new->type = t_typespec_int;  // return value
+
+    newtspec = (struct tpspec*)malloc(sizeof(struct tpspec));
+
+    newtspec->type = t_typespec_int;
+    newtspec->lines = -1;
+    newtspec->cols = -1;
+    new->tsp = newtspec;  // return value
 	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0));
 }
 
@@ -69,7 +95,7 @@ int check_dec(struct declaration* dec, char *name){
             ec++;
         } else {
             //printf("Is inserting element\n");
-            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id, dec->type, NULL, 0));
+            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id, dec->tsp->type, NULL, 0));
         }
         current = current->next;
     }
@@ -91,7 +117,7 @@ int check_f_def(struct function_definition* fdef){
     if (s) { //meaning that it found a correct reference
         /* Checking Return Value */
         table_element = get_token_by_name(global_scope->symtab,s->name);
-        if ((int) table_element->sym_f->return_value == (int) fdef->type) {
+        if ((int) table_element->sym_f->return_value == (int) fdef->tsp->type) {
             // printf("TEMPORARY: Return types match in Declaration and Definition\n");
         } else {
             printf("TEMPORARY: Return types don't match!\n"); 
@@ -115,7 +141,7 @@ int check_f_def(struct function_definition* fdef){
             current_dec = table_element->sym_f->params;
             current_def = fdef->param_list;
             while (current_dec && current_def) {
-                if ((int) current_dec->param_type != (int) current_def->p_dec->type) {
+                if ((int) current_dec->param_type != (int) current_def->p_dec->tsp->type) {
                     printf("TEMPORARY: Diferentes tipos!!!\n");
                     ec++;
                 } 
@@ -127,13 +153,13 @@ int check_f_def(struct function_definition* fdef){
             ec++;
         }
     } else { //Meaning that it did not find a valid definition
-        f_dec->type = fdef->type;
+        f_dec->tsp->type = fdef->tsp->type;
         f_dec->info->id = fdef->info->id;
         f_dec->param_list = fdef->param_list;
         global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0));
 		create_scope(scope_head, fdef->info->id);
     }
-    ec += check_return_type(fdef->type, fdef->info->id);
+    ec += check_return_type(fdef->tsp->type, fdef->info->id);
     ec += check_param_list(fdef->param_list, fdef->info->id);
     ec += check_f_body(fdef->f_body,fdef->info->id);
 	return ec;
@@ -153,7 +179,7 @@ int check_param_list(struct parameter_list* pl, char* name){
 	struct scope *head = get_scope_by_name(scope_head,name);
 	while (pl) {
         if (pl->p_dec->info->id != NULL) {
-            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,pl->p_dec->type, NULL, 1));	
+            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,pl->p_dec->tsp->type, NULL, 1));	
         }
 		pl = pl->next;
 	}
