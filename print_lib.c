@@ -398,8 +398,7 @@ void showTable(struct scope* head){
     while(current){
         if(strcmp(current->name, "Global") == 0){
             printf("===== Global Symbol Table =====\n");
-        }
-        else{
+        } else if(current->symtab != NULL){
             printf("\n===== Function %s Symbol Table =====\n",current->name);
         }
         print_scope(current->symtab);
@@ -460,6 +459,9 @@ void print_s_type(s_types s){
         if(s == s_double){
             printf("double");
         }
+        if(s == s_undef){
+            printf("undef");
+        }
 }
 
 //======================================================================================
@@ -474,8 +476,7 @@ s_types get_expression_type(struct expression* exp, char* local_scope_name){
         case t_call:
             return get_call_type(exp->expression_morphs.c, local_scope_name);
     }
-    printf("Não devia ter acontecido!!\n");
-    return s_void;
+    return s_undef;
 }
 
 s_types get_op1_type(struct op1* op, char* local_scope_name) {
@@ -497,7 +498,7 @@ s_types get_op2_type(struct op2* op, char* local_scope_name){
         case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le: case t_mod:
             return s_int;
         case t_store:
-            return t_exp1; //TODO: está mal!! 
+            return t_exp1;
         case t_comma:
             return t_exp2;
         case t_add: case t_sub: case t_mul: case t_div: 
@@ -520,14 +521,14 @@ s_types get_op2_type(struct op2* op, char* local_scope_name){
                     }
                     return t_exp1;
                 } else {
-                    printf("Não devia ter acontecido!!\n");
-                    return s_void;
+                    // printf("Não devia ter acontecido!!\n");
+                    return s_undef;
                 }
             }
 
     }
-    printf("Não devia ter acontecido!!\n");
-    return s_void;  
+    // printf("Não devia ter acontecido!!\n");
+    return s_undef;  
 }
 
 s_types get_terminal_type(struct terminal* t, char* local_scope_name){
@@ -541,8 +542,8 @@ s_types get_terminal_type(struct terminal* t, char* local_scope_name){
         case t_reallit:
             return s_double;
         default:
-            printf("Não devia ter acontecido!!\n");
-            return s_void;
+            // printf("Não devia ter acontecido!!\n");
+            return s_undef;
     }
 }
 
@@ -551,8 +552,8 @@ s_types get_call_type(struct call* c, char* local_scope_name){
     if ((sym_elem = search_symbol(scope_head,c->call_morphs.info->id, local_scope_name))) {
         return sym_elem->sym_f->return_value;
     }
-    printf("Nao devia chegar aqui!!\n");
-    return s_void;
+    // printf("Nao devia chegar aqui!!\n");
+    return s_undef;
 }
 
 s_types get_id_type(char* id, char* local_scope_name){
@@ -568,6 +569,6 @@ s_types get_id_type(char* id, char* local_scope_name){
             break;
         }
     }
-    printf("Nao devia chegar aqui!!\n");
-    return s_void;
+    // printf("Nao devia chegar aqui!!\n");
+    return s_undef;
 }
