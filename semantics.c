@@ -247,15 +247,13 @@ int check_f_def(struct function_definition* fdef){
         global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0, 1));
 		create_scope(scope_head, fdef->info->id);
     }
-    ec += check_return_type(fdef->tsp->type, fdef->info->id);
-    ec += check_param_list(fdef->param_list, fdef->info->id);
+    ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função
+    ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão
     ec += check_f_body(fdef->f_body,fdef->info->id);
 	return ec;
 }
 
-//TODO: falta daqui para baixo
 int check_return_type(typespec_type typ, char *name){
-	//TODO check possible errors here
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
     if (head){
@@ -265,12 +263,11 @@ int check_return_type(typespec_type typ, char *name){
 }
 
 int check_param_list(struct parameter_list* pl, char* name){
-	//TODO	 check possible errors
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
     if (head){
         while (pl) {
-            if (pl->p_dec->info && pl->p_dec->info->id != NULL) {//TODO this can be fucked
+            if (pl->p_dec->info && pl->p_dec->info->id != NULL) {
                 head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
             }
 		    pl = pl->next;
