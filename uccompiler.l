@@ -171,17 +171,19 @@ int main(int argc, char* argv[]) {
             break;
     }
 
-    if(mf == meta3){
+    if(mf == meta3 && syntax_error_counter == 0){
         semantic_errors += check_program(myprog);
-        if (semantic_errors > 0) printf("Total semantic_errors: %d\n",semantic_errors);
-        showTable(scope_head);
-        printf("\n");
+        /* if (semantic_errors > 0) printf("Total semantic_errors: %d\n",semantic_errors); */
+        if (ASTnoted){
+            showTable(scope_head);
+            printf("\n");
+        }
     }
     /* AST | AST-noted print */
     if(sintaxTree && syntax_error_counter == 0){ // AST
         print_ast(myprog);
-                                                // not sure about this!!!!!
-    } else if (ASTnoted && (syntax_error_counter + semantic_errors) == 0) { // AST-noted
+                                               
+    } else if (ASTnoted && syntax_error_counter == 0) { // AST-noted
         print_ast(myprog);
     }
 

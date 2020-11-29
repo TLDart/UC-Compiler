@@ -71,11 +71,54 @@ void insert_default_values(struct scope* head){
 
 int check_f_dec(struct function_declaration* f_dec, char *name){
     int ec = 0;
+    int dif = 0;
+    int len_symbol_param = 0;
+    int len_fdec_func = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
+    struct sym_element* sym_elem = NULL;
+    struct sym_f_param* current_first;
+    struct parameter_list* current_second;
+    if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) {
+        /* Checking if Signature is different*/
+        if (sym_elem->type == s_function){
+            // Number of parameters
 
-    if (get_token_by_name(s->symtab, f_dec->info->id)) {
-        //TODO: Verificar assinatura
-        printf("Is this a double declaration?\n");
+            current_first = sym_elem->sym_f->params;
+            while (current_first) {
+                len_symbol_param++;
+                current_first = current_first->next;
+            }
+
+            current_second = f_dec->param_list;
+            while(current_second) {
+                len_fdec_func++;
+                current_second = current_second->next;
+            }
+            // Parameter Types matching
+            if (len_fdec_func == len_symbol_param){
+                current_first = sym_elem->sym_f->params;
+                current_second = f_dec->param_list;
+                while (current_first && current_second){
+                    if (current_first->param_type != (s_types) current_second->p_dec->tsp->type){
+                        dif++;
+                    }
+                    current_first = current_first->next;
+                    current_second = current_second->next;
+                }
+                
+            }
+            if ((sym_elem->sym_f->return_value != (s_types) f_dec->tsp->type) || (len_fdec_func != len_symbol_param) || (dif > 0)){
+                printf("Line %d, col %d: Conflicting types (got ",f_dec->info->lines,f_dec->info->cols);
+                print_scope_f_dec(create_sym_f_param(f_dec));
+                printf(", required ");
+                print_scope_f_dec(sym_elem->sym_f);
+                printf(")\n");
+                ec++;
+            }      
+        } else {
+            printf("Line %d, col %d: Symbol %s already defined\n",f_dec->info->lines,f_dec->info->cols,f_dec->info->id);
+            ec++;
+        }
     } else {
         s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0));
         //create a local scope to respect the order of functions
@@ -149,8 +192,19 @@ int check_f_def(struct function_definition* fdef){
                 current_def = current_def->next;   
             }
         } else {
-            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n",lines, columns - yyleng, fdef->info->id, len_definition, len_declaration);
+            // Acho que isto devia ser conflicting types, de modo que vou comentar
+            struct function_declaration * fdef_dec = (struct function_declaration *) malloc(sizeof(struct function_declaration));
+            fdef_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
+            fdef_dec->tsp->type = fdef->tsp->type;
+            fdef_dec->param_list = fdef->param_list;
+            printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
+            print_scope_f_dec(create_sym_f_param(fdef_dec));
+            printf(", required ");
+            print_scope_f_dec(table_element->sym_f);
+            printf(")\n");
             ec++;
+            free(fdef_dec->tsp);
+            free(fdef_dec);
         }
     } else { //Meaning that it did not find a valid definition
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
