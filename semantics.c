@@ -132,38 +132,40 @@ int check_dec(struct declaration* dec, char *name){
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
     struct sym_element* sym_elem = NULL;
-    while(current){
-        if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
-            if (sym_elem->type == s_function){
-                printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
-            } else if (sym_elem->already_defined) {
-                if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
-                    if (current->decl->expr != NULL) { // Current defined
-                        printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+    if (s) {
+        while(current){
+            if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
+                if (sym_elem->type == s_function){
+                    printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                } else if (sym_elem->already_defined) {
+                    if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
+                        if (current->decl->expr != NULL) { // Current defined
+                            printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                        }
+                    } else { // case [char foo = 1; int foo = 1;]
+                        printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                        print_s_type((s_types) current->tsp->type);
+                        printf(", expected ");
+                        print_s_type(sym_elem->type);
+                        printf(")\n");
                     }
-                } else { // case [char foo = 1; int foo = 1;]
-                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
-                    print_s_type((s_types) current->tsp->type);
-                    printf(", expected ");
-                    print_s_type(sym_elem->type);
-                    printf(")\n");
+                } else if (!sym_elem->already_defined) { // Only declared, but not defined
+                    if (sym_elem->type == (s_types) current->tsp->type) {
+                        sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
+                    } else {
+                        printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                        print_s_type((s_types) current->tsp->type);
+                        printf(", expected ");
+                        print_s_type(sym_elem->type);
+                        printf(")\n");
+                    }
                 }
-            } else if (!sym_elem->already_defined) { // Only declared, but not defined
-                if (sym_elem->type == (s_types) current->tsp->type) {
-                    sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
-                } else {
-                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
-                    print_s_type((s_types) current->tsp->type);
-                    printf(", expected ");
-                    print_s_type(sym_elem->type);
-                    printf(")\n");
-                }
+                
+            } else {
+                s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
             }
-            
-        } else {
-            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
+            current = current->next;
         }
-        current = current->next;
     }
     return ec;
 }
@@ -251,6 +253,7 @@ int check_f_def(struct function_definition* fdef){
 	return ec;
 }
 
+//TODO: falta daqui para baixo
 int check_return_type(typespec_type typ, char *name){
 	//TODO check possible errors here
 	int ec = 0;
