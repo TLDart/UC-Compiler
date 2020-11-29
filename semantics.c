@@ -43,7 +43,7 @@ void insert_default_values(struct scope* head){
     newtspec->cols = -1;
 
     new->tsp = newtspec;  // return value
-	head->symtab= insert_sym_element(head->symtab, create_sym_element("putchar", s_function,create_sym_f_param(new), 0));
+	head->symtab= insert_sym_element(head->symtab, create_sym_element("putchar", s_function,create_sym_f_param(new), 0,1));
 
     newpdec=(struct parameter_declaration*)malloc(sizeof(struct parameter_declaration));
     newinfo = (struct info*)malloc(sizeof(struct info));
@@ -66,7 +66,7 @@ void insert_default_values(struct scope* head){
     newtspec->lines = -1;
     newtspec->cols = -1;
     new->tsp = newtspec;  // return value
-	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0));
+	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0,1));
 }
 
 int check_f_dec(struct function_declaration* f_dec, char *name){
@@ -78,11 +78,10 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     struct sym_element* sym_elem = NULL;
     struct sym_f_param* current_first;
     struct parameter_list* current_second;
-    if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) {
+    if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) { // Case where the same token is a function 
         /* Checking if Signature is different*/
         if (sym_elem->type == s_function){
             // Number of parameters
-
             current_first = sym_elem->sym_f->params;
             while (current_first) {
                 len_symbol_param++;
@@ -94,6 +93,7 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
                 len_fdec_func++;
                 current_second = current_second->next;
             }
+
             // Parameter Types matching
             if (len_fdec_func == len_symbol_param){
                 current_first = sym_elem->sym_f->params;
@@ -105,8 +105,8 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
                     current_first = current_first->next;
                     current_second = current_second->next;
                 }
-                
             }
+            // In case of Semantic Error
             if ((sym_elem->sym_f->return_value != (s_types) f_dec->tsp->type) || (len_fdec_func != len_symbol_param) || (dif > 0)){
                 printf("Line %d, col %d: Conflicting types (got ",f_dec->info->lines,f_dec->info->cols);
                 print_scope_f_dec(create_sym_f_param(f_dec));
@@ -115,12 +115,12 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
                 printf(")\n");
                 ec++;
             }      
-        } else {
+        } else { // Case where the same token is not a function 
             printf("Line %d, col %d: Symbol %s already defined\n",f_dec->info->lines,f_dec->info->cols,f_dec->info->id);
             ec++;
         }
     } else {
-        s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0));
+        s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0, 0));
         //create a local scope to respect the order of functions
         create_scope(scope_head, f_dec->info->id);  
     }
@@ -129,22 +129,48 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
 
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
-    //printf("Is checking dec\n");
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
+    struct sym_element* sym_elem = NULL;
     while(current){
-        if(get_token_by_name(s->symtab, current->decl->info->id)){ //TODO: Isto só vê no próprio scope, não sei se para o tratamento de erros não é necessário ver também no global 
-            printf ("Line %d, col %d: Symbol %s is already defined\n" , lines, columns - yyleng, current->decl->info->id);
-            ec++;
+        if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
+            if (sym_elem->type == s_function){
+                printf("Line %d, col %d: Symbol %s is already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+            } else if (sym_elem->already_defined) {
+                if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
+                    if (current->decl->expr != NULL) { // Current defined
+                        printf("Line %d, col %d: Symbol %s is already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                    }
+                } else { // case [char foo = 1; int foo = 1;]
+                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                    print_s_type((s_types) current->tsp->type);
+                    printf(", expected ");
+                    print_s_type(sym_elem->type);
+                    printf(")\n");
+                }
+            } else if (!sym_elem->already_defined) { // Only declared, but not defined
+                if (sym_elem->type == (s_types) current->tsp->type) {
+                    sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
+                } else {
+                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                    print_s_type((s_types) current->tsp->type);
+                    printf(", expected ");
+                    print_s_type(sym_elem->type);
+                    printf(")\n");
+                }
+            }
+            
         } else {
-            //printf("Is inserting element\n");
-            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0));
+
+            s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
         }
         current = current->next;
     }
     return ec;
 }
 
+//TODO: meter defined = 1 quando já tiver existido a declaração mas não ter sido corretamente definida
+//TODO: verificar se já foi declarada e/ou definida!
 int check_f_def(struct function_definition* fdef){
 	int ec = 0;
     int len_declaration = 0;
@@ -156,7 +182,6 @@ int check_f_def(struct function_definition* fdef){
     struct scope* global_scope = get_scope_by_name(scope_head,"Global");
     struct scope* s = get_scope_by_name(scope_head, fdef->info->id);
     struct function_declaration* f_dec = (struct function_declaration*) malloc(sizeof(struct function_declaration));
-
     if (s) { //meaning that it found a correct reference
         /* Checking Return Value */
         table_element = get_token_by_name(global_scope->symtab,s->name);
@@ -220,7 +245,7 @@ int check_f_def(struct function_definition* fdef){
         f_dec->tsp = tpsp;
         f_dec->info = infor;
         f_dec->param_list = fdef->param_list;
-        global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0));
+        global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0, 1));
 		create_scope(scope_head, fdef->info->id);
     }
     ec += check_return_type(fdef->tsp->type, fdef->info->id);
@@ -233,7 +258,7 @@ int check_return_type(typespec_type typ, char *name){
 	//TODO check possible errors here
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
-	head->symtab = insert_sym_element(head->symtab, create_sym_element("return", (s_types) typ, NULL, 0));
+	head->symtab = insert_sym_element(head->symtab, create_sym_element("return", (s_types) typ, NULL, 0, 1));
 	return ec; 
 }
 
@@ -243,7 +268,7 @@ int check_param_list(struct parameter_list* pl, char* name){
 	struct scope *head = get_scope_by_name(scope_head,name);
 	while (pl) {
         if (pl->p_dec->info && pl->p_dec->info->id != NULL) {//TODO this can be fucked
-            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1));	
+            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
         }
 		pl = pl->next;
 	}

@@ -72,7 +72,7 @@ struct sym_element* insert_sym_element(struct sym_element* head,struct sym_eleme
     return head;
 }
 
-struct sym_element* create_sym_element(char* name, s_types type, struct sym_function* f, int parameter){
+struct sym_element* create_sym_element(char* name, s_types type, struct sym_function* f, int parameter, int defined){
     struct sym_element* new=(struct sym_element*)malloc(sizeof(struct sym_element));
     if(name == NULL)
         new->name = NULL;
@@ -81,6 +81,7 @@ struct sym_element* create_sym_element(char* name, s_types type, struct sym_func
     new->type = type;
     new->sym_f = f;
     new->parameter = parameter;
+    new->already_defined = defined;
     new->next = NULL;
 
     return new;
