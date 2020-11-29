@@ -284,12 +284,13 @@ struct statement* insert_statement(struct statement* head, struct statement* new
     }
     return head;
 }
-struct statement* insert_return(struct expression* i_expr){
+struct statement* insert_return(struct expression* i_expr, struct oplines* opl){
     //printf("insert return\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct return_statement* new_return=(struct return_statement*)malloc(sizeof(struct return_statement));
 
     new_return->expr = i_expr;
+    new_return->opl = opl;
     new->type = t_return;
     new->statement_data.u_return = new_return;
     new->next = NULL;

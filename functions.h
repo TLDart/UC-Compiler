@@ -28,7 +28,7 @@ struct declaration* insert_dec(struct tpspec* tsp,struct declarator* i_decl, str
 struct declaration* insert_dec_rem(struct declaration* head, struct declarator* i_decl);
 struct tpspec* insert_tpspec(int i_typespec, int lines, int cols);
 struct statement* insert_statement(struct statement* head, struct statement* new);
-struct statement* insert_return(struct expression* i_expr);
+struct statement* insert_return(struct expression* i_expr,struct oplines* opl);
 struct statement* insert_if_statement(struct expression* i_expr, struct statement* i_if_body, struct statement* i_else_body);
 struct statement* insert_while_statement(struct expression* i_expr, struct statement* i_while_body);
 struct statement* insert_statlist(struct statement* i_statlist_body);

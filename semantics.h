@@ -26,4 +26,7 @@ int check_op1(struct op1* op, char* name);
 int check_op2(struct op2* op, char* name);
 int check_terminal(struct terminal* t, char* name);
 int check_call(struct call* c, char* name);
+
+int get_expression_col(struct expression* exp);
+int compare_types(s_types type1, s_types type2);
 #endif

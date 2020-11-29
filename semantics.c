@@ -127,6 +127,9 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     return ec;
 }
 
+//TODO: Verificar o type e.g: double a = 'A'; (upcasts e downcasts)
+//TODO: Verificar que void não pode ser void a = 1;
+//TODO: Verificar se não tem void nos params
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
@@ -247,8 +250,8 @@ int check_f_def(struct function_definition* fdef){
         global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0, 1));
 		create_scope(scope_head, fdef->info->id);
     }
-    ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função
-    ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão
+    ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
+    ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
     ec += check_f_body(fdef->f_body,fdef->info->id);
 	return ec;
 }
@@ -262,6 +265,7 @@ int check_return_type(typespec_type typ, char *name){
 	return ec; 
 }
 
+//TODO: check conflicting types int cenas(int a, char a);
 int check_param_list(struct parameter_list* pl, char* name){
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
@@ -313,10 +317,28 @@ int check_statement(struct statement* head, char* name){
     return ec;
 }
 
+//TODO: return (2.4);
+//TODO: downcasts e upcasts e whatever
 int check_return(struct return_statement* rs, char* name) {
     int ec = 0;
-    //TODO: Verificar se o valor da expressão retornada é igual ao daquele que foi declarado/definido
+    int lines = 0;
+    int cols = 0;
+    struct sym_element* sym_elem = search_symbol(scope_head,name,"Global");
+    s_types s_type;
     if (rs != NULL) {
+        if (sym_elem && (sym_elem->type == s_function) && compare_types(sym_elem->sym_f->return_value,(s_type = get_expression_type(rs->expr,name)))){
+            lines = rs->opl->lines;
+            if (s_type == s_void) { // fica o erro no 'r' do return
+                cols = rs->opl->cols;
+            } else {
+                cols = get_expression_col(rs->expr);
+            }
+            printf("Line %d, col %d: Conflicting types (got ",lines, cols);
+            print_s_type(s_type);
+            printf(", expected ");
+            print_s_type(sym_elem->sym_f->return_value);
+            printf(")\n");
+        }
         ec += check_expression(rs->expr, name);
     }
     return ec;
@@ -404,4 +426,27 @@ int check_call(struct call* c, char* name) {
         c = c->next_arg;
     }
     return ec;   
+}
+
+// ==================================================================== Aux funcs
+
+int get_expression_col(struct expression* exp){
+    switch (exp->expr_t) {
+        case t_op1:
+            return exp->expression_morphs.operation1->cols;
+        case t_op2:
+            return exp->expression_morphs.operation2->cols;
+        case t_call:
+            return exp->expression_morphs.c->call_morphs.info->cols;
+        case t_term:
+            return exp->expression_morphs.t->info->cols;
+    }
+    return -1;
+}
+
+int compare_types(s_types type1, s_types type2){
+    if (type2 == s_double && (type1 == s_char || type1 == s_short || type1 == s_int)){
+        return 1;
+    }
+    return 0;
 }

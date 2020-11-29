@@ -59,13 +59,13 @@ int syntax_error_counter = 0;
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
-%token  CHAR ELSE WHILE IF INT SHORT DOUBLE RETURN VOID
+%token  CHAR ELSE WHILE IF INT SHORT DOUBLE VOID
         LBRACE LPAR   
         RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE THEN
 
 // Tokens which yylval (Value) is necessary    
 %token <info>     CHRLIT ID REALLIT INTLIT
-%token <opl> OR AND EQ NE LT GT GE PLUS MINUS MUL DIV MOD ASSIGN COMMA BITWISEAND BITWISEOR BITWISEXOR LE NOT 
+%token <opl> OR AND EQ NE LT GT GE PLUS MINUS MUL DIV MOD ASSIGN COMMA BITWISEAND BITWISEOR BITWISEXOR LE NOT RETURN
 
 /* Associativity and Priority of Operators */
 
@@ -155,8 +155,8 @@ Statement:              Expression SEMI                                         
         |               IF LPAR Expression RPAR ErrorOrStat  %prec THEN             {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,NULL);}}
         |               IF LPAR Expression RPAR ErrorOrStat ELSE ErrorOrStat        {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,$7);}}
         |               WHILE LPAR Expression RPAR ErrorOrStat                      {if(syntax_error_counter == 0){$$=insert_while_statement($3,$5);}}
-        |               RETURN SEMI                                                 {if(syntax_error_counter == 0){$$=insert_return(NULL);}}
-        |               RETURN Expression SEMI                                      {if(syntax_error_counter == 0){$$=insert_return($2);}}
+        |               RETURN SEMI                                                 {if(syntax_error_counter == 0){$$=insert_return(NULL,$1);}}
+        |               RETURN Expression SEMI                                      {if(syntax_error_counter == 0){$$=insert_return($2,$1);}}
         |               LBRACE error RBRACE                                         {if(syntax_error_counter == 0){$$=NULL;}}
         |               LBRACE RBRACE                                               {if(syntax_error_counter == 0){$$=NULL;}}
         ;

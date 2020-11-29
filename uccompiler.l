@@ -91,7 +91,7 @@ MLCOMMENTE      "*/"
 {INT}                                                       {if(verbose) printf("INT\n"); columns += yyleng; if(mf) return INT;}
 {SHORT}                                                     {if(verbose) printf("SHORT\n");columns += yyleng; if(mf) return SHORT;}
 {DOUBLE}                                                    {if(verbose) printf("DOUBLE\n");columns += yyleng; if(mf) return DOUBLE;}
-{RETURN}                                                    {if(verbose) printf("RETURN\n");columns += yyleng; if(mf) return RETURN;}
+{RETURN}                                                    {if(verbose) printf("RETURN\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng);if(mf) return RETURN;}
 {VOID}                                                      {if(verbose) printf("VOID\n");columns += yyleng; if(mf) return VOID;}
 {BITWISEAND}                                                {if(verbose) printf("BITWISEAND\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return BITWISEAND;}
 {BITWISEOR}                                                 {if(verbose) printf("BITWISEOR\n");columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return BITWISEOR;}

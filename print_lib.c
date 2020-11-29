@@ -466,17 +466,20 @@ void print_s_type(s_types s){
 
 //======================================================================================
 s_types get_expression_type(struct expression* exp, char* local_scope_name){
-    switch (exp->expr_t){
-        case t_op1:
-            return get_op1_type(exp->expression_morphs.operation1,local_scope_name);
-        case t_op2:
-            return get_op2_type(exp->expression_morphs.operation2,local_scope_name); 
-        case t_term:
-            return get_terminal_type(exp->expression_morphs.t, local_scope_name);
-        case t_call:
-            return get_call_type(exp->expression_morphs.c, local_scope_name);
+    if (exp){
+        switch (exp->expr_t){
+            case t_op1:
+                return get_op1_type(exp->expression_morphs.operation1,local_scope_name);
+            case t_op2:
+                return get_op2_type(exp->expression_morphs.operation2,local_scope_name); 
+            case t_term:
+                return get_terminal_type(exp->expression_morphs.t, local_scope_name);
+            case t_call:
+                return get_call_type(exp->expression_morphs.c, local_scope_name);
+        }
+        return s_undef;
     }
-    return s_undef;
+    return s_void;
 }
 
 s_types get_op1_type(struct op1* op, char* local_scope_name) {
