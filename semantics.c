@@ -78,9 +78,9 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     struct sym_element* sym_elem = NULL;
     struct sym_f_param* current_first;
     struct parameter_list* current_second;
-    if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) { // Case where the same token is a function 
-        /* Checking if Signature is different*/
-        if (sym_elem->type == s_function){
+    if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) { 
+        if (sym_elem->type == s_function){ // Case where the same token is a function 
+            /* Checking if Signature is different*/
             // Number of parameters
             current_first = sym_elem->sym_f->params;
             while (current_first) {
@@ -135,11 +135,11 @@ int check_dec(struct declaration* dec, char *name){
     while(current){
         if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
             if (sym_elem->type == s_function){
-                printf("Line %d, col %d: Symbol %s is already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
             } else if (sym_elem->already_defined) {
                 if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
                     if (current->decl->expr != NULL) { // Current defined
-                        printf("Line %d, col %d: Symbol %s is already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                        printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
                     }
                 } else { // case [char foo = 1; int foo = 1;]
                     printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
@@ -161,7 +161,6 @@ int check_dec(struct declaration* dec, char *name){
             }
             
         } else {
-
             s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
         }
         current = current->next;
@@ -169,67 +168,65 @@ int check_dec(struct declaration* dec, char *name){
     return ec;
 }
 
-//TODO: meter defined = 1 quando já tiver existido a declaração mas não ter sido corretamente definida
-//TODO: verificar se já foi declarada e/ou definida!
 int check_f_def(struct function_definition* fdef){
 	int ec = 0;
     int len_declaration = 0;
     int len_definition = 0;
-
+    int dif = 0;
     struct sym_f_param* current_dec;
     struct parameter_list* current_def;
-    struct sym_element* table_element;
     struct scope* global_scope = get_scope_by_name(scope_head,"Global");
-    struct scope* s = get_scope_by_name(scope_head, fdef->info->id);
+    struct sym_element* sym_elem = NULL;
     struct function_declaration* f_dec = (struct function_declaration*) malloc(sizeof(struct function_declaration));
-    if (s) { //meaning that it found a correct reference
-        /* Checking Return Value */
-        table_element = get_token_by_name(global_scope->symtab,s->name);
-        if ((int) table_element->sym_f->return_value == (int) fdef->tsp->type) {
-            // printf("TEMPORARY: Return types match in Declaration and Definition\n");
-        } else {
-            printf("TEMPORARY: Return types don't match!\n"); 
-            ec++;
-        }
-        /* Checking argc */
-        // For the Declaration
-        current_dec = table_element->sym_f->params;
-        while(current_dec) {
-            len_declaration++;
-            current_dec = current_dec -> next;
-        }
-        // For the Definition
-        current_def = fdef->param_list;
-        while (current_def) {
-            len_definition++;
-            current_def = current_def->next;
-        }
-        if(len_declaration == len_definition){
-            // printf("TEMPORARY: Equal number of args in Declaration and Definition\n");
-            current_dec = table_element->sym_f->params;
-            current_def = fdef->param_list;
-            while (current_dec && current_def) {
-                if ((int) current_dec->param_type != (int) current_def->p_dec->tsp->type) {
-                    printf("TEMPORARY: Diferentes tipos!!!\n");
-                    ec++;
+    if ((sym_elem = search_symbol(scope_head,fdef->info->id,"Global"))) { //meaning that it found a correct reference
+        if(sym_elem->type == s_function){
+            if (sym_elem->already_defined) {
+                /* Checking if Signature is different*/
+                // Number of parameters
+                current_dec = sym_elem->sym_f->params;
+                while (current_dec) {
+                    len_declaration++;
+                    current_dec = current_dec->next;
+                }
+
+                current_def = fdef->param_list;
+                while(current_def) {
+                    len_definition++;
+                    current_def = current_def->next;
+                }
+
+                // Parameter Types matching
+                if (len_declaration == len_definition){
+                    current_dec = sym_elem->sym_f->params;
+                    current_def = fdef->param_list;
+                    while (current_dec && current_def){
+                        if (current_dec->param_type != (s_types) current_def->p_dec->tsp->type){
+                            dif++;
+                        }
+                        current_dec = current_dec->next;
+                        current_def = current_def->next;
+                    }
+                }
+                // In case of Semantic Error
+                if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){ // Signatures don't match
+                    f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
+                    f_dec->tsp->type = fdef->tsp->type;
+                    f_dec->param_list = fdef->param_list;
+                    printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
+                    print_scope_f_dec(create_sym_f_param(f_dec));
+                    printf(", required ");
+                    print_scope_f_dec(sym_elem->sym_f);
+                    printf(")\n");
+                    free(f_dec->tsp);
+                    free(f_dec);
+                } else {    // Signatures match
+                    printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
                 } 
-                current_dec = current_dec->next;   
-                current_def = current_def->next;   
+            } else { // Caso apenas haja a declaração
+                sym_elem->already_defined = 1;
             }
-        } else {
-            // Acho que isto devia ser conflicting types, de modo que vou comentar
-            struct function_declaration * fdef_dec = (struct function_declaration *) malloc(sizeof(struct function_declaration));
-            fdef_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
-            fdef_dec->tsp->type = fdef->tsp->type;
-            fdef_dec->param_list = fdef->param_list;
-            printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
-            print_scope_f_dec(create_sym_f_param(fdef_dec));
-            printf(", required ");
-            print_scope_f_dec(table_element->sym_f);
-            printf(")\n");
-            ec++;
-            free(fdef_dec->tsp);
-            free(fdef_dec);
+        } else { // Caso não seja uma função aka, seja uma decalaração
+            printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
         }
     } else { //Meaning that it did not find a valid definition
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
@@ -258,7 +255,9 @@ int check_return_type(typespec_type typ, char *name){
 	//TODO check possible errors here
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
-	head->symtab = insert_sym_element(head->symtab, create_sym_element("return", (s_types) typ, NULL, 0, 1));
+    if (head){
+        head->symtab = insert_sym_element(head->symtab, create_sym_element("return", (s_types) typ, NULL, 0, 1));
+    }    
 	return ec; 
 }
 
@@ -266,12 +265,14 @@ int check_param_list(struct parameter_list* pl, char* name){
 	//TODO	 check possible errors
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
-	while (pl) {
-        if (pl->p_dec->info && pl->p_dec->info->id != NULL) {//TODO this can be fucked
-            head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
-        }
-		pl = pl->next;
-	}
+    if (head){
+        while (pl) {
+            if (pl->p_dec->info && pl->p_dec->info->id != NULL) {//TODO this can be fucked
+                head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
+            }
+		    pl = pl->next;
+	    }
+    }
 	return ec;
 }
 
