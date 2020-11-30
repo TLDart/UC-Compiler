@@ -297,11 +297,11 @@ struct statement* insert_return(struct expression* i_expr, struct oplines* opl){
    
     return new;
 }
-struct statement* insert_if_statement(struct expression* i_expr, struct statement* i_if_body, struct statement* i_else_body){
+struct statement* insert_if_statement(struct expression* i_expr, struct statement* i_if_body, struct statement* i_else_body, struct oplines* opl){
     //printf("inser if\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct if_statement* new_if=(struct if_statement*)malloc(sizeof(struct if_statement));
-
+    new_if->opl = opl;
     new_if->expr = i_expr;
     new_if->if_body = i_if_body;
     new_if->else_body = i_else_body;

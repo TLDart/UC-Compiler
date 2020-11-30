@@ -1,6 +1,19 @@
+int foo(void){
+    return 2;
+}
+int main(void){
+    double a = 2.0;
+
+
+    if( foo()){}
+    return 0;
+}
+
+
+
 // int foo(int, char);
-char foo(void);
-int foo = 1;
+// char foo(void);
+// int foo = 1;
 // int foo = 1;
 // int foo = 1;
 // int foo(int a,void b){}

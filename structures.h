@@ -86,6 +86,7 @@ struct statement{
 };
 
 struct if_statement{
+    struct oplines* opl;
     struct expression* expr;
     struct statement* if_body;
     struct statement* else_body;

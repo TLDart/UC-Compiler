@@ -431,16 +431,19 @@ int check_if(struct if_statement* head, char* name){
             ec += check_statement(head->if_body, name);
             ec += check_statement(head->else_body, name);
         } else {
-            printf("Line %d, col %d: Conflicting types (got ");
-            if (s_type == s_function){
-                
-            } else {
-
+            printf("Line %d,",head->opl->lines); 
+            if (s_type == s_function){ // case where int f(void){return 0;} if(f){}
+                printf(" col %d: Conflicting types (got ",0);
+                get_expression_type(head->expr,name,true); 
+            } else if (head->expr->expr_t == t_call){
+                printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.c->call_morphs.info->cols);
+                print_s_type(s_type);
+            } else { 
+                printf(" col %d: Conflicting types (got ", get_expression_col(head->expr));
+                print_s_type(s_type);
             }
             printf(", expected int)\n");
-            
         }
-
     }
     return ec;
 }
