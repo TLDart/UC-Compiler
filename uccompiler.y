@@ -59,13 +59,13 @@ int syntax_error_counter = 0;
 /* Tokens */
 
 // Tokens which yylval (Value) is NOT necessary
-%token  CHAR ELSE WHILE INT SHORT DOUBLE VOID
+%token  CHAR ELSE INT SHORT DOUBLE VOID
         LBRACE LPAR   
         RBRACE RPAR SEMI RESERVED SIMPLECOMMENT MLCOMMENTS MLCOMMENTE THEN
 
 // Tokens which yylval (Value) is necessary    
 %token <info>     CHRLIT ID REALLIT INTLIT
-%token <opl> OR AND EQ NE LT GT GE PLUS MINUS MUL DIV MOD ASSIGN COMMA BITWISEAND BITWISEOR BITWISEXOR LE NOT RETURN IF
+%token <opl> OR AND EQ NE LT GT GE PLUS MINUS MUL DIV MOD ASSIGN COMMA BITWISEAND BITWISEOR BITWISEXOR LE NOT RETURN IF WHILE
 
 /* Associativity and Priority of Operators */
 
@@ -154,7 +154,7 @@ Statement:              Expression SEMI                                         
         |               LBRACE kleenClosureStatement RBRACE                         {if(syntax_error_counter == 0){$$=insert_statlist($2);}}
         |               IF LPAR Expression RPAR ErrorOrStat  %prec THEN             {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,NULL,$1);}}
         |               IF LPAR Expression RPAR ErrorOrStat ELSE ErrorOrStat        {if(syntax_error_counter == 0){$$=insert_if_statement($3,$5,$7,$1);}}
-        |               WHILE LPAR Expression RPAR ErrorOrStat                      {if(syntax_error_counter == 0){$$=insert_while_statement($3,$5);}}
+        |               WHILE LPAR Expression RPAR ErrorOrStat                      {if(syntax_error_counter == 0){$$=insert_while_statement($3,$5,$1);}}
         |               RETURN SEMI                                                 {if(syntax_error_counter == 0){$$=insert_return(NULL,$1);}}
         |               RETURN Expression SEMI                                      {if(syntax_error_counter == 0){$$=insert_return($2,$1);}}
         |               LBRACE error RBRACE                                         {if(syntax_error_counter == 0){$$=NULL;}}

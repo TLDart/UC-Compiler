@@ -312,11 +312,11 @@ struct statement* insert_if_statement(struct expression* i_expr, struct statemen
     return new;
 }
 
-struct statement* insert_while_statement(struct expression* i_expr, struct statement* i_while_body){
+struct statement* insert_while_statement(struct expression* i_expr, struct statement* i_while_body, struct oplines* opl){
     //printf("hello\n");
     struct statement* new=(struct statement*)malloc(sizeof(struct statement));
     struct while_statement* new_while=(struct while_statement*)malloc(sizeof(struct while_statement));
-
+    new_while->opl = opl;
     new_while->expr = i_expr;
     new_while->while_body = i_while_body;
     new->type = t_while;

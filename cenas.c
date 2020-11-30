@@ -1,7 +1,8 @@
-double foo(void);
+int foo(int a){
+    return 2;
+}
 int main(void){
-    if(1.2 + foo){} // error: invalid operands to binary + (have ‘double’ and ‘double (*)(void)’)
-    return 0;
+    if (1.2 <= foo) {}
 }
 
 // double foo(void){

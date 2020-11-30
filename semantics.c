@@ -425,9 +425,11 @@ int check_if(struct if_statement* head, char* name){
     int ec = 0;
     s_types s_type;
     if(head != NULL){
+        ec += check_expression(head->expr, name);
         s_type = get_expression_type(head->expr,name,false);
-        if (s_type == s_char || s_type == s_short || s_type == s_int) {
-            ec += check_expression(head->expr, name);
+        if (s_type == s_undef && head->expr->expr_t == t_op2){
+            // Já deu erro, não vai dar again
+        } else if (s_type == s_char || s_type == s_short || s_type == s_int) {
             ec += check_statement(head->if_body, name);
             ec += check_statement(head->else_body, name);
         } else {
@@ -447,14 +449,35 @@ int check_if(struct if_statement* head, char* name){
     }
     return ec;
 }
+
 int check_while(struct while_statement* head, char* name){
     int ec = 0;
+    s_types s_type;
     if(head != NULL){
         ec += check_expression(head->expr, name);
-        ec += check_statement(head->while_body, name);
+        s_type = get_expression_type(head->expr,name,false);
+         if (s_type == s_undef && head->expr->expr_t == t_op2){
+            // Já deu erro, não vai dar again
+        } else if (s_type == s_char || s_type == s_short || s_type == s_int) {
+            ec += check_statement(head->while_body, name);
+        } else {
+            printf("Line %d,",head->opl->lines); 
+            if (s_type == s_function){ // case where int f(void){return 0;} if(f){}
+                printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.t->info->cols);
+                get_expression_type(head->expr,name,true); 
+            } else if (head->expr->expr_t == t_call){
+                printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.c->call_morphs.info->cols);
+                print_s_type(s_type);
+            } else { 
+                printf(" col %d: Conflicting types (got ", get_expression_col(head->expr));
+                print_s_type(s_type);
+            }
+            printf(", expected int)\n");
+        }
     }
     return ec;
 }
+
 int check_statlist(struct statlist_statement* head, char* name){
     int ec = 0;
     if(head != NULL){
@@ -488,12 +511,69 @@ int check_op1(struct op1* op, char* name) {
     return ec;
 }
 
-//TODO: Compatibilidade de Operadores
 int check_op2(struct op2* op, char* name) {
     int ec = 0;
+    struct sym_element* sym_elem = NULL;
     if (op != NULL){
         ec += check_expression(op->exp1, name);
         ec += check_expression(op->exp2, name);
+        s_types exp1_s_type = get_expression_type(op->exp1,name,false);
+        s_types exp2_s_type = get_expression_type(op->exp2,name,false);
+        if (exp1_s_type == s_undef || exp2_s_type == s_undef) {
+            // Já deu erro, não vai dar again
+        } else {
+            switch (op->type) {
+                /* Os que não podem receber um double como argumento */
+                case t_mod: case t_or: case t_and: case t_bitwiseand:
+                case t_bitwiseor: case t_bitwisexor:
+                    if (exp1_s_type != s_int || exp1_s_type != s_int ||
+                        exp1_s_type != s_short || exp1_s_type != s_short ||
+                        exp1_s_type != s_char || exp1_s_type != s_char) {
+                       
+                        printf("Line %d, col %d: Operator ",op->lines,op->cols);
+                        print_op2_symbol(op->type);
+                        printf(" cannot be applied to types ");
+                        print_s_type(get_expression_type(op->exp1,name,true));
+                        printf(", "); 
+                        print_s_type(get_expression_type(op->exp2,name,true));
+                        printf("\n"); 
+                    }
+                    break;
+                case t_le: case t_lt: case t_eq: case t_ne: case t_ge: case t_gt:
+                case t_add: case t_sub: case t_mul: case t_div: case t_comma:
+                    if (exp1_s_type == s_function || exp2_s_type == s_function) {
+                        printf("Line %d, col %d: Operator ",op->lines,op->cols);
+                        print_op2_symbol(op->type);
+                        printf(" cannot be applied to types ");
+                        print_s_type(get_expression_type(op->exp1,name,true));
+                        printf(", "); 
+                        print_s_type(get_expression_type(op->exp2,name,true));
+                        printf("\n"); 
+                    }
+                    break;
+                case t_store:
+                    if (op->exp1->expr_t == t_term) {
+                        if (op->exp1->expression_morphs.t->type == t_id) {
+                            if (!(sym_elem = search_symbol(scope_head, op->exp1->expression_morphs.t->info->id,name))){
+                                printf("Line %d, col %d: Unknown symbol %s\n",op->exp1->expression_morphs.t->info->lines,op->exp1->expression_morphs.t->info->cols,op->exp1->expression_morphs.t->info->id);
+                            } else if (sym_elem->type == s_function){
+                                printf("Line %d, col %d: Operator ",op->lines,op->cols);
+                                print_op2_symbol(op->type);
+                                printf(" cannot be applied to types ");
+                                print_s_type(get_expression_type(op->exp1,name,true));
+                                printf(", "); 
+                                print_s_type(get_expression_type(op->exp2,name,true));
+                                printf("\n"); 
+                            }
+                        } else {
+                            printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
+                        }
+                    } else {
+                        printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
+                    }
+                    break;
+            }
+        }
     }
     return ec;
 }

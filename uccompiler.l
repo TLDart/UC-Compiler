@@ -86,7 +86,7 @@ MLCOMMENTE      "*/"
 
 {CHAR}                                                      {if(verbose) printf("CHAR\n"); columns += yyleng; if(mf) return CHAR;}
 {ELSE}                                                      {if(verbose) printf("ELSE\n"); columns += yyleng; if(mf) return ELSE;}
-{WHILE}                                                     {if(verbose) printf("WHILE\n"); columns += yyleng; if(mf) return WHILE;}
+{WHILE}                                                     {if(verbose) printf("WHILE\n"); columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return WHILE;}
 {IF}                                                        {if(verbose) printf("IF\n"); columns += yyleng;yylval.opl = getopl(lines,columns - yyleng); if(mf) return IF;}
 {INT}                                                       {if(verbose) printf("INT\n"); columns += yyleng; if(mf) return INT;}
 {SHORT}                                                     {if(verbose) printf("SHORT\n");columns += yyleng; if(mf) return SHORT;}

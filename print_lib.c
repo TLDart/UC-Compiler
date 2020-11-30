@@ -464,6 +464,65 @@ void print_s_type(s_types s){
         }
 }
 
+void print_op2_symbol(op2_type type){
+    switch (type){
+        case t_or:
+            printf("||");
+            break;
+        case t_and:
+            printf("&&");
+            break;
+        case t_eq:
+            printf("==");
+            break;
+        case t_ne:
+            printf("!=");
+            break;
+        case t_lt:
+            printf("<");
+            break;
+        case t_gt:
+            printf(">");
+            break;
+        case t_ge:
+            printf(">=");
+            break;
+        case t_add:
+            printf("+");
+            break;
+        case t_sub:
+            printf("-");
+            break;
+        case t_mul:
+            printf("*");
+            break;
+        case t_div:
+            printf("/");
+            break;
+        case t_mod:
+            printf("%%");
+            break;
+        case t_store:
+            printf("=");
+            break;
+        case t_comma:
+            printf(",");
+            break;
+        case t_bitwiseand:
+            printf("&");  
+            break;
+        case t_bitwisexor:
+            printf("^");
+            break;
+        case t_bitwiseor:
+            printf("|");
+            break;
+        case t_le:
+            printf("<=");
+            break;
+    }
+}
+
 //======================================================================================
 s_types get_expression_type(struct expression* exp, char* local_scope_name, int print_func){
     if (exp){
@@ -493,8 +552,20 @@ s_types get_op1_type(struct op1* op, char* local_scope_name, int print_func) {
     
 
 s_types get_op2_type(struct op2* op, char* local_scope_name, int print_func){
-    s_types t_exp1 = get_expression_type(op->exp1, local_scope_name, print_func);
-    s_types t_exp2 = get_expression_type(op->exp2, local_scope_name, print_func);
+    s_types t_exp1 = get_expression_type(op->exp1, local_scope_name, false);
+    s_types t_exp2 = get_expression_type(op->exp2, local_scope_name, false);
+    // Se um for undef ou se um for s_function
+    if (t_exp1 == s_undef || t_exp2 == s_undef){
+        return s_undef;
+    } else {
+        if (t_exp1 != s_function){
+            get_expression_type(op->exp1, local_scope_name, print_func);
+        }
+        if (t_exp2 != s_function) {
+            get_expression_type(op->exp2, local_scope_name, print_func);
+        }
+        return s_undef;
+    }
     switch (op->type) {
         case t_or: case t_and: case t_eq:case t_ne: case t_lt: case t_gt: case t_ge:
         case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le: case t_mod:
@@ -527,7 +598,6 @@ s_types get_op2_type(struct op2* op, char* local_scope_name, int print_func){
                     return s_undef;
                 }
             }
-
     }
     // printf("Não devia ter acontecido!!\n");
     return s_undef;  
@@ -574,3 +644,4 @@ s_types get_id_type(char* id, char* local_scope_name, int print_func){
     // printf("Nao devia chegar aqui!!\n");
     return s_undef;
 }
+

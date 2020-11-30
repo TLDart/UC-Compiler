@@ -97,6 +97,7 @@ struct return_statement{
 };
 
 struct while_statement{
+    struct oplines* opl;
     struct expression* expr;
     struct statement* while_body;
 };
