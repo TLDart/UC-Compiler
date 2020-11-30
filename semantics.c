@@ -193,7 +193,7 @@ int check_dec(struct declaration* dec, char *name){
                 } else {    // case type different from void
                     if (compare_types(current->tsp->type,(s_type = get_expression_type(current->decl->expr,name,false)))) {
                         printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
-                        print_s_type(s_type);
+                        print_s_type(get_expression_type(current->decl->expr,name,true));
                         printf(", expected ");
                         print_s_type((s_types) current->tsp->type);
                         printf(")\n");
@@ -394,8 +394,6 @@ int check_statement(struct statement* head, char* name){
     return ec;
 }
 
-//TODO: return (2.4);
-//TODO: got void(void) expected void
 int check_return(struct return_statement* rs, char* name) {
     int ec = 0;
     int lines = 0;
@@ -411,7 +409,7 @@ int check_return(struct return_statement* rs, char* name) {
                 cols = get_expression_col(rs->expr);
             }
             printf("Line %d, col %d: Conflicting types (got ",lines, cols);
-            print_s_type(s_type);
+            print_s_type(get_expression_type(rs->expr,name,true));
             printf(", expected ");
             print_s_type(sym_elem->sym_f->return_value);
             printf(")\n");
@@ -427,9 +425,10 @@ int check_if(struct if_statement* head, char* name){
     if(head != NULL){
         ec += check_expression(head->expr, name);
         s_type = get_expression_type(head->expr,name,false);
-        if (s_type == s_undef && head->expr->expr_t == t_op2){
+        /*if (s_type == s_undef && head->expr->expr_t == t_op2){
             // Já deu erro, não vai dar again
-        } else if (s_type == s_char || s_type == s_short || s_type == s_int) {
+        } else */
+        if (s_type == s_char || s_type == s_short || s_type == s_int) {
             ec += check_statement(head->if_body, name);
             ec += check_statement(head->else_body, name);
         } else {
@@ -456,9 +455,9 @@ int check_while(struct while_statement* head, char* name){
     if(head != NULL){
         ec += check_expression(head->expr, name);
         s_type = get_expression_type(head->expr,name,false);
-         if (s_type == s_undef && head->expr->expr_t == t_op2){
+         /*if (s_type == s_undef && head->expr->expr_t == t_op2){
             // Já deu erro, não vai dar again
-        } else if (s_type == s_char || s_type == s_short || s_type == s_int) {
+        } else*/ if (s_type == s_char || s_type == s_short || s_type == s_int) {
             ec += check_statement(head->while_body, name);
         } else {
             printf("Line %d,",head->opl->lines); 
@@ -519,9 +518,9 @@ int check_op2(struct op2* op, char* name) {
         ec += check_expression(op->exp2, name);
         s_types exp1_s_type = get_expression_type(op->exp1,name,false);
         s_types exp2_s_type = get_expression_type(op->exp2,name,false);
-        if (exp1_s_type == s_undef || exp2_s_type == s_undef) {
+        /*if (exp1_s_type == s_undef || exp2_s_type == s_undef) {
             // Já deu erro, não vai dar again
-        } else {
+        } else {*/
             switch (op->type) {
                 /* Os que não podem receber um double como argumento */
                 case t_mod: case t_or: case t_and: case t_bitwiseand:
@@ -552,18 +551,20 @@ int check_op2(struct op2* op, char* name) {
                     }
                     break;
                 case t_store:
+                    if (exp1_s_type == s_function || exp2_s_type == s_function){
+                        printf("Line %d, col %d: Operator ",op->lines,op->cols);
+                        print_op2_symbol(op->type);
+                        printf(" cannot be applied to types ");
+                        print_s_type(get_expression_type(op->exp1,name,true));
+                        printf(", "); 
+                        print_s_type(get_expression_type(op->exp2,name,true));
+                        printf("\n"); 
+                    }
                     if (op->exp1->expr_t == t_term) {
                         if (op->exp1->expression_morphs.t->type == t_id) {
                             if (!(sym_elem = search_symbol(scope_head, op->exp1->expression_morphs.t->info->id,name))){
+                                //TODO: remover isto e passar para o check_term - aqui não faz nada
                                 printf("Line %d, col %d: Unknown symbol %s\n",op->exp1->expression_morphs.t->info->lines,op->exp1->expression_morphs.t->info->cols,op->exp1->expression_morphs.t->info->id);
-                            } else if (sym_elem->type == s_function){
-                                printf("Line %d, col %d: Operator ",op->lines,op->cols);
-                                print_op2_symbol(op->type);
-                                printf(" cannot be applied to types ");
-                                print_s_type(get_expression_type(op->exp1,name,true));
-                                printf(", "); 
-                                print_s_type(get_expression_type(op->exp2,name,true));
-                                printf("\n"); 
                             }
                         } else {
                             printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
@@ -573,7 +574,7 @@ int check_op2(struct op2* op, char* name) {
                     }
                     break;
             }
-        }
+        // }
     }
     return ec;
 }
@@ -624,6 +625,9 @@ int get_expression_col(struct expression* exp){
 }
 
 int compare_types(s_types type1, s_types type2){
+    if (type1 == s_function || type2 == s_function ) {
+        return 1;    
+    }
     if (type2 == s_double && (type1 == s_char || type1 == s_short || type1 == s_int)){
         return 1;
     }

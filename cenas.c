@@ -1,9 +1,19 @@
-int foo(int a){
-    return 2;
-}
+double z;
 int main(void){
-    if (1.2 <= foo) {}
+    -(z  ^main);
 }
+
+
+// int foo(int a){}
+// int main(void){
+//     foo=1;
+//     if(foo=2);
+// }
+
+// void v(void);
+// void g0(void){
+//     return v();
+// }
 
 // double foo(void){
 //     return 2.2;
