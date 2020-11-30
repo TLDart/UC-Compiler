@@ -127,14 +127,13 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     return ec;
 }
 
-//TODO: Verificar o type e.g: double a = 'A'; (upcasts e downcasts)
-//TODO: Verificar que void não pode ser void a = 1;
 //TODO: Verificar se não tem void nos params
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
     struct sym_element* sym_elem = NULL;
+    s_types s_type;
     if (s) {
         while(current){
             if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
@@ -143,7 +142,7 @@ int check_dec(struct declaration* dec, char *name){
                 } else if (sym_elem->already_defined) {
                     if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
                         if (current->decl->expr != NULL) { // Current defined
-                            printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                            printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
                         }
                     } else { // case [char foo = 1; int foo = 1;]
                         printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
@@ -165,7 +164,20 @@ int check_dec(struct declaration* dec, char *name){
                 }
                 
             } else {
-                s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
+                if ((s_types) current->tsp->type == s_void){ // case void a = 1;
+                    printf("Line %d, col %d: Invalid use of void type in declaration\n",current->decl->info->lines,current->decl->info->cols);
+                } else {    // case type different from void
+                    if (compare_types(current->tsp->type,(s_type = get_expression_type(current->decl->expr,name)))) {
+                        printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
+                        print_s_type(s_type);
+                        printf(", expected ");
+                        print_s_type((s_types) current->tsp->type);
+                        printf(")\n");
+                    }
+                    
+                    s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
+                }
+                
             }
             current = current->next;
         }
@@ -265,14 +277,26 @@ int check_return_type(typespec_type typ, char *name){
 	return ec; 
 }
 
-//TODO: check conflicting types int cenas(int a, char a);
 int check_param_list(struct parameter_list* pl, char* name){
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
+    struct sym_element* sym_elem = NULL;
     if (head){
         while (pl) {
             if (pl->p_dec->info && pl->p_dec->info->id != NULL) {
-                head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
+                if (!(sym_elem = search_symbol(scope_head,pl->p_dec->info->id,name))){ // Se não encontrar nenhum simbolo
+                    head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
+                } else {
+                    if (sym_elem->type == (s_types) pl->p_dec->tsp->type){
+                        printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
+                    } else {
+                        printf("Line %d, col %d: Conflicting types (got ",pl->p_dec->info->lines,pl->p_dec->info->cols);
+                        print_s_type((s_types) pl->p_dec->tsp->type);
+                        printf(", required ");
+                        print_s_type(sym_elem->type);
+                        printf(")\n");
+                    }
+                }
             }
 		    pl = pl->next;
 	    }
@@ -318,7 +342,7 @@ int check_statement(struct statement* head, char* name){
 }
 
 //TODO: return (2.4);
-//TODO: downcasts e upcasts e whatever
+//TODO: got void(void) expected void
 int check_return(struct return_statement* rs, char* name) {
     int ec = 0;
     int lines = 0;
