@@ -81,6 +81,19 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     struct sym_element* sym_elem = NULL;
     struct sym_f_param* current_first;
     struct parameter_list* current_second;
+    // Check for void type
+    current_second = f_dec->param_list;
+    while (current_second){
+        counter++;
+        if ((s_types)current_second->p_dec->tsp->type == s_void) {
+            void_param_flag = current_second;
+        }
+        if (void_param_flag && counter > 1){
+            printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
+            return ec; // dont add function to the scope neither create a scope of their own
+        }
+        current_second = current_second->next;
+    }
     if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) { 
         if (sym_elem->type == s_function){ // Case where the same token is a function 
             /* Checking if Signature is different*/
@@ -123,19 +136,6 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
             ec++;
         }
     } else {
-        // case theres a void in the parameters
-        current_second = f_dec->param_list;
-        while (current_second){
-            counter++;
-            if ((s_types)current_second->p_dec->tsp->type == s_void) {
-                void_param_flag = current_second;
-            }
-            if (void_param_flag && counter > 1){
-                printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
-                return ec; // dont add function to the scope neither create a scope of their own
-            }
-            current_second = current_second->next;
-        }
         s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0, 0));
         //create a local scope to respect the order of functions
         create_scope(scope_head, f_dec->info->id);  
@@ -212,6 +212,19 @@ int check_f_def(struct function_definition* fdef){
     struct scope* global_scope = get_scope_by_name(scope_head,"Global");
     struct sym_element* sym_elem = NULL;
     struct function_declaration* f_dec = (struct function_declaration*) malloc(sizeof(struct function_declaration));
+    // Check for void type
+    current_def = fdef->param_list;
+    while (current_def){
+        counter++;
+        if ((s_types)current_def->p_dec->tsp->type == s_void){
+            void_param_flag = current_def;
+        }
+        if (void_param_flag && counter > 1){
+            printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
+            return ec;
+        }
+        current_def = current_def->next;
+    }
     if ((sym_elem = search_symbol(scope_head,fdef->info->id,"Global"))) { //meaning that it found a correct reference
         if(sym_elem->type == s_function){
             if (sym_elem->already_defined) {
@@ -262,23 +275,10 @@ int check_f_def(struct function_definition* fdef){
                 ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
                 ec += check_f_body(fdef->f_body,fdef->info->id);
             }
-        } else { // Caso não seja uma função aka, seja uma decalaração
+        } else { // Caso não seja uma função aka, seja uma declaração
             printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
         }
     } else { //Meaning that it did not find a valid definition
-        current_def = fdef->param_list;
-        while (current_def){
-            counter++;
-            if ((s_types)current_def->p_dec->tsp->type == s_void){
-                void_param_flag = current_def;
-            }
-            if (void_param_flag && counter > 1){
-                printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
-                return ec;
-            }
-            current_def = current_def->next;
-        }
-        
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
         tpsp->type = fdef->tsp->type;
         tpsp->lines = fdef->tsp->lines;
