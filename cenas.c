@@ -4,9 +4,9 @@ int main(void){
     return 0;
 }
 
-double foo(void){
-    return 2.2;
-}
+// double foo(void){
+//     return 2.2;
+// }
 
 // int foo(int, char);
 // char foo(void);

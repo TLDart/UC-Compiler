@@ -479,8 +479,8 @@ int check_expression(struct expression* exp, char* name){
     return 0;
 }
 
+//TODO: Compatibilidade de Operadores
 int check_op1(struct op1* op, char* name) {
-    //TODO: Compatibilidade de Operadores
     int ec = 0;
     if (op != NULL){
         ec += check_expression(op->exp, name);
@@ -488,8 +488,8 @@ int check_op1(struct op1* op, char* name) {
     return ec;
 }
 
+//TODO: Compatibilidade de Operadores
 int check_op2(struct op2* op, char* name) {
-    //TODO: Compatibilidade de Operadores
     int ec = 0;
     if (op != NULL){
         ec += check_expression(op->exp1, name);
@@ -498,6 +498,7 @@ int check_op2(struct op2* op, char* name) {
     return ec;
 }
 
+//TODO: Unknown symbol i think
 int check_terminal(struct terminal* t, char* name) {
     if (t == NULL) {
         printf("TEMPORARY Falta o terminal para o operador!\n");
@@ -505,12 +506,16 @@ int check_terminal(struct terminal* t, char* name) {
     }
     return 0;
 }
-
+//TODO: wrong number of args to func | symbol is not a func
 int check_call(struct call* c, char* name) {
     int ec = 0;
     while(c) {
         switch (c->ct) {
             case call_name:
+                if (/* se c->call_morphs.info->id não for uma func, symbol is not a func */1){
+                    /* code */
+                }
+                
                 ec += (c->call_morphs.info->id == NULL ? 1 : 0);
                 break;
             case call_exp:
