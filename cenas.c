@@ -1,10 +1,10 @@
-int foo(int a){
-    return 2;
-}
+int cenas(void);
 int main(void){
-    if ((1.2 + foo) <= not_found){}
+    !cenas;
+    +cenas;
+    -cenas;
 }
-
+// int 
 // int cenas(void);
 // int main(void){
 //     !cenas;

@@ -555,11 +555,13 @@ s_types get_expression_type(struct expression* exp, char* local_scope_name, int 
 }
 
 s_types get_op1_type(struct op1* op, char* local_scope_name, int print_func) {
+    s_types s_type;
     switch (op->type){
         case t_not:
             return s_int;
         default:
-            return get_expression_type(op->exp,local_scope_name, print_func);
+            s_type = get_expression_type(op->exp,local_scope_name, false);
+            return (s_type == s_function) ? s_undef : get_expression_type(op->exp,local_scope_name, print_func);
     }
 }
     
