@@ -433,7 +433,7 @@ int check_if(struct if_statement* head, char* name){
         } else {
             printf("Line %d,",head->opl->lines); 
             if (s_type == s_function){ // case where int f(void){return 0;} if(f){}
-                printf(" col %d: Conflicting types (got ",0);
+                printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.t->info->cols);
                 get_expression_type(head->expr,name,true); 
             } else if (head->expr->expr_t == t_call){
                 printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.c->call_morphs.info->cols);

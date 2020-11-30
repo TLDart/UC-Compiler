@@ -495,7 +495,6 @@ s_types get_op1_type(struct op1* op, char* local_scope_name, int print_func) {
 s_types get_op2_type(struct op2* op, char* local_scope_name, int print_func){
     s_types t_exp1 = get_expression_type(op->exp1, local_scope_name, print_func);
     s_types t_exp2 = get_expression_type(op->exp2, local_scope_name, print_func);
-
     switch (op->type) {
         case t_or: case t_and: case t_eq:case t_ne: case t_lt: case t_gt: case t_ge:
         case t_bitwiseand: case t_bitwisexor: case t_bitwiseor: case t_le: case t_mod:

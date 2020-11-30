@@ -1,15 +1,12 @@
-int foo(void){
-    return 2;
-}
+double foo(void);
 int main(void){
-    double a = 2.0;
-
-
-    if( foo()){}
+    if(1.2 + foo){} // error: invalid operands to binary + (have ‘double’ and ‘double (*)(void)’)
     return 0;
 }
 
-
+double foo(void){
+    return 2.2;
+}
 
 // int foo(int, char);
 // char foo(void);
