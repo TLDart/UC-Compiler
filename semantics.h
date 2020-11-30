@@ -28,5 +28,6 @@ int check_terminal(struct terminal* t, char* name);
 int check_call(struct call* c, char* name);
 
 int get_expression_col(struct expression* exp);
+int count_call_params(struct call* head);
 int compare_types(s_types type1, s_types type2);
 #endif

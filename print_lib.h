@@ -45,6 +45,7 @@ void print_sym_element(struct sym_element* s_el);
 void print_scope_f_dec(struct sym_function* sf);
 void print_s_type(s_types s);
 
+void print_op1_symbol(op1_type type);
 void print_op2_symbol(op2_type type);
 // gets for Print AST-noted 
 s_types get_expression_type(struct expression* exp, char* local_scope_name, int print_func);

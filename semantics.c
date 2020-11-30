@@ -236,33 +236,33 @@ int check_f_def(struct function_definition* fdef){
     }
     if ((sym_elem = search_symbol(scope_head,fdef->info->id,"Global"))) { //meaning that it found a correct reference
         if(sym_elem->type == s_function){
-            if (sym_elem->already_defined) {
-                /* Checking if Signature is different*/
-                // Number of parameters
-                current_dec = sym_elem->sym_f->params;
-                while (current_dec) {
-                    len_declaration++;
-                    current_dec = current_dec->next;
-                }
+            /* Checking if Signature is different*/
+            // Number of parameters
+            current_dec = sym_elem->sym_f->params;
+            while (current_dec) {
+                len_declaration++;
+                current_dec = current_dec->next;
+            }
 
+            current_def = fdef->param_list;
+            while(current_def) {
+                len_definition++;
+                current_def = current_def->next;
+            }
+
+            // Parameter Types matching
+            if (len_declaration == len_definition){
+                current_dec = sym_elem->sym_f->params;
                 current_def = fdef->param_list;
-                while(current_def) {
-                    len_definition++;
+                while (current_dec && current_def){
+                    if (current_dec->param_type != (s_types) current_def->p_dec->tsp->type){
+                        dif++;
+                    }
+                    current_dec = current_dec->next;
                     current_def = current_def->next;
                 }
-
-                // Parameter Types matching
-                if (len_declaration == len_definition){
-                    current_dec = sym_elem->sym_f->params;
-                    current_def = fdef->param_list;
-                    while (current_dec && current_def){
-                        if (current_dec->param_type != (s_types) current_def->p_dec->tsp->type){
-                            dif++;
-                        }
-                        current_dec = current_dec->next;
-                        current_def = current_def->next;
-                    }
-                }
+            }
+            if (sym_elem->already_defined) {
                 // In case of Semantic Error
                 if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){ // Signatures don't match
                     f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
@@ -279,10 +279,23 @@ int check_f_def(struct function_definition* fdef){
                     printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
                 } 
             } else { // Caso apenas haja a declaração
-                sym_elem->already_defined = 1;
-                ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
-                ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
-                ec += check_f_body(fdef->f_body,fdef->info->id);
+                if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){
+                    f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
+                    f_dec->tsp->type = fdef->tsp->type;
+                    f_dec->param_list = fdef->param_list;
+                    printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
+                    print_scope_f_dec(create_sym_f_param(f_dec));
+                    printf(", expected ");
+                    print_scope_f_dec(sym_elem->sym_f);
+                    printf(")\n");
+                    free(f_dec->tsp);
+                    free(f_dec);
+                } else {
+                    sym_elem->already_defined = 1;
+                    ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
+                    ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
+                    ec += check_f_body(fdef->f_body,fdef->info->id);
+                }
             }
         } else { // Caso não seja uma função aka, seja uma declaração
             // printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
@@ -334,10 +347,11 @@ int check_param_list(struct parameter_list* pl, char* name){
 	int ec = 0;
 	struct scope *head = get_scope_by_name(scope_head,name);
     struct sym_element* sym_elem = NULL;
+    struct scope* aux_scope = NULL;
     if (head){
         while (pl) {
             if (pl->p_dec->info && pl->p_dec->info->id != NULL) {
-                if (!(sym_elem = search_symbol(scope_head,pl->p_dec->info->id,name))){ // Se não encontrar nenhum simbolo
+                if(!((aux_scope = get_scope_by_name(head,name)) && (sym_elem = get_token_by_name(aux_scope->symtab,pl->p_dec->info->id)))){// Se não encontrar nenhum simbolo no contexto local aka na própria param list
                     head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
                 } else {
                     if (sym_elem->type == (s_types) pl->p_dec->tsp->type){
@@ -501,11 +515,18 @@ int check_expression(struct expression* exp, char* name){
     return 0;
 }
 
-//TODO: Compatibilidade de Operadores
 int check_op1(struct op1* op, char* name) {
     int ec = 0;
     if (op != NULL){
         ec += check_expression(op->exp, name);
+        s_types exp_type = get_expression_type(op->exp, name, false);
+        if (exp_type == s_function){
+            printf("Line %d, col %d: Operator ",op->lines,op->cols);
+            print_op1_symbol(op->type);
+            printf(" cannot be applied to type ");
+            print_s_type(get_expression_type(op->exp, name, true));
+            printf("\n");
+        }
     }
     return ec;
 }
@@ -525,10 +546,7 @@ int check_op2(struct op2* op, char* name) {
                 /* Os que não podem receber um double como argumento */
                 case t_mod: case t_or: case t_and: case t_bitwiseand:
                 case t_bitwiseor: case t_bitwisexor:
-                    if (exp1_s_type != s_int || exp1_s_type != s_int ||
-                        exp1_s_type != s_short || exp1_s_type != s_short ||
-                        exp1_s_type != s_char || exp1_s_type != s_char) {
-                       
+                    if (exp1_s_type == s_double || exp2_s_type == s_double || exp1_s_type == s_function || exp2_s_type == s_function) {
                         printf("Line %d, col %d: Operator ",op->lines,op->cols);
                         print_op2_symbol(op->type);
                         printf(" cannot be applied to types ");
@@ -551,7 +569,7 @@ int check_op2(struct op2* op, char* name) {
                     }
                     break;
                 case t_store:
-                    if (exp1_s_type == s_function || exp2_s_type == s_function){
+                    if (((exp1_s_type != s_double) && (exp2_s_type == s_double)) || exp1_s_type == s_function || exp2_s_type == s_function){
                         printf("Line %d, col %d: Operator ",op->lines,op->cols);
                         print_op2_symbol(op->type);
                         printf(" cannot be applied to types ");
@@ -566,10 +584,10 @@ int check_op2(struct op2* op, char* name) {
                                 //TODO: remover isto e passar para o check_term - aqui não faz nada
                             }
                         } else {
-                            printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
+                            printf("Line %d, col %d: Lvalue required\n",op->lines, get_expression_col(op->exp1));
                         }
                     } else {
-                        printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
+                        printf("Line %d, col %d: Lvalue required\n",op->lines,get_expression_col(op->exp1));
                     }
                     break;
             }
@@ -585,17 +603,35 @@ int check_terminal(struct terminal* t, char* name) {
     }
     return 0;
 }
-//TODO: wrong number of args to func | symbol is not a func
+
+//TODO: int foo(int, char); foo(1,2.2);
+//TODO: unknown ou is not a function?
 int check_call(struct call* c, char* name) {
     int ec = 0;
+    int required_args = 0;
+    int got_args = 0;
+    struct sym_element* sym_elem = NULL; 
+    struct sym_f_param* current_sym_param = NULL;
     while(c) {
         switch (c->ct) {
-            case call_name:
-                if (/* se c->call_morphs.info->id não for uma func, symbol is not a func */1){
-                    /* code */
+            case call_name: 
+                if ((sym_elem = search_symbol(scope_head, c->call_morphs.info->id, name))){
+                    if (sym_elem->type != s_function) {
+                        printf("Line %d, col %d: Symbol %s is not a function\n", c->call_morphs.info->lines, c->call_morphs.info->cols, c->call_morphs.info->id);
+                    } else { // é uma função e portanto é necessário ver se não dá wrong number of args
+                        current_sym_param = sym_elem->sym_f->params;
+                        while(current_sym_param){
+                            required_args++;
+                            current_sym_param = current_sym_param->next;
+                        }
+                        if ((got_args = count_call_params(c)) != required_args){
+                            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n", c->call_morphs.info->lines, c->call_morphs.info->cols,c->call_morphs.info->id,got_args,required_args);
+                        }
+                    }
+                    
+                } else { // Se o simbolo não for encontrado
+                    printf("Line %d, col %d: Unknown symbol %s\n", c->call_morphs.info->lines, c->call_morphs.info->cols,c->call_morphs.info->id);
                 }
-                
-                ec += (c->call_morphs.info->id == NULL ? 1 : 0);
                 break;
             case call_exp:
                 ec += check_expression(c->call_morphs.exp, name);
@@ -620,6 +656,21 @@ int get_expression_col(struct expression* exp){
             return exp->expression_morphs.t->info->cols;
     }
     return -1;
+}
+
+int count_call_params(struct call* head){
+    int counter = 0;
+    while (head){
+        switch (head->ct) {
+            case call_name:
+                break;
+            case call_exp:
+                counter++;
+                break;
+        }
+        head = head->next_arg;
+    }
+    return counter;
 }
 
 int compare_types(s_types type1, s_types type2){

@@ -1,9 +1,15 @@
-int foo(int a){
-    return 2;
-}
-int main(void){
-    if ((1.2 + foo) <= foo){}
-}
+int main(void);
+int main(void){}
+int cenas(int, double, char);
+int cenas(double, int, double);
+int cenas(double a, int b, double c){return 0;}
+// int foo(int a){
+//     return 2;
+// }
+// int main(void){
+//     f();
+
+// }
 // int main(void){foo,foo;
 // }
 
