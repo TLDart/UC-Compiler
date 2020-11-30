@@ -69,7 +69,6 @@ void insert_default_values(struct scope* head){
 	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0,1));
 }
 
-//TODO: Verificar se não tem void nos params
 int check_f_dec(struct function_declaration* f_dec, char *name){
     int ec = 0;
     int dif = 0;
@@ -126,13 +125,18 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
             if ((sym_elem->sym_f->return_value != (s_types) f_dec->tsp->type) || (len_fdec_func != len_symbol_param) || (dif > 0)){
                 printf("Line %d, col %d: Conflicting types (got ",f_dec->info->lines,f_dec->info->cols);
                 print_scope_f_dec(create_sym_f_param(f_dec));
-                printf(", required ");
+                printf(", expected ");
                 print_scope_f_dec(sym_elem->sym_f);
                 printf(")\n");
                 ec++;
             }      
         } else { // Case where the same token is not a function 
-            printf("Line %d, col %d: Symbol %s already defined\n",f_dec->info->lines,f_dec->info->cols,f_dec->info->id);
+            // printf("Line %d, col %d: Symbol %s already defined\n",f_dec->info->lines,f_dec->info->cols,f_dec->info->id);
+            printf("Line %d, col %d: Conflicting types (got ",f_dec->info->lines,f_dec->info->cols);
+            print_scope_f_dec(create_sym_f_param(f_dec));
+            printf(", expected ");
+            print_s_type(sym_elem->type);
+            printf(")\n");
             ec++;
         }
     } else {
@@ -153,7 +157,12 @@ int check_dec(struct declaration* dec, char *name){
         while(current){
             if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
                 if (sym_elem->type == s_function){
-                    printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                    // printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
+                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                    print_s_type((s_types) current->tsp->type);
+                    printf(", expected ");
+                    print_scope_f_dec(sym_elem->sym_f);
+                    printf(")\n");
                 } else if (sym_elem->already_defined) {
                     if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
                         if (current->decl->expr != NULL) { // Current defined
@@ -261,7 +270,7 @@ int check_f_def(struct function_definition* fdef){
                     f_dec->param_list = fdef->param_list;
                     printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
                     print_scope_f_dec(create_sym_f_param(f_dec));
-                    printf(", required ");
+                    printf(", expected ");
                     print_scope_f_dec(sym_elem->sym_f);
                     printf(")\n");
                     free(f_dec->tsp);
@@ -276,7 +285,17 @@ int check_f_def(struct function_definition* fdef){
                 ec += check_f_body(fdef->f_body,fdef->info->id);
             }
         } else { // Caso não seja uma função aka, seja uma declaração
-            printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
+            // printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
+            f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
+            f_dec->tsp->type = fdef->tsp->type;
+            f_dec->param_list = fdef->param_list;
+            printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
+            print_scope_f_dec(create_sym_f_param(f_dec));
+            printf(", expected ");
+            print_s_type(sym_elem->type);
+            printf(")\n");
+            free(f_dec->tsp);
+            free(f_dec);
         }
     } else { //Meaning that it did not find a valid definition
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
@@ -326,7 +345,7 @@ int check_param_list(struct parameter_list* pl, char* name){
                     } else {
                         printf("Line %d, col %d: Conflicting types (got ",pl->p_dec->info->lines,pl->p_dec->info->cols);
                         print_s_type((s_types) pl->p_dec->tsp->type);
-                        printf(", required ");
+                        printf(", expected ");
                         print_s_type(sym_elem->type);
                         printf(")\n");
                     }
