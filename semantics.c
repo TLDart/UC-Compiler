@@ -191,7 +191,7 @@ int check_dec(struct declaration* dec, char *name){
                 if ((s_types) current->tsp->type == s_void){ // case void a = 1;
                     printf("Line %d, col %d: Invalid use of void type in declaration\n",current->decl->info->lines,current->decl->info->cols);
                 } else {    // case type different from void
-                    if (compare_types(current->tsp->type,(s_type = get_expression_type(current->decl->expr,name)))) {
+                    if (compare_types(current->tsp->type,(s_type = get_expression_type(current->decl->expr,name,false)))) {
                         printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
                         print_s_type(s_type);
                         printf(", expected ");
@@ -403,7 +403,7 @@ int check_return(struct return_statement* rs, char* name) {
     struct sym_element* sym_elem = search_symbol(scope_head,name,"Global");
     s_types s_type;
     if (rs != NULL) {
-        if (sym_elem && (sym_elem->type == s_function) && compare_types(sym_elem->sym_f->return_value,(s_type = get_expression_type(rs->expr,name)))){
+        if (sym_elem && (sym_elem->type == s_function) && compare_types(sym_elem->sym_f->return_value,(s_type = get_expression_type(rs->expr,name,false)))){
             lines = rs->opl->lines;
             if (s_type == s_void) { // fica o erro no 'r' do return
                 cols = rs->opl->cols;
@@ -423,10 +423,24 @@ int check_return(struct return_statement* rs, char* name) {
 
 int check_if(struct if_statement* head, char* name){
     int ec = 0;
+    s_types s_type;
     if(head != NULL){
-        ec += check_expression(head->expr, name);
-        ec += check_statement(head->if_body, name);
-        ec += check_statement(head->else_body, name);
+        s_type = get_expression_type(head->expr,name,false);
+        if (s_type == s_char || s_type == s_short || s_type == s_int) {
+            ec += check_expression(head->expr, name);
+            ec += check_statement(head->if_body, name);
+            ec += check_statement(head->else_body, name);
+        } else {
+            printf("Line %d, col %d: Conflicting types (got ");
+            if (s_type == s_function){
+                
+            } else {
+
+            }
+            printf(", expected int)\n");
+            
+        }
+
     }
     return ec;
 }

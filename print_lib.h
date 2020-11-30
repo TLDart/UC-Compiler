@@ -8,6 +8,9 @@
 #include "structures.h"
 #include "symbol_table.h"
 
+#define true 1
+#define false 0
+
 extern int ASTnoted;
 extern struct scope* scope_head;
 
@@ -43,11 +46,11 @@ void print_scope_f_dec(struct sym_function* sf);
 void print_s_type(s_types s);
 
 // gets for Print AST-noted 
-s_types get_expression_type(struct expression* exp, char* local_scope_name);
-s_types get_op1_type(struct op1* op, char* local_scope_name);
-s_types get_op2_type(struct op2* op, char* local_scope_name);
-s_types get_terminal_type(struct terminal* t, char* local_scope_name);
-s_types get_call_type(struct call* c, char* local_scope_name);
-s_types get_id_type(char* id, char* local_scope_name);
+s_types get_expression_type(struct expression* exp, char* local_scope_name, int print_func);
+s_types get_op1_type(struct op1* op, char* local_scope_name, int print_func);
+s_types get_op2_type(struct op2* op, char* local_scope_name, int print_func);
+s_types get_terminal_type(struct terminal* t, char* local_scope_name, int print_func);
+s_types get_call_type(struct call* c, char* local_scope_name, int print_func);
+s_types get_id_type(char* id, char* local_scope_name, int print_func);
 
 #endif

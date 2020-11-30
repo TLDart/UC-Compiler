@@ -264,7 +264,7 @@ void print_op1(struct op1* op, int depth,char* local_scope_name){
     //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
-        print_s_type(get_op1_type(op,local_scope_name));
+        print_s_type(get_op1_type(op,local_scope_name, true));
     }
     printf("\n");
     print_expression(op->exp, depth + 1,local_scope_name);
@@ -330,7 +330,7 @@ void print_op2(struct op2* op, int depth, char* local_scope_name){
     //printf("Lines %d Cols %d", op->lines, op->cols);
     if (ASTnoted) {
         printf(" - ");
-        print_s_type(get_op2_type(op,local_scope_name));
+        print_s_type(get_op2_type(op,local_scope_name, true));
     }
     printf("\n");
     print_expression(op->exp1, depth + 1, local_scope_name);
@@ -359,7 +359,7 @@ void print_term(struct terminal* t, int depth, char* local_scope_name){
     }
     if (ASTnoted){
         printf(" - ");
-        print_s_type(get_terminal_type(t,local_scope_name));
+        print_s_type(get_terminal_type(t,local_scope_name,true));
     }
     printf("\n");
 }
@@ -372,14 +372,14 @@ void print_call(struct call* c, int depth, char* local_scope_name){
             if (ASTnoted) {
                 printf(" - ");   
                 // print_s_type(search_symbol(scope_head,current->call_morphs.id, local_scope_name)->sym_f->return_value);
-                print_s_type(get_call_type(current,local_scope_name));   
+                print_s_type(get_call_type(current,local_scope_name,true));   
             }
             printf("\n");
             print_indentation(depth + 1);
             printf("Id(%s)",current->call_morphs.info->id);
             if(ASTnoted){
                 printf(" - ");
-                print_s_type(get_id_type(current->call_morphs.info->id,local_scope_name));
+                print_s_type(get_id_type(current->call_morphs.info->id,local_scope_name,true));
             }
             printf("\n");
         } else if (current->ct == call_exp){
@@ -465,36 +465,36 @@ void print_s_type(s_types s){
 }
 
 //======================================================================================
-s_types get_expression_type(struct expression* exp, char* local_scope_name){
+s_types get_expression_type(struct expression* exp, char* local_scope_name, int print_func){
     if (exp){
         switch (exp->expr_t){
             case t_op1:
-                return get_op1_type(exp->expression_morphs.operation1,local_scope_name);
+                return get_op1_type(exp->expression_morphs.operation1,local_scope_name, print_func);
             case t_op2:
-                return get_op2_type(exp->expression_morphs.operation2,local_scope_name); 
+                return get_op2_type(exp->expression_morphs.operation2,local_scope_name, print_func); 
             case t_term:
-                return get_terminal_type(exp->expression_morphs.t, local_scope_name);
+                return get_terminal_type(exp->expression_morphs.t, local_scope_name, print_func);
             case t_call:
-                return get_call_type(exp->expression_morphs.c, local_scope_name);
+                return get_call_type(exp->expression_morphs.c, local_scope_name, print_func);
         }
         return s_undef;
     }
     return s_void;
 }
 
-s_types get_op1_type(struct op1* op, char* local_scope_name) {
+s_types get_op1_type(struct op1* op, char* local_scope_name, int print_func) {
     switch (op->type){
         case t_not:
             return s_int;
         default:
-            return get_expression_type(op->exp,local_scope_name);
+            return get_expression_type(op->exp,local_scope_name, print_func);
     }
 }
     
 
-s_types get_op2_type(struct op2* op, char* local_scope_name){
-    s_types t_exp1 = get_expression_type(op->exp1, local_scope_name);
-    s_types t_exp2 = get_expression_type(op->exp2, local_scope_name);
+s_types get_op2_type(struct op2* op, char* local_scope_name, int print_func){
+    s_types t_exp1 = get_expression_type(op->exp1, local_scope_name, print_func);
+    s_types t_exp2 = get_expression_type(op->exp2, local_scope_name, print_func);
 
     switch (op->type) {
         case t_or: case t_and: case t_eq:case t_ne: case t_lt: case t_gt: case t_ge:
@@ -534,12 +534,12 @@ s_types get_op2_type(struct op2* op, char* local_scope_name){
     return s_undef;  
 }
 
-s_types get_terminal_type(struct terminal* t, char* local_scope_name){
+s_types get_terminal_type(struct terminal* t, char* local_scope_name, int print_func){
     switch (t->type) {
         case t_charlit:
             return s_int;
         case t_id:
-            return get_id_type(t->info->id,local_scope_name);
+            return get_id_type(t->info->id,local_scope_name, print_func);
         case t_intlit:
             return s_int;
         case t_reallit:
@@ -550,7 +550,7 @@ s_types get_terminal_type(struct terminal* t, char* local_scope_name){
     }
 }
 
-s_types get_call_type(struct call* c, char* local_scope_name){
+s_types get_call_type(struct call* c, char* local_scope_name, int print_func){
     struct sym_element* sym_elem = NULL;
     if ((sym_elem = search_symbol(scope_head,c->call_morphs.info->id, local_scope_name))) {
         return sym_elem->sym_f->return_value;
@@ -559,14 +559,14 @@ s_types get_call_type(struct call* c, char* local_scope_name){
     return s_undef;
 }
 
-s_types get_id_type(char* id, char* local_scope_name){
+s_types get_id_type(char* id, char* local_scope_name, int print_func){
     struct sym_element* sym_elem = NULL;
     if((sym_elem = search_symbol(scope_head,id,local_scope_name))){
         switch (sym_elem->type){
         case s_char: case s_int: case s_void: case s_short: case s_double:
             return sym_elem->type;
         case s_function:
-            print_scope_f_dec(sym_elem->sym_f);
+            if (print_func) print_scope_f_dec(sym_elem->sym_f);
             return s_function;
         default:
             break;
