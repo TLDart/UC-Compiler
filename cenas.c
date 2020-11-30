@@ -1,8 +1,13 @@
+int main(void);
+
 int main(void){
-    char a = 20000000;
     return 0;
 }
-
+// int foo;
+// int foo(int a,char b){return 0;}
+// int foo(int, void, int);
+// int foo(int a, void b, int c){}
+// int foo(int, char);
 // int main1(void){
 //     void a = 1;
 //     return 0;

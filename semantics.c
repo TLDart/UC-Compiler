@@ -69,11 +69,14 @@ void insert_default_values(struct scope* head){
 	head->symtab= insert_sym_element(head->symtab, create_sym_element("getchar", s_function,create_sym_f_param(new), 0,1));
 }
 
+//TODO: Verificar se não tem void nos params
 int check_f_dec(struct function_declaration* f_dec, char *name){
     int ec = 0;
     int dif = 0;
+    int counter = 0;
     int len_symbol_param = 0;
     int len_fdec_func = 0;
+    struct parameter_list* void_param_flag = NULL;
     struct scope* s = get_scope_by_name(scope_head, name);
     struct sym_element* sym_elem = NULL;
     struct sym_f_param* current_first;
@@ -120,6 +123,19 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
             ec++;
         }
     } else {
+        // case theres a void in the parameters
+        current_second = f_dec->param_list;
+        while (current_second){
+            counter++;
+            if ((s_types)current_second->p_dec->tsp->type == s_void) {
+                void_param_flag = current_second;
+            }
+            if (void_param_flag && counter > 1){
+                printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
+                return ec; // dont add function to the scope neither create a scope of their own
+            }
+            current_second = current_second->next;
+        }
         s->symtab= insert_sym_element(s->symtab, create_sym_element(f_dec->info->id, s_function, create_sym_f_param(f_dec), 0, 0));
         //create a local scope to respect the order of functions
         create_scope(scope_head, f_dec->info->id);  
@@ -127,7 +143,6 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     return ec;
 }
 
-//TODO: Verificar se não tem void nos params
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
@@ -190,6 +205,8 @@ int check_f_def(struct function_definition* fdef){
     int len_declaration = 0;
     int len_definition = 0;
     int dif = 0;
+    int counter = 0;
+    struct parameter_list* void_param_flag = NULL;
     struct sym_f_param* current_dec;
     struct parameter_list* current_def;
     struct scope* global_scope = get_scope_by_name(scope_head,"Global");
@@ -241,11 +258,27 @@ int check_f_def(struct function_definition* fdef){
                 } 
             } else { // Caso apenas haja a declaração
                 sym_elem->already_defined = 1;
+                ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
+                ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
+                ec += check_f_body(fdef->f_body,fdef->info->id);
             }
         } else { // Caso não seja uma função aka, seja uma decalaração
             printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
         }
     } else { //Meaning that it did not find a valid definition
+        current_def = fdef->param_list;
+        while (current_def){
+            counter++;
+            if ((s_types)current_def->p_dec->tsp->type == s_void){
+                void_param_flag = current_def;
+            }
+            if (void_param_flag && counter > 1){
+                printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
+                return ec;
+            }
+            current_def = current_def->next;
+        }
+        
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
         tpsp->type = fdef->tsp->type;
         tpsp->lines = fdef->tsp->lines;
@@ -261,10 +294,11 @@ int check_f_def(struct function_definition* fdef){
         f_dec->param_list = fdef->param_list;
         global_scope->symtab = insert_sym_element(global_scope->symtab,create_sym_element(fdef->info->id, s_function, create_sym_f_param(f_dec), 0, 1));
 		create_scope(scope_head, fdef->info->id);
+
+        ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
+        ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
+        ec += check_f_body(fdef->f_body,fdef->info->id);
     }
-    ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
-    ec += check_param_list(fdef->param_list, fdef->info->id); // Adicionar os params ao scope da funcão             | o scope da funcao
-    ec += check_f_body(fdef->f_body,fdef->info->id);
 	return ec;
 }
 
