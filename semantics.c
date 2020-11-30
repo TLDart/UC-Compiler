@@ -158,7 +158,7 @@ int check_dec(struct declaration* dec, char *name){
             if((sym_elem = get_token_by_name(s->symtab, current->decl->info->id))){ 
                 if (sym_elem->type == s_function){
                     // printf("Line %d, col %d: Symbol %s already defined\n",current->tsp->lines, current->tsp->cols, current->decl->info->id);
-                    printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                    printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
                     print_s_type((s_types) current->tsp->type);
                     printf(", expected ");
                     print_scope_f_dec(sym_elem->sym_f);
@@ -169,7 +169,7 @@ int check_dec(struct declaration* dec, char *name){
                             printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
                         }
                     } else { // case [char foo = 1; int foo = 1;]
-                        printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                        printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
                         print_s_type((s_types) current->tsp->type);
                         printf(", expected ");
                         print_s_type(sym_elem->type);
@@ -179,7 +179,7 @@ int check_dec(struct declaration* dec, char *name){
                     if (sym_elem->type == (s_types) current->tsp->type) {
                         sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
                     } else {
-                        printf("Line %d, col %d: Conflicting types (got ",current->tsp->lines, current->tsp->cols);
+                        printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
                         print_s_type((s_types) current->tsp->type);
                         printf(", expected ");
                         print_s_type(sym_elem->type);

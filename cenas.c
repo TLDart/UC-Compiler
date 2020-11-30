@@ -1,10 +1,6 @@
-int main(void){
-    return 0;
-}
-int cenas(void){
-  double a = 3.5;
-  return a;
-}
+// int foo(int, char);
+char foo(void);
+int foo = 1;
 // int foo = 1;
 // int foo = 1;
 // int foo(int a,void b){}
