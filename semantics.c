@@ -520,7 +520,7 @@ int check_op1(struct op1* op, char* name) {
     if (op != NULL){
         ec += check_expression(op->exp, name);
         s_types exp_type = get_expression_type(op->exp, name, false);
-        if (exp_type == s_function){
+        if (exp_type == s_function || exp_type == s_undef){
             printf("Line %d, col %d: Operator ",op->lines,op->cols);
             print_op1_symbol(op->type);
             printf(" cannot be applied to type ");
@@ -546,7 +546,7 @@ int check_op2(struct op2* op, char* name) {
                 /* Os que não podem receber um double como argumento */
                 case t_mod: case t_or: case t_and: case t_bitwiseand:
                 case t_bitwiseor: case t_bitwisexor:
-                    if (exp1_s_type == s_double || exp2_s_type == s_double || exp1_s_type == s_function || exp2_s_type == s_function) {
+                    if (exp1_s_type == s_undef || exp2_s_type == s_undef || exp1_s_type == s_double || exp2_s_type == s_double || exp1_s_type == s_function || exp2_s_type == s_function) {
                         printf("Line %d, col %d: Operator ",op->lines,op->cols);
                         print_op2_symbol(op->type);
                         printf(" cannot be applied to types ");
@@ -558,7 +558,7 @@ int check_op2(struct op2* op, char* name) {
                     break;
                 case t_le: case t_lt: case t_eq: case t_ne: case t_ge: case t_gt:
                 case t_add: case t_sub: case t_mul: case t_div: case t_comma:
-                    if (exp1_s_type == s_function || exp2_s_type == s_function) {
+                    if (exp1_s_type == s_undef || exp2_s_type == s_undef || exp1_s_type == s_function || exp2_s_type == s_function) {
                         printf("Line %d, col %d: Operator ",op->lines,op->cols);
                         print_op2_symbol(op->type);
                         printf(" cannot be applied to types ");
@@ -569,7 +569,7 @@ int check_op2(struct op2* op, char* name) {
                     }
                     break;
                 case t_store:
-                    if (((exp1_s_type != s_double) && (exp2_s_type == s_double)) || exp1_s_type == s_function || exp2_s_type == s_function){
+                    if (exp1_s_type == s_undef || exp2_s_type == s_undef || ((exp1_s_type != s_double) && (exp2_s_type == s_double)) || exp1_s_type == s_function || exp2_s_type == s_function){
                         printf("Line %d, col %d: Operator ",op->lines,op->cols);
                         print_op2_symbol(op->type);
                         printf(" cannot be applied to types ");
