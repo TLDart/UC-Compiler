@@ -564,7 +564,6 @@ int check_op2(struct op2* op, char* name) {
                         if (op->exp1->expression_morphs.t->type == t_id) {
                             if (!(sym_elem = search_symbol(scope_head, op->exp1->expression_morphs.t->info->id,name))){
                                 //TODO: remover isto e passar para o check_term - aqui não faz nada
-                                printf("Line %d, col %d: Unknown symbol %s\n",op->exp1->expression_morphs.t->info->lines,op->exp1->expression_morphs.t->info->cols,op->exp1->expression_morphs.t->info->id);
                             }
                         } else {
                             printf("Line %d, col %d: Lvalue required\n",op->lines, op->cols);
@@ -579,10 +578,9 @@ int check_op2(struct op2* op, char* name) {
     return ec;
 }
 
-//TODO: Unknown symbol i think
 int check_terminal(struct terminal* t, char* name) {
-    if (t == NULL) {
-        printf("TEMPORARY Falta o terminal para o operador!\n");
+    if (t->type == t_id && !search_symbol(scope_head,t->info->id,name)) {
+        printf("Line %d, col %d: Unknown symbol %s\n",t->info->lines, t->info->cols,t->info->id);
         return 1;
     }
     return 0;

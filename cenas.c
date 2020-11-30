@@ -1,15 +1,15 @@
-double z;
-int main(void){
-    -(z  ^main);
+int foo(int a){
+    return 2;
 }
-
-
-// int foo(int a){}
-// int main(void){
-//     foo=1;
-//     if(foo=2);
+int main(void){
+    if ((1.2 + foo) <= foo){}
+}
+// int main(void){foo,foo;
 // }
 
+// int main(void){
+//     if(a = 1);
+// }
 // void v(void);
 // void g0(void){
 //     return v();
