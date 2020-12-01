@@ -93,6 +93,7 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
         }
         current_second = current_second->next;
     }
+    ec += check_f_dec_param_list(f_dec->param_list);  
     if ((sym_elem = get_token_by_name(s->symtab, f_dec->info->id))) { 
         if (sym_elem->type == s_function){ // Case where the same token is a function 
             /* Checking if Signature is different*/
@@ -144,6 +145,46 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
         //create a local scope to respect the order of functions
         create_scope(scope_head, f_dec->info->id);  
     }
+    return ec;
+}
+
+int check_f_dec_param_list(struct parameter_list* pl) {
+    int ec = 0;
+    struct scope* disney_scope = NULL;
+    disney_scope = create_scope(disney_scope,"disney");
+    struct sym_element* sym_elem = NULL;
+    if (disney_scope){
+        while(pl){
+            if (pl->p_dec->info && pl->p_dec->info->id != NULL) {
+                if(!(sym_elem = get_token_by_name(disney_scope->symtab,pl->p_dec->info->id))){// Se não encontrar nenhum simbolo no contexto local aka na própria param list
+                    disney_scope->symtab = insert_sym_element(disney_scope->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
+                } else {
+                    if (sym_elem->type == (s_types) pl->p_dec->tsp->type){
+                        printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
+                    } else {
+                        printf("Line %d, col %d: Conflicting types (got ",pl->p_dec->info->lines,pl->p_dec->info->cols);
+                        print_s_type((s_types) pl->p_dec->tsp->type);
+                        printf(", expected ");
+                        print_s_type(sym_elem->type);
+                        printf(")\n");
+                    }
+                }
+            }
+            pl = pl->next;
+        }
+    }
+    /*to free, not completed*/
+    // sym_elem = disney_scope->symtab;
+    // while(sym_elem){
+    //     switch (sym_elem->type) {
+    //         case /* constant-expression */:
+    //             /* code */
+    //             break;
+    //     }
+    //     sym_elem = sym_elem->next;
+    // }
+    // free(disney_scope->name);
+    // free(disney_scope);
     return ec;
 }
 

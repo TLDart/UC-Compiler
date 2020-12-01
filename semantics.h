@@ -11,6 +11,7 @@ extern int columns, lines, yyleng;
 int check_program(struct program* head);
 void insert_default_values(struct scope* head);
 int check_f_dec(struct function_declaration* f_dec,char *name);
+int check_f_dec_param_list(struct parameter_list* pl);
 int check_dec(struct declaration* dec, char* name);
 int check_f_def(struct function_definition* fdef);
 int check_return_type(typespec_type typ, char *name);

@@ -1,6 +1,6 @@
-double cenas1(int a){
-    return f;
-}
+int main(int a, int a);
+int main(double b, double b);
+// int main1(int a, char a);
 // int 
 // int cenas(void);
 // int main(void){
