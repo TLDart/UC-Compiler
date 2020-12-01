@@ -225,10 +225,10 @@ int check_f_def(struct function_definition* fdef){
     current_def = fdef->param_list;
     while (current_def){
         counter++;
-        if ((s_types)current_def->p_dec->tsp->type == s_void){
+        if (((s_types)current_def->p_dec->tsp->type == s_void) && (void_param_flag == 0)){
             void_param_flag = current_def;
         }
-        if (void_param_flag && counter > 1){
+        if ((void_param_flag && counter > 1) || (void_param_flag && current_def->p_dec->info && current_def->p_dec->info->id != NULL)){
             printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
             return ec;
         }

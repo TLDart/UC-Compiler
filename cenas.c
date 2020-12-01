@@ -1,8 +1,5 @@
-int cenas(void);
-int main(void){
-    !cenas;
-    +cenas;
-    -cenas;
+int main(void a){
+    void b;
 }
 // int 
 // int cenas(void);
