@@ -1,4 +1,4 @@
-int cenas1(int a){
+double cenas1(int a){
     return ;
 }
 // int 
