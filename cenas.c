@@ -1,5 +1,5 @@
-int main(void a){
-    void b;
+int cenas1(int a){
+    return ;
 }
 // int 
 // int cenas(void);

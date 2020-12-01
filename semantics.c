@@ -84,10 +84,10 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
     current_second = f_dec->param_list;
     while (current_second){
         counter++;
-        if ((s_types)current_second->p_dec->tsp->type == s_void) {
+        if (((s_types)current_second->p_dec->tsp->type == s_void) && (void_param_flag == 0)) {
             void_param_flag = current_second;
         }
-        if (void_param_flag && counter > 1){
+        if ((void_param_flag && counter > 1) || (void_param_flag && current_second->p_dec->info && current_second->p_dec->info != NULL)){
             printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
             return ec; // dont add function to the scope neither create a scope of their own
         }
