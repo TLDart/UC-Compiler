@@ -1,8 +1,4 @@
-int f(int, int);
-int main(void){
-	int a = 1, b = 2;
-	return f(f + a,not_defined + b);
-}
+char c;
 // int main1(int a, char a);
 // int 
 // int cenas(void);

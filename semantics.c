@@ -681,7 +681,7 @@ int check_call(struct call* c, char* name) {
                 break;
             case call_exp:
                 ec += check_expression(current->call_morphs.exp, name);
-                if (sym_elem && (sym_elem->type == s_function)) {
+                if (current_sym_param && sym_elem && (sym_elem->type == s_function)) {
                     s_type = get_expression_type(current->call_morphs.exp,name,false);
                     if (compare_types(current_sym_param->param_type, s_type)){
                         printf("Line %d, col %d: Conflicting types (got ",call_id->call_morphs.info->lines, get_expression_col(current->call_morphs.exp));
