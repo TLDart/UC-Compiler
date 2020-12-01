@@ -675,7 +675,7 @@ int count_call_params(struct call* head){
 }
 
 int compare_types(s_types type1, s_types type2){
-    if (type1 == s_function || type2 == s_function ) {
+    if (type1 == s_function || type2 == s_function || type1 == s_undef || type2 == s_undef) {
         return 1;    
     }
     if (type2 == s_double && (type1 == s_char || type1 == s_short || type1 == s_int)){

@@ -1,5 +1,5 @@
 double cenas1(int a){
-    return ;
+    return f;
 }
 // int 
 // int cenas(void);
