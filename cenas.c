@@ -1,5 +1,8 @@
-int main(int a, int a);
-int main(double b, double b);
+int f(int, int);
+int main(void){
+	int a = 1, b = 2;
+	return f(f + a,not_defined + b);
+}
 // int main1(int a, char a);
 // int 
 // int cenas(void);

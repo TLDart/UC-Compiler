@@ -654,32 +654,47 @@ int check_call(struct call* c, char* name) {
     int got_args = 0;
     struct sym_element* sym_elem = NULL; 
     struct sym_f_param* current_sym_param = NULL;
-    while(c) {
-        switch (c->ct) {
+    struct call* call_id = NULL;
+    struct call* current = c;
+    s_types s_type;
+    while(current) {
+        switch (current->ct) {
             case call_name: 
-                if ((sym_elem = search_symbol(scope_head, c->call_morphs.info->id, name))){
+                if ((sym_elem = search_symbol(scope_head, current->call_morphs.info->id, name))){
                     if (sym_elem->type != s_function) {
-                        printf("Line %d, col %d: Symbol %s is not a function\n", c->call_morphs.info->lines, c->call_morphs.info->cols, c->call_morphs.info->id);
+                        printf("Line %d, col %d: Symbol %s is not a function\n", current->call_morphs.info->lines, current->call_morphs.info->cols, current->call_morphs.info->id);
                     } else { // é uma função e portanto é necessário ver se não dá wrong number of args
                         current_sym_param = sym_elem->sym_f->params;
                         while(current_sym_param){
                             required_args++;
                             current_sym_param = current_sym_param->next;
                         }
-                        if ((got_args = count_call_params(c)) != required_args){
-                            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n", c->call_morphs.info->lines, c->call_morphs.info->cols,c->call_morphs.info->id,got_args,required_args);
+                        if ((got_args = count_call_params(current)) != required_args){
+                            printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id,got_args,required_args);
                         }
+                        current_sym_param = sym_elem->sym_f->params; // for the call_exp: current is already on the head, just ->next to next param
+                        call_id = c;
                     }
-                    
                 } else { // Se o simbolo não for encontrado
-                    printf("Line %d, col %d: Unknown symbol %s\n", c->call_morphs.info->lines, c->call_morphs.info->cols,c->call_morphs.info->id);
+                    printf("Line %d, col %d: Unknown symbol %s\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id);
                 }
                 break;
             case call_exp:
-                ec += check_expression(c->call_morphs.exp, name);
+                ec += check_expression(current->call_morphs.exp, name);
+                if (sym_elem && (sym_elem->type == s_function)) {
+                    s_type = get_expression_type(current->call_morphs.exp,name,false);
+                    if (compare_types(current_sym_param->param_type, s_type)){
+                        printf("Line %d, col %d: Conflicting types (got ",call_id->call_morphs.info->lines, get_expression_col(current->call_morphs.exp));
+                        print_s_type(get_expression_type(current->call_morphs.exp,name,true));
+                        printf(", expected ");
+                        print_s_type(current_sym_param->param_type);
+                        printf(")\n");
+                    }
+                    current_sym_param = current_sym_param->next;
+                }
                 break;   
         }
-        c = c->next_arg;
+        current = current->next_arg;
     }
     return ec;   
 }
