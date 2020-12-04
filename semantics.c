@@ -183,6 +183,7 @@ int check_f_dec_param_list(struct parameter_list* pl) {
 //TODO: fix int a; int a; int main(void){int a; int a;} 
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
+    int is_global = (int)!strcmp("Global",name);
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
     struct sym_element* sym_elem = NULL;
@@ -198,26 +199,24 @@ int check_dec(struct declaration* dec, char *name){
                     print_scope_f_dec(sym_elem->sym_f);
                     printf(")\n");
                 } else if (sym_elem->already_defined) {
-                    if (sym_elem->type == (s_types) current->tsp->type) { // case [int foo = 1; int foo = 1;]
-                        if (current->decl->expr != NULL) { // Current defined
+                    if(is_global){
+                        if (current->decl->expr != NULL) { // If current is a definition
                             printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
+                        } else {
+                            // Not an error
                         }
-                    } else { // case [char foo = 1; int foo = 1;]
-                        printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
-                        print_s_type((s_types) current->tsp->type);
-                        printf(", expected ");
-                        print_s_type(sym_elem->type);
-                        printf(")\n");
+                    } else { // Inside a Function
+                        printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
                     }
                 } else if (!sym_elem->already_defined) { // Only declared, but not defined
-                    if (sym_elem->type == (s_types) current->tsp->type) {
-                        sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
+                    if (is_global) {
+                        if (sym_elem->type == (s_types) current->tsp->type) {
+                            sym_elem->already_defined = ((current->decl->expr == NULL) ? 0 : 1);
+                        } else {
+                            // printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
+                        }
                     } else {
-                        printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
-                        print_s_type((s_types) current->tsp->type);
-                        printf(", expected ");
-                        print_s_type(sym_elem->type);
-                        printf(")\n");
+                        printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
                     }
                 }
                 

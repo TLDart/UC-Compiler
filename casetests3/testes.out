@@ -1,0 +1,126 @@
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+b	int(char,char)
+a	int(int,int)
+c	int(double,double)
+d	int(short,short)
+e	int(void)
+f	int(int,int)
+g	int(short,short)
+h	int(double,double)
+i	int(char,char)
+
+===== Function b Symbol Table =====
+return	int
+a	char	param
+b	char	param
+
+===== Function a Symbol Table =====
+return	int
+a	int	param
+b	int	param
+
+Program
+..FuncDefinition
+....Int
+....Id(b)
+....ParamList
+......ParamDeclaration
+........Char
+........Id(a)
+......ParamDeclaration
+........Char
+........Id(b)
+....FuncBody
+......Return
+........IntLit(0) - int
+..FuncDeclaration
+....Int
+....Id(a)
+....ParamList
+......ParamDeclaration
+........Int
+......ParamDeclaration
+........Int
+..FuncDeclaration
+....Int
+....Id(b)
+....ParamList
+......ParamDeclaration
+........Char
+......ParamDeclaration
+........Char
+..FuncDefinition
+....Int
+....Id(a)
+....ParamList
+......ParamDeclaration
+........Int
+........Id(a)
+......ParamDeclaration
+........Int
+........Id(b)
+....FuncBody
+......Return
+........IntLit(0) - int
+..FuncDeclaration
+....Int
+....Id(c)
+....ParamList
+......ParamDeclaration
+........Double
+......ParamDeclaration
+........Double
+..FuncDeclaration
+....Int
+....Id(d)
+....ParamList
+......ParamDeclaration
+........Short
+......ParamDeclaration
+........Short
+..FuncDeclaration
+....Int
+....Id(e)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Int
+....Id(f)
+....ParamList
+......ParamDeclaration
+........Int
+........Id(a)
+......ParamDeclaration
+........Int
+........Id(b)
+..FuncDeclaration
+....Int
+....Id(g)
+....ParamList
+......ParamDeclaration
+........Short
+........Id(a)
+......ParamDeclaration
+........Short
+........Id(b)
+..FuncDeclaration
+....Int
+....Id(h)
+....ParamList
+......ParamDeclaration
+........Double
+........Id(a)
+......ParamDeclaration
+........Double
+........Id(b)
+..FuncDeclaration
+....Int
+....Id(i)
+....ParamList
+......ParamDeclaration
+........Char
+......ParamDeclaration
+........Char
