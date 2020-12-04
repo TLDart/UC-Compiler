@@ -652,7 +652,9 @@ int check_call(struct call* c, char* name) {
                     } else { // é uma função e portanto é necessário ver se não dá wrong number of args
                         current_sym_param = sym_elem->sym_f->params;
                         while(current_sym_param){
-                            required_args++;
+                            if (current_sym_param->param_type != s_void){
+                                required_args++;
+                            }                            
                             current_sym_param = current_sym_param->next;
                         }
                         if ((got_args = count_call_params(current)) != required_args){

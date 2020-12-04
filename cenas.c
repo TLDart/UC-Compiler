@@ -1,1 +1,2 @@
-int main(int a, char a){}
+int main(int);
+int cenas(void){main();}
