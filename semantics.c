@@ -664,6 +664,7 @@ int check_call(struct call* c, char* name) {
                     }
                 } else { // Se o simbolo não for encontrado
                     printf("Line %d, col %d: Unknown symbol %s\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id);
+                    printf("Line %d, col %d: Symbol %s is not a function\n", current->call_morphs.info->lines, current->call_morphs.info->cols, current->call_morphs.info->id);
                 }
                 break;
             case call_exp:

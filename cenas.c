@@ -1,2 +1,6 @@
-int main(int);
-int cenas(void){main();}
+int a;
+char a = 'A';
+
+int main(void){
+    not_found();
+}
