@@ -1,0 +1,105 @@
+Line 8, col 9: Symbol a already defined
+Line 9, col 10: Symbol a already defined
+Line 17, col 6: Symbol f2 already defined
+Line 20, col 6: Conflicting types (got void(int), expected void(void))
+Line 22, col 20: Symbol a already defined
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+a	int
+args	int(void)
+main	int(void)
+f1	void(void)
+f2	void(void)
+f3	void(void)
+f4	int(int,char)
+
+===== Function main Symbol Table =====
+return	int
+a	int
+
+===== Function f2 Symbol Table =====
+return	void
+
+Program
+..Declaration
+....Int
+....Id(a)
+..Declaration
+....Int
+....Id(a)
+..Declaration
+....Char
+....Id(a)
+..FuncDeclaration
+....Int
+....Id(args)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Id(a)
+......Declaration
+........Int
+........Id(a)
+......Declaration
+........Char
+........Id(a)
+......Call - int
+........Id(args) - int(void)
+..FuncDeclaration
+....Void
+....Id(f1)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Void
+....Id(f1)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Void
+....Id(f2)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDefinition
+....Void
+....Id(f2)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+..FuncDeclaration
+....Void
+....Id(f3)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDeclaration
+....Void
+....Id(f3)
+....ParamList
+......ParamDeclaration
+........Int
+..FuncDeclaration
+....Int
+....Id(f4)
+....ParamList
+......ParamDeclaration
+........Int
+........Id(a)
+......ParamDeclaration
+........Char
+........Id(a)

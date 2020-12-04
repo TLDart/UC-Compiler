@@ -159,15 +159,7 @@ int check_f_dec_param_list(struct parameter_list* pl) {
                 if(!(sym_elem = get_token_by_name(disney_scope->symtab,pl->p_dec->info->id))){// Se não encontrar nenhum simbolo no contexto local aka na própria param list
                     disney_scope->symtab = insert_sym_element(disney_scope->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
                 } else {
-                    if (sym_elem->type == (s_types) pl->p_dec->tsp->type){
-                        printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
-                    } else {
-                        printf("Line %d, col %d: Conflicting types (got ",pl->p_dec->info->lines,pl->p_dec->info->cols);
-                        print_s_type((s_types) pl->p_dec->tsp->type);
-                        printf(", expected ");
-                        print_s_type(sym_elem->type);
-                        printf(")\n");
-                    }
+                    printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
                 }
             }
             pl = pl->next;
@@ -188,6 +180,7 @@ int check_f_dec_param_list(struct parameter_list* pl) {
     return ec;
 }
 
+//TODO: fix int a; int a; int main(void){int a; int a;}
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
@@ -320,7 +313,7 @@ int check_f_def(struct function_definition* fdef){
                 } else {    // Signatures match
                     printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
                 } 
-            } else { // Caso apenas haja a declaração
+            } else { // Caso apenas haja a declaração da função
                 if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){
                     f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
                     f_dec->tsp->type = fdef->tsp->type;
@@ -396,15 +389,7 @@ int check_param_list(struct parameter_list* pl, char* name){
                 if(!((aux_scope = get_scope_by_name(head,name)) && (sym_elem = get_token_by_name(aux_scope->symtab,pl->p_dec->info->id)))){// Se não encontrar nenhum simbolo no contexto local aka na própria param list
                     head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
                 } else {
-                    if (sym_elem->type == (s_types) pl->p_dec->tsp->type){
-                        printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
-                    } else {
-                        printf("Line %d, col %d: Conflicting types (got ",pl->p_dec->info->lines,pl->p_dec->info->cols);
-                        print_s_type((s_types) pl->p_dec->tsp->type);
-                        printf(", expected ");
-                        print_s_type(sym_elem->type);
-                        printf(")\n");
-                    }
+                    printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
                 }
             }
 		    pl = pl->next;
