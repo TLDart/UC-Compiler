@@ -180,7 +180,7 @@ int check_f_dec_param_list(struct parameter_list* pl) {
     return ec;
 }
 
-//TODO: fix int a; int a; int main(void){int a; int a;}
+//TODO: fix int a; int a; int main(void){int a; int a;} 
 int check_dec(struct declaration* dec, char *name){
     int ec = 0;
     struct scope* s = get_scope_by_name(scope_head, name);
