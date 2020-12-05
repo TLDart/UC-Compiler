@@ -1,6 +1,5 @@
-int a;
-char a = 'A';
-
+int a = 1;
+char a;
 int main(void){
-    not_found();
+    return 0;
 }
