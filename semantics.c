@@ -225,7 +225,6 @@ int check_dec(struct declaration* dec, char *name){
                     printf("Line %d, col %d: Invalid use of void type in declaration\n",current->decl->info->lines,current->decl->info->cols);
                 } else {    // case type different from void
                     if (current->decl->expr && compare_types((s_types) current->tsp->type,(s_type = get_expression_type(current->decl->expr,name,false)))) {
-                        print_s_type(s_type);
                         printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
                         print_s_type(get_expression_type(current->decl->expr,name,true));
                         printf(", expected ");
