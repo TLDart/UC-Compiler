@@ -1,4 +1,4 @@
-int main(void){
-    double a;
-    !a;
+char a;
+void main(void){
+    return a;
 }

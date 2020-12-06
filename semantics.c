@@ -430,7 +430,6 @@ int check_return(struct return_statement* rs, char* name) {
         if (sym_elem && (sym_elem->type == s_function) && compare_types(sym_elem->sym_f->return_value,(s_type = get_expression_type(rs->expr,name,false)))){
             lines = rs->opl->lines;
             if (s_type == s_void) { // fica o erro no 'r' do return
-                
                 cols = rs->opl->cols;
             } else {
                 cols = get_expression_col(rs->expr);
@@ -710,6 +709,10 @@ int compare_types(s_types type1, s_types type2){
     if (type2 == s_double && (type1 == s_char || type1 == s_short || type1 == s_int)){
         return 1;
     }
+    if ((type1 == s_void) && (type2 != s_void)){
+        return 1;
+    }
+    
     if ((type1 != s_void) && (type2 == s_void)){
         return 1;
     }
