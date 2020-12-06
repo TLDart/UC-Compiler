@@ -532,7 +532,7 @@ int check_op1(struct op1* op, char* name) {
     if (op != NULL){
         ec += check_expression(op->exp, name);
         s_types exp_type = get_expression_type(op->exp, name, false);
-        if (exp_type == s_function || exp_type == s_undef){
+        if (exp_type == s_function || exp_type == s_undef || ((exp_type == s_double) && (op->type == t_not))){
             printf("Line %d, col %d: Operator ",op->lines,op->cols);
             print_op1_symbol(op->type);
             printf(" cannot be applied to type ");
