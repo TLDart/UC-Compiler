@@ -297,21 +297,7 @@ int check_f_def(struct function_definition* fdef){
                 }
             }
             if (sym_elem->already_defined) {
-                // In case of Semantic Error
-                if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){ // Signatures don't match
-                    f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
-                    f_dec->tsp->type = fdef->tsp->type;
-                    f_dec->param_list = fdef->param_list;
-                    printf("Line %d, col %d: Conflicting types (got ",fdef->info->lines,fdef->info->cols);
-                    print_scope_f_dec(create_sym_f_param(f_dec));
-                    printf(", expected ");
-                    print_scope_f_dec(sym_elem->sym_f);
-                    printf(")\n");
-                    free(f_dec->tsp);
-                    free(f_dec);
-                } else {    // Signatures match
-                    printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
-                } 
+                printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
             } else { // Caso apenas haja a declaração da função
                 if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){
                     f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));

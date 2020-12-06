@@ -1,5 +1,6 @@
-int a = 1;
-char a;
-int main(void){
-    return 0;
-}
+void f(void);
+void f(int);
+void f(int a){}
+void f(void){}
+void f(int a){}
+void f(void){}
