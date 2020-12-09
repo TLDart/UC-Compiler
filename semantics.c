@@ -187,6 +187,7 @@ int check_dec(struct declaration* dec, char *name){
     struct scope* s = get_scope_by_name(scope_head, name);
     struct declaration* current = dec;
     struct sym_element* sym_elem = NULL;
+    int void_type_flag = 0;
     s_types s_type;
     if (s) {
         while(current){
@@ -221,7 +222,8 @@ int check_dec(struct declaration* dec, char *name){
                 }
                 
             } else {
-                if ((s_types) current->tsp->type == s_void){ // case void a = 1;
+                if ((void_type_flag == 1) || ((s_types) current->tsp->type == s_void)) { // case void a = 1;
+                    void_type_flag = 1;
                     printf("Line %d, col %d: Invalid use of void type in declaration\n",current->decl->info->lines,current->decl->info->cols);
                 } else {    // case type different from void
                     if (current->decl->expr && compare_types((s_types) current->tsp->type,(s_type = get_expression_type(current->decl->expr,name,false)))) {
