@@ -644,6 +644,7 @@ int check_call(struct call* c, char* name) {
                         }
                         if ((got_args = count_call_params(current)) != required_args){
                             printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id,got_args,required_args);
+                            return ec;
                         }
                         current_sym_param = sym_elem->sym_f->params; // for the call_exp: current is already on the head, just ->next to next param
                         call_id = c;

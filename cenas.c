@@ -1,4 +1,7 @@
-void a,b;
+int g(void);
+int main(void){
+g(1);
+}
 // int bola;
 // int i=bola();
 
