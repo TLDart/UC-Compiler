@@ -638,7 +638,7 @@ s_types get_terminal_type(struct terminal* t, char* local_scope_name, int print_
 
 s_types get_call_type(struct call* c, char* local_scope_name, int print_func){
     struct sym_element* sym_elem = NULL;
-    if ((sym_elem = search_symbol(scope_head,c->call_morphs.info->id, local_scope_name))) {
+    if ((sym_elem = search_symbol(scope_head,c->call_morphs.info->id, local_scope_name)) && sym_elem->type == s_function) {
         return sym_elem->sym_f->return_value;
     }
     // printf("Nao devia chegar aqui!!\n");
