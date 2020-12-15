@@ -1,0 +1,54 @@
+Line 7, col 13: Unknown symbol b
+Line 7, col 11: Operator + cannot be applied to types int, undef
+Line 8, col 9: Conflicting types (got double, expected int)
+Line 9, col 12: Conflicting types (got double, expected int)
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+f2	int(void)
+b	int
+
+===== Function f2 Symbol Table =====
+return	int
+a	int
+c	int
+
+Program
+..FuncDeclaration
+....Int
+....Id(f2)
+....ParamList
+......ParamDeclaration
+........Void
+..FuncDefinition
+....Int
+....Id(f2)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Id(a)
+........IntLit(1) - int
+......Add - int
+........Id(a) - int
+........IntLit(2) - int
+......Add - int
+........Add - int
+..........Id(a) - int
+..........IntLit(3) - int
+........Id(b) - int
+......Declaration
+........Int
+........Id(c)
+........Add - double
+..........Add - int
+............Id(a) - int
+............IntLit(1) - int
+..........RealLit(2.0) - double
+......Return
+........RealLit(2.4) - double
+..Declaration
+....Int
+....Id(b)

@@ -54,6 +54,7 @@ MLCOMMENTE      "*/"
     #include "symbol_table.h"
     #include "semantics.h"
     #include "functions.h"
+    #include "codegen.h"
 
 
     #define STDT_PRINT 0
@@ -61,6 +62,7 @@ MLCOMMENTE      "*/"
 
     extern int syntax_error_counter;
     
+    int varcounter = 1;
     int lines = 1;
     int columns = 1;
     int verbose = 0;
@@ -72,7 +74,7 @@ MLCOMMENTE      "*/"
     int semantic_errors = 0;
     struct program* myprog;
     struct scope* scope_head = NULL;
-    typedef enum {meta1, meta2, meta3} meta_flag;
+    typedef enum {meta1, meta2, meta3, meta4} meta_flag;
 
     meta_flag mf;
 %}
@@ -141,7 +143,7 @@ MLCOMMENTE      "*/"
 
 int main(int argc, char* argv[]) {
     /* [Se nenhuma flag for passada] : */ 
-    mf = meta3; //isto é supostor ir atualizando para ficar sempre a ultima meta por default
+    mf = meta4; //isto é supostor ir atualizando para ficar sempre a ultima meta por default
     for(int i = 1; i < argc; i++){
         if(strcmp("-l", argv[i]) == 0){
             verbose = 1;
@@ -166,12 +168,12 @@ int main(int argc, char* argv[]) {
         case meta1:
             yylex();
             break;
-        case meta2: case meta3:
+        case meta2: case meta3: case meta4:
             yyparse();
             break;
     }
 
-    if(mf == meta3 && syntax_error_counter == 0){
+    if((mf == meta3 && syntax_error_counter == 0 ) ||(mf == meta4 && syntax_error_counter == 0) ){ 
         semantic_errors += check_program(myprog);
         /* if (semantic_errors > 0) printf("Total semantic_errors: %d\n",semantic_errors); */
         if (ASTnoted){
@@ -183,8 +185,13 @@ int main(int argc, char* argv[]) {
     if(sintaxTree && syntax_error_counter == 0){ // AST
         print_ast(myprog);
                                                
-    } else if (ASTnoted && syntax_error_counter == 0) { // AST-noted
+    } 
+    else if (ASTnoted && syntax_error_counter == 0) { // AST-noted
         print_ast(myprog);
+    }
+    else if(meta4){
+        if( myprog != NULL && scope_head != NULL)
+            codegen(myprog, scope_head);
     }
 
     /* Free */

@@ -1,0 +1,123 @@
+Line 28, col 7: Symbol z1 already defined
+Line 31, col 6: Symbol z2 already defined
+Line 34, col 8: Symbol z3 already defined
+Line 37, col 13: Symbol z4 already defined
+Line 40, col 8: Symbol z5 already defined
+===== Global Symbol Table =====
+putchar	int(int)
+getchar	int(void)
+x	int
+k	int
+a	int
+t	double
+s	short
+V1	double
+b	int
+c	int
+d	double
+main	int(void)
+
+===== Function main Symbol Table =====
+return	int
+b	int
+c	short
+d	int
+z1	int
+z2	int
+z3	int
+z4	double
+AAA	short
+z5	double
+
+Program
+..Declaration
+....Int
+....Id(x)
+..Declaration
+....Char
+....Id(x)
+..Declaration
+....Int
+....Id(k)
+..Declaration
+....Int
+....Id(k)
+..Declaration
+....Int
+....Id(a)
+..Declaration
+....Short
+....Id(a)
+..Declaration
+....Double
+....Id(t)
+..Declaration
+....Short
+....Id(s)
+..Declaration
+....Short
+....Id(t)
+..Declaration
+....Double
+....Id(V1)
+..Declaration
+....Short
+....Id(V1)
+..Declaration
+....Int
+....Id(b)
+..Declaration
+....Int
+....Id(c)
+..Declaration
+....Double
+....Id(d)
+..FuncDefinition
+....Int
+....Id(main)
+....ParamList
+......ParamDeclaration
+........Void
+....FuncBody
+......Declaration
+........Int
+........Id(b)
+......Declaration
+........Short
+........Id(c)
+......Declaration
+........Int
+........Id(d)
+......Declaration
+........Int
+........Id(z1)
+......Declaration
+........Char
+........Id(z1)
+......Declaration
+........Int
+........Id(z2)
+......Declaration
+........Int
+........Id(z2)
+......Declaration
+........Int
+........Id(z3)
+......Declaration
+........Short
+........Id(z3)
+......Declaration
+........Double
+........Id(z4)
+......Declaration
+........Short
+........Id(AAA)
+......Declaration
+........Short
+........Id(z4)
+......Declaration
+........Double
+........Id(z5)
+......Declaration
+........Short
+........Id(z5)
