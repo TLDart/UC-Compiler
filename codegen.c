@@ -270,33 +270,147 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             return varcounter++;
             break;
         case t_eq:
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp oeq %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp eq %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
+            
             print_code_indent(1); 
-            printf("%%%d = imcp eq %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_ne:
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp one %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp ne %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
             print_code_indent(1); 
-            printf("%%%d = imcp ne %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_lt:
-            print_code_indent(1);
-            printf("%%%d = imcp slt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp olt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp slt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
+            print_code_indent(1); 
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_le:
-            print_code_indent(1);
-            printf("%%%d = imcp sle %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp ole %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp sle %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
+            print_code_indent(1); 
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_gt:
-            print_code_indent(1);
-            printf("%%%d = imcp sgt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp ogt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp sgt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
+            print_code_indent(1); 
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_ge:
             print_code_indent(1);
             printf("%%%d = imcp sge %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            varcounter++;
+            print_code_indent(1); 
+            printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_add:
