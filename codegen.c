@@ -169,7 +169,8 @@ void codegen_statement(struct statement* stt, char* local_scope_name){
 }
 
 
-void codegen_if(struct if_statement* stt_if, char* local_scope_name){}
+void codegen_if(struct if_statement* stt_if, char* local_scope_name){
+}
 void codegen_return(struct return_statement* stt_ret, char* local_scope_name){
     int result = codegen_expression(stt_ret->expr, local_scope_name);   
     s_types t = get_expression_type(stt_ret->expr, local_scope_name, 0);
@@ -186,7 +187,7 @@ void codegen_return(struct return_statement* stt_ret, char* local_scope_name){
     }
 
     print_code_indent(1);
-    printf("ret %s %%% d\n",codegen_s_type(sm->sym_f->return_value) , result);
+    printf("ret %s %%%d\n",codegen_s_type(sm->sym_f->return_value) , result);
 }
 int codegen_expression(struct expression* expr, char* local_scope_name){//TODO Fix this
     if (expr->expr_t == t_op1){
@@ -249,22 +250,95 @@ int codegen_op1(struct op1* op, char* local_scope_name) {
 int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars and converstion required to i32 from string
     int op1 = codegen_expression(op->exp1, local_scope_name);
     int op2 = codegen_expression(op->exp2, local_scope_name);
+	int label1, label2;
     s_types t = get_op2_type(op, local_scope_name, 0);
     s_types op1type = get_expression_type(op->exp1, local_scope_name, 0);
     s_types op2type = get_expression_type(op->exp2, local_scope_name, 0);
     switch (op->type){
-        case t_or:
+        case t_and:
+            	if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+				else{
+					print_code_indent(1); 
+                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
+                    op1 = varcounter;
+				}
+				label1 = varcounter;
+				label2 = varcounter + 2;//TODO fix label2
+				print_code_indent(1); 
+				printf("br %s %%%d, label %%%d, label %%%d\n", "i1", op2,label1, label2);
+				varcounter++;
+				printf("\n%d:\n", label1);
+
+				if(op2type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+				else{
+					print_code_indent(1); 
+                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
+                    op2 = varcounter;
+					varcounter++;
+				}	
+				print_code_indent(1); 
+				printf("br label %%%d\n", label2);
+				varcounter++; //Fix the counter
+
+				printf("\n%d:\n", label2);
+
             print_code_indent(1); 
-            printf("%%%d = or %s %%%d, %%%d\n", varcounter, "i1", op1, op2);
-            varcounter++;
+            printf("%%%d = phi %s [ false, %%0 ], [ %%%d, %%%d ]\n", varcounter, "i1", label2 - 1, label1);
+			varcounter++;
             print_code_indent(1); 
             printf("%%%d = zext %s %%%d to %s\n",varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
-        case t_and:
+        case t_or:
+            	if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+				else{
+					print_code_indent(1); 
+                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
+                    op1 = varcounter;
+					varcounter++;
+				}
+				label1 = varcounter;
+				label2 = varcounter + 2;
+				print_code_indent(1); 
+				printf("br %s %%%d, label %%%d, label %%%d\n", "i1", op2,label2, label1);
+				varcounter++;
+				printf("\n%d:\n", label1);
+
+				if(op2type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+				else{
+					print_code_indent(1); 
+                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
+                    op2 = varcounter;
+				}	
+				print_code_indent(1); 
+				printf("br label %%%d\n", label2);
+				varcounter++; //Fix the counter
+
+				printf("\n%d:\n", label2);
+
             print_code_indent(1); 
-            printf("%%%d = and %s %%%d, %%%d\n", varcounter, "i1", op1, op2);
-            varcounter++;
+            printf("%%%d = phi %s [ true, %%0 ], [ %%%d, %%%d ]\n", varcounter, "i1", label2 - 1, label1);
+			varcounter++;
             print_code_indent(1); 
             printf("%%%d = zext %s %%%d to %s\n",varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;

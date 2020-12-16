@@ -12,5 +12,5 @@ double test(double a, int b){
     double testi = 1;
     int f = 1 && testi;
     double d =  2.0;
-    return f == d;
+    return f && d ;
 }
