@@ -406,9 +406,28 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             return varcounter++;
             break;
         case t_ge:
-            print_code_indent(1);
-            printf("%%%d = imcp sge %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
-            varcounter++;
+            if(op1type == s_double || op2type == s_double){
+                if(op1type != s_double ){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op1, "double");
+                    op1 = varcounter;
+                    varcounter++;
+                }
+                if(op2type != s_double){
+                    print_code_indent(1); 
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter;
+                    varcounter++;
+                }
+                print_code_indent(1); 
+                printf("%%%d = fmcp oge %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                varcounter++;
+            }
+            else{
+                print_code_indent(1); 
+                printf("%%%d = imcp sge %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                varcounter++;
+            }
             print_code_indent(1); 
             printf("%%%d = zext %s %%%d to %s\n", varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
