@@ -8,7 +8,7 @@ define i32 @main(){
   store i32 %1, i32* %a
   %2 = load i32, i32* %a
   %3 = call i32 @putchar(i32 %2)
-  %4 = add i32 92, 0
+  %4 = add i32 10, 0
   %5 = call i32 @putchar(i32 %4)
   ret i32 0
 }

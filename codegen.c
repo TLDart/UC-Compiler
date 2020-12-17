@@ -734,7 +734,17 @@ int codegen_term(struct terminal* t, char* local_scope_name){
             return varcounter++;
         }
         else if(t->type == t_charlit){
-            printf("%%%d = add %s %d, 0\n", varcounter,"i32", t->info->id[0]);
+            //TODO Se for type \000 then what do I do?
+            if(strncmp(t->info->id, "\\n",2) == 0)
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", 10);
+            else if(strncmp(t->info->id, "\\t",2) == 0)
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", 9);
+            else if(strncmp(t->info->id, "\\\"",2) == 0)
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", 34);
+            else if(strncmp(t->info->id, "\\\'",2) == 0)
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", 39);
+            else
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", t->info->id[0]);
             return varcounter++;
         }
         else{
