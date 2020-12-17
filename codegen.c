@@ -170,21 +170,21 @@ int codegen_statement(struct statement* stt, char* local_scope_name){
     //printf("asdasdasdasd %d\n", stt->type);
     while(stt != NULL){
         if(stt->type == t_if){
-            return codegen_if(stt->statement_data.u_if, local_scope_name);
+            codegen_if(stt->statement_data.u_if, local_scope_name);
         }
         else if(stt->type == t_return){
-            return codegen_return(stt->statement_data.u_return, local_scope_name);
+            codegen_return(stt->statement_data.u_return, local_scope_name);
         }
         else if(stt->type == t_while){
             //printf("here\n");
             codegen_while(stt->statement_data.u_while, local_scope_name);
         }
         else if(stt->type == t_statlist){
-            return codegen_statlist(stt->statement_data.u_statlist, local_scope_name);
+            codegen_statlist(stt->statement_data.u_statlist, local_scope_name);
         }
         else if(stt->type == t_expression){
             // printf("Here goes h");
-            return codegen_expression(stt->statement_data.u_expr, local_scope_name);
+            codegen_expression(stt->statement_data.u_expr, local_scope_name);
         }
         stt = stt->next;
     }
