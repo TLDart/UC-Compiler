@@ -358,7 +358,7 @@ int codegen_op1(struct op1* op, char* local_scope_name) {
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = sub %s %%%s, %%%d\n", varcounter, "i32",  "0",op1);
+                printf("%%%d = sub %s %s, %%%d\n", varcounter, "i32", "0",op1);
                 return varcounter++;
             }
             
