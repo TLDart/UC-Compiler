@@ -143,35 +143,74 @@ void codegen_f_body(struct function_body* f_body, char* local_scope_name){
     }
 }
 
-void codegen_statement(struct statement* stt, char* local_scope_name){
+int codegen_statement(struct statement* stt, char* local_scope_name){
     //printf("asdasdasdasd %d\n", stt->type);
     while(stt != NULL){
         if(stt->type == t_if){
-            //print_if(stt->statement_data.u_if, depth, local_scope_name);
+            return codegen_if(stt->statement_data.u_if, local_scope_name);
         }
         else if(stt->type == t_return){
-            codegen_return(stt->statement_data.u_return, local_scope_name);
+            return codegen_return(stt->statement_data.u_return, local_scope_name);
         }
         else if(stt->type == t_while){
             //printf("here\n");
             //print_while(stt->statement_data.u_while, depth, local_scope_name);
         }
         else if(stt->type == t_statlist){
-            //print_statlist(stt->statement_data.u_statlist, depth, local_scope_name);
+            return codegen_statlist(stt->statement_data.u_statlist, local_scope_name);
         }
         else if(stt->type == t_expression){
             // printf("Here goes h");
-            //print_expression(stt->statement_data.u_expr, depth,local_scope_name);
+            return codegen_expression(stt->statement_data.u_expr, local_scope_name);
         }
         stt = stt->next;
     }
+    return -1;
 
 }
 
 
-void codegen_if(struct if_statement* stt_if, char* local_scope_name){
+int codegen_if(struct if_statement* stt_if, char* local_scope_name){
+    int result = codegen_expression(stt_if->expr, local_scope_name);
+    int label1, label2, label3, old;
+    print_code_indent(1);
+    printf("%%%d = icmp eq %s %%%d, %s\n", varcounter, "i32", result, "1");
+    varcounter++;
+    label1= varcounter;
+    varcounter++;
+    label2 = stt_if->if_body == NULL ? varcounter:  codegen_statement(stt_if->if_body, local_scope_name);
+    varcounter++;
+    label3 = stt_if->else_body == NULL ? varcounter:  codegen_statement(stt_if->else_body, local_scope_name);
+    varcounter = label1;
+    print_code_indent(1);
+    printf("br %s %%%d, label %%%d, label %%%d\n", "i1", varcounter - 1, label1,label2);
+    varcounter++;
+
+    printf("\n%d:\n", label1);
+    if(stt_if->if_body != NULL)
+        codegen_statement(stt_if->if_body, local_scope_name);
+    print_code_indent(1);
+    printf("br label %%%d\n", label3);
+    varcounter++;
+
+    printf("\n%d:\n", label2);
+    if(stt_if->else_body != NULL)
+        codegen_statement(stt_if->else_body, local_scope_name);
+    print_code_indent(1);
+    printf("br label %%%d\n", label3);
+    varcounter++;
+
+    printf("\n%d:\n", label3);
+
+    return -1;
 }
-void codegen_return(struct return_statement* stt_ret, char* local_scope_name){
+
+int codegen_statlist(struct statlist_statement* stt_stl, char* local_scope_name){
+    codegen_statement(stt_stl->stt, local_scope_name);
+    return varcounter;
+}
+
+int codegen_return(struct return_statement* stt_ret, char* local_scope_name){
     int result = codegen_expression(stt_ret->expr, local_scope_name);   
     s_types t = get_expression_type(stt_ret->expr, local_scope_name, 0);
 
@@ -188,6 +227,7 @@ void codegen_return(struct return_statement* stt_ret, char* local_scope_name){
 
     print_code_indent(1);
     printf("ret %s %%%d\n",codegen_s_type(sm->sym_f->return_value) , result);
+    return varcounter;
 }
 int codegen_expression(struct expression* expr, char* local_scope_name){//TODO Fix this
     if (expr->expr_t == t_op1){
@@ -609,15 +649,16 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             break;
         case t_store:
             if(op2type == s_double){
-                printf("store %s %%%d, %s* %%%d", "double", op2, "double", op1);
+                print_code_indent(1); 
+                printf("store %s %%%d, %s* %%%d\n", "double", op2, "double", op1);
             } 
             else{
-                printf("store %s %%%d, %s* %%%d", "i32", op2, "i32", op1);
+                print_code_indent(1); 
+                printf("store %s %%%d, %s* %%%d\n", "i32", op2, "i32", op1);
             }
             break;
         case t_comma:
-            printf("Comma");
-            break;
+
         case t_bitwiseand:
             print_code_indent(1);
             printf("%%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);

@@ -9,8 +9,11 @@ int main(void){
 }
 
 double test(double a, int b){
-    double testi = 1;
-    int f = 1 && testi;
-    double d =  2.0;
-    return f && d ;
+    int d = 1;
+    int f = 1;
+    if(d == 1){
+    }
+
+
+    return 1;
 }
