@@ -37,7 +37,12 @@ char* codegen_s_type(s_types s){
         }
 
 }
-
+void try_main(){
+    struct scope* s = NULL;
+    s = get_scope_by_name(scope_head,"main");
+    if(s == NULL)
+        printf("\ndefine i32 @main(){\n  ret i32 0\n}\n");
+}
 
 
 double get_expr_global(struct expression* exp){//TODO Fix this
@@ -66,6 +71,7 @@ void codegen(struct program* head, struct scope* scope_head){
         }
         head = head->next;
     }
+    try_main();
 }
 
 void codegen_declaration(struct declaration* dec, int depth, char* scope_name){

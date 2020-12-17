@@ -4,12 +4,5 @@ double c = 2;
 char d = 2;
 
 int main(void){
-    putchar(' ');
-    putchar(' ');
-    putchar('a');
-    putchar(' ');
-    putchar('b');
-
-
-
+    int a = 2;
 }
