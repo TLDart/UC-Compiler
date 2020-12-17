@@ -81,18 +81,32 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
         else{
             print_code_indent(depth);
             printf("%%%s = alloca %s\n", dec->decl->info->id, get_type(head->tsp));
-            result = codegen_expression(dec->decl->expr, scope_name);
 
-            //Convert int to float
-            op1type = get_expression_type(dec->decl->expr, scope_name,0);
-            if(op1type == s_int && strcmp(get_type(head->tsp), "double") == 0){
-                print_code_indent(depth);
-                printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
-                result = varcounter++;
-            }
+            if(dec->decl->expr != NULL){
+                result = codegen_expression(dec->decl->expr, scope_name);
+                
+                //Convert int to float
+                op1type = get_expression_type(dec->decl->expr, scope_name,0);
+                if(op1type == s_int && strcmp(get_type(head->tsp), "double") == 0){
+                    print_code_indent(depth);
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
+                    result = varcounter++;
+                }
 
             print_code_indent(depth);
             printf("store %s %%%d, %s* %%%s\n", get_type(head->tsp), result,get_type(head->tsp), dec->decl->info->id);
+            }
+            else{
+				if(strcmp(get_type(head->tsp), "double") == 0){
+					print_code_indent(depth);
+				printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0.0",get_type(head->tsp), dec->decl->info->id);
+				}
+				else if(strcmp(get_type(head->tsp), "i32") == 0){
+					print_code_indent(depth);
+					printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0",get_type(head->tsp), dec->decl->info->id);
+				}
+                
+            }
             dec = dec->next;
         }
     }
@@ -152,7 +166,6 @@ void codegen_param_list_stores(struct parameter_list* p_list){
 }
 
 void codegen_f_body(struct function_body* f_body, char* local_scope_name){
-    //TODO Maybe save params, not sure it is needed
     
     while(f_body != NULL){
         if(f_body->type == t_statement){
