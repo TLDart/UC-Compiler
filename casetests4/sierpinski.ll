@@ -35,7 +35,7 @@ label4:
 label5:
   %14 = load i32, i32* %i
   %15 = load i32, i32* %j
-  %16 = or i32 %14, %15
+  %16 = and i32 %14, %15
   %17 = icmp eq i32 %16, 1
   br i1 %17, label %label7, label %label8
 

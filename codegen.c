@@ -737,7 +737,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             break;
         case t_bitwiseand:
             print_code_indent(1);
-            printf("%%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("%%%d = and %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
             return varcounter++;
             break;
         case t_bitwisexor:
