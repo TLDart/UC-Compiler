@@ -177,32 +177,26 @@ int codegen_if(struct if_statement* stt_if, char* local_scope_name){
     printf("%%%d = icmp eq %s %%%d, %s\n", varcounter, "i32", result, "1");
     varcounter++;
     label1= labelcounter++;
-    varcounter++;
     label2 = labelcounter++;
-    varcounter++;
     label3 = labelcounter++;
-    varcounter = label1;
     print_code_indent(1);
     printf("br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label1,label2);
-    varcounter++;
 
     printf("\nlabel%d:\n", label1);
     if(stt_if->if_body != NULL)
         codegen_statement(stt_if->if_body, local_scope_name);
     print_code_indent(1);
     printf("br label %%label%d\n", label3);
-    varcounter++;
 
-    printf("\n%d:\n", label2);
+    printf("\nlabel%d:\n", label2);
     if(stt_if->else_body != NULL)
         codegen_statement(stt_if->else_body, local_scope_name);
     print_code_indent(1);
     printf("br label %%label%d\n", label3);
-    varcounter++;
 
     printf("\nlabel%d:\n", label3);
 
-    return -1;
+    return varcounter;
 }
 
 int codegen_statlist(struct statlist_statement* stt_stl, char* local_scope_name){
@@ -736,7 +730,12 @@ int codegen_call(struct call* c, char* local_scope_name){
         }
     }
     print_code_indent(1); 
-    printf("%%%d = call %s @%s(", varcounter,codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
+    if(strcmp(codegen_s_type(sm->sym_f->return_value), "void") == 0 )
+        printf("call %s @%s(",codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
+    else{
+        printf("%%%d = call %s @%s(", varcounter,codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
+        varcounter++;
+    }
     //Print Param list
     for (current = c, i = 0; current; current = current->next_arg){
         if (current->ct == call_exp){
@@ -751,5 +750,5 @@ int codegen_call(struct call* c, char* local_scope_name){
     }   
         
     printf(")\n");
-    return varcounter++;
+    return varcounter;
 }
