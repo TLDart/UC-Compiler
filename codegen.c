@@ -70,6 +70,7 @@ void codegen(struct program* head, struct scope* scope_head){
 void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
     struct declaration* head = dec;
     int result;
+    s_types op1type;
     while(dec != NULL){
 
         if(strcmp(scope_name, "Global") == 0){
@@ -81,6 +82,15 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
             print_code_indent(depth);
             printf("%%%s = alloca %s\n", dec->decl->info->id, get_type(head->tsp));
             result = codegen_expression(dec->decl->expr, scope_name);
+
+            //Convert int to float
+            op1type = get_expression_type(dec->decl->expr, scope_name,0);
+            if(op1type == s_int && strcmp(get_type(head->tsp), "double") == 0){
+                print_code_indent(depth);
+                printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
+                result = varcounter++;
+            }
+
             print_code_indent(depth);
             printf("store %s %%%d, %s* %%%s\n", get_type(head->tsp), result,get_type(head->tsp), dec->decl->info->id);
             dec = dec->next;
@@ -719,10 +729,10 @@ int codegen_term(struct terminal* t, char* local_scope_name){
 
         if ((s = get_scope_by_name(scope_head,local_scope_name)) && (se = get_token_by_name(s->symtab,t->info->id))){
             print_code_indent(1);
-            printf("%%%d = load %s, %s* %%%s\n", varcounter,codegen_terminal_type(t->type), codegen_terminal_type(t->type),t->info->id);
+            printf("%%%d = load %s, %s* %%%s\n", varcounter,codegen_s_type(se->type), codegen_s_type(se->type),t->info->id);
         } else if ((s = get_scope_by_name(scope_head,"Global")) && (se = get_token_by_name(s->symtab,t->info->id))) {
             print_code_indent(1);
-            printf("%%%d = load %s, %s* @%s\n", varcounter,codegen_terminal_type(t->type), codegen_terminal_type(t->type),t->info->id);
+            printf("%%%d = load %s, %s* @%s\n", varcounter,codegen_s_type(se->type), codegen_s_type(se->type),t->info->id);
         }
         return varcounter++;
     }

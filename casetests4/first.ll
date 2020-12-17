@@ -4,9 +4,9 @@ declare i32 @getchar(i32)
 
 define i32 @main(){
   %a = alloca double
-  %1 = add i32 3, 0
+  %1 = fadd double 3.2, 0.0
   store double %1, double* %a
-  %2 = load i32, i32* %a
+  %2 = load double, double* %a
   %3 = add i32 2, 0
   %4 = sitofp i32 %3 to double
   %5 = fcmp olt double %2, %4
