@@ -713,7 +713,7 @@ int codegen_call(struct call* c, char* local_scope_name){
     struct call* current;
     int paramregs[1024];
     int paramnr = 0, i;
-    struct sym_element* sm = get_token_by_name(scope_head->symtab, local_scope_name);
+    struct sym_element* sm = get_token_by_name(scope_head->symtab, c->call_morphs.info->id);//FIXME Might need to do a verification here
     struct sym_f_param* par_list = sm->sym_f->params;
     struct sym_f_param* par_list_copy = sm->sym_f->params;
     for (current = c; current; current = current->next_arg){

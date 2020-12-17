@@ -7,11 +7,14 @@ int main(void){
     b = a;
     return a + 1;
 }
-
+int hello(void){
+    putchar(23);
+}
 double test(double a, int b){
     int d = 1;
     int f = 1;
     if(d == 1){
+        hello();
     }
     else{
         putchar(65);
