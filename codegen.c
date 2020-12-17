@@ -154,7 +154,7 @@ int codegen_statement(struct statement* stt, char* local_scope_name){
         }
         else if(stt->type == t_while){
             //printf("here\n");
-            //print_while(stt->statement_data.u_while, depth, local_scope_name);
+            codegen_while(stt->statement_data.u_while, local_scope_name);
         }
         else if(stt->type == t_statlist){
             return codegen_statlist(stt->statement_data.u_statlist, local_scope_name);
@@ -199,10 +199,38 @@ int codegen_if(struct if_statement* stt_if, char* local_scope_name){
     return varcounter;
 }
 
+int codegen_while(struct while_statement* stt_whi, char* local_scope_name){
+    int label1 = labelcounter++, label2 = labelcounter++, label3 = labelcounter++, result;
+
+    print_code_indent(1);
+    printf("br label %%label%d\n", label1);
+    printf("\nlabel%d:\n", label1);
+
+    result = codegen_expression(stt_whi->expr, local_scope_name);
+    print_code_indent(1);
+    printf("%%%d = icmp eq %s %%%d, %s\n", varcounter, "i32", result, "1");
+    varcounter++;
+
+    print_code_indent(1);
+    printf("br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label2,label3);
+
+    printf("\nlabel%d:\n", label2);
+    if(stt_whi->while_body != NULL){
+        codegen_statement(stt_whi->while_body, local_scope_name);
+    }
+    print_code_indent(1);
+    printf("br label %%label%d\n", label1);
+
+    printf("\nlabel%d:\n", label2);
+
+    return varcounter;
+}
 int codegen_statlist(struct statlist_statement* stt_stl, char* local_scope_name){
     codegen_statement(stt_stl->stt, local_scope_name);
     return varcounter;
 }
+
+
 
 int codegen_return(struct return_statement* stt_ret, char* local_scope_name){
     int result = codegen_expression(stt_ret->expr, local_scope_name);   

@@ -18,6 +18,7 @@ void codegen_param_list_stores(struct parameter_list* p_list);
 void codegen_f_body(struct function_body* f_body, char* local_scope_name);
 int codegen_statement(struct statement* stt, char* local_scope_name);
 int codegen_if(struct if_statement* stt_if, char* local_scope_name);
+int codegen_while(struct while_statement* stt_whi, char* local_scope_name);
 int codegen_statlist(struct statlist_statement* stt_stl, char* local_scope_name);
 int codegen_return(struct return_statement* stt_ret, char* local_scope_name);
 int codegen_expression(struct expression* expr, char* local_scope_name);

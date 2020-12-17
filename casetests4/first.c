@@ -10,11 +10,8 @@ int main(void){
 double test(double a, int b){
     int d = 1;
     int f = 1;
-    if(d == 1){
+    while( a == 1 ){
+        putchar('a');
     }
-    else{
-    }
-
-
     return 1;
 }
