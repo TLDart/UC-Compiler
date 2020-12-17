@@ -87,7 +87,7 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
                 
                 //Convert int to float
                 op1type = get_expression_type(dec->decl->expr, scope_name,0);
-                if(op1type == s_int && strcmp(get_type(head->tsp), "double") == 0){
+                if(op1type != s_double && strcmp(get_type(head->tsp), "double") == 0){
                     print_code_indent(depth);
                     printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
                     result = varcounter++;
@@ -98,8 +98,14 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
             }
             else{
 				if(strcmp(get_type(head->tsp), "double") == 0){
-					print_code_indent(depth);
-				printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0.0",get_type(head->tsp), dec->decl->info->id);
+                   /*  if(get_expression_type(dec->decl->expr, scope_name, 0) == s_int){
+                        print_code_indent(depth);
+                        printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
+                        varcounter++;
+                    } */
+                       
+                        print_code_indent(depth);
+                        printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0.0",get_type(head->tsp), dec->decl->info->id);
 				}
 				else if(strcmp(get_type(head->tsp), "i32") == 0){
 					print_code_indent(depth);
@@ -708,13 +714,14 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                 return varcounter++;
             break;
         case t_store:
+            //printf("kekw\n");
             if(op2type == s_double){
                 print_code_indent(1); 
                 printf("store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
             } 
             else{
-                print_code_indent(1); 
                 if ((s = get_scope_by_name(scope_head,local_scope_name)) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id)) &&  strcmp(codegen_s_type(se->type), "double") == 0){
+                    print_code_indent(1); 
                     printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
                     op2 = varcounter++;
                     print_code_indent(1); 
@@ -727,7 +734,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             }
             break;
         case t_comma:
-
+            break;
         case t_bitwiseand:
             print_code_indent(1);
             printf("%%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);

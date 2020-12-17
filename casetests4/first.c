@@ -1,9 +1,9 @@
-int i = 0;
-
-int main(void){
-    double a = 2;
-    a=4;
-    if(a == 4){
-        putchar('f');
-    }
+int main(void) {
+  char i = 'A';
+  while (i <= 'Z')
+  {
+    putchar(i);
+    i = i + 1;
+  }
+  return 0;
 }
