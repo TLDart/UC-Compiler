@@ -352,6 +352,8 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
     s_types t = get_op2_type(op, local_scope_name, 0);
     s_types op1type = get_expression_type(op->exp1, local_scope_name, 0);
     s_types op2type = get_expression_type(op->exp2, local_scope_name, 0);
+    struct sym_element* se = NULL;
+    struct scope* s = NULL;
     switch (op->type){
         case t_and:
             	if(op1type != s_double ){
@@ -712,7 +714,16 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             } 
             else{
                 print_code_indent(1); 
-                printf("store %s %%%d, %s* %%%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
+                if ((s = get_scope_by_name(scope_head,local_scope_name)) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id)) &&  strcmp(codegen_s_type(se->type), "double") == 0){
+                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                    op2 = varcounter++;
+                    print_code_indent(1); 
+                    printf("store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
+                }
+                else{
+                    print_code_indent(1); 
+                    printf("store %s %%%d, %s* %%%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
+                }
             }
             break;
         case t_comma:
