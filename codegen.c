@@ -244,7 +244,7 @@ int codegen_while(struct while_statement* stt_whi, char* local_scope_name){
     print_code_indent(1);
     printf("br label %%label%d\n", label1);
 
-    printf("\nlabel%d:\n", label2);
+    printf("\nlabel%d:\n", label3);
 
     return varcounter;
 }
@@ -695,11 +695,11 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
         case t_store:
             if(op2type == s_double){
                 print_code_indent(1); 
-                printf("store %s %%%d, %s* %%%d\n", "double", op2, "double", op1);
+                printf("store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
             } 
             else{
                 print_code_indent(1); 
-                printf("store %s %%%d, %s* %%%d\n", "i32", op2, "i32", op1);
+                printf("store %s %%%d, %s* %%%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
             }
             break;
         case t_comma:
