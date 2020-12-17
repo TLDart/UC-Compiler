@@ -2,10 +2,10 @@ declare i32 @putchar(i32)
 
 declare i32 @getchar(i32)
 
-@a = global i32 8
-@b = global i32 8
-@c = global double 8
-@d = global i32 8
+@a = global i32 2
+@b = global i32 2
+@c = global double 2.00
+@d = global i32 2
 define i32 @main(){
   %1 = add i32 32, 0
   %2 = call i32 @putchar(i32 %1)

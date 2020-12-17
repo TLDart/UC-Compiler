@@ -40,11 +40,12 @@ char* codegen_s_type(s_types s){
 
 
 
-char* get_expr_global(struct expression* exp){//TODO Fix this
-    if(exp == NULL){
-        return "0";
+double get_expr_global(struct expression* exp){//TODO Fix this
+//if neg symbol
+    if(exp->expr_t == t_op1 && exp->expression_morphs.operation1->type == t_minus){
+        return -atof(exp->expression_morphs.t->info->id);
     }
-    return "8";
+    return atof(exp->expression_morphs.t->info->id);
 }
 
 void codegen(struct program* head, struct scope* scope_head){
@@ -71,10 +72,23 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
     struct declaration* head = dec;
     int result;
     s_types op1type;
+    double globnr;
     while(dec != NULL){
-
         if(strcmp(scope_name, "Global") == 0){
-            printf("@%s = global %s %s\n", dec->decl->info->id, get_type(head->tsp), get_expr_global(dec->decl->expr));
+            globnr = get_expr_global(dec->decl->expr);
+            if(strcmp(get_type(head->tsp), "double") == 0){
+                if(globnr == (int) globnr)
+                    printf("@%s = global %s %.2lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
+                else
+                {
+                    printf("@%s = global %s %lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
+                }
+                
+            }
+            else{
+                printf("@%s = global %s %.0lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
+
+            }
 
             dec = dec->next;
         }
