@@ -333,13 +333,13 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
         case t_and:
             	if(op1type != s_double ){
                     print_code_indent(1); 
-                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
+                    printf("%%%d = fcmp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
                     op1 = varcounter;
                     varcounter++;
                 }
 				else{
 					print_code_indent(1); 
-                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
+                    printf("%%%d = icmp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
                     op1 = varcounter;
 				}
 				label1 = varcounter;
@@ -351,13 +351,13 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
 
 				if(op2type != s_double ){
                     print_code_indent(1); 
-                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
+                    printf("%%%d = fcmp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
                     op2 = varcounter;
                     varcounter++;
                 }
 				else{
 					print_code_indent(1); 
-                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
+                    printf("%%%d = icmp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
                     op2 = varcounter;
 					varcounter++;
 				}	
@@ -377,13 +377,13 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
         case t_or:
             	if(op1type != s_double ){
                     print_code_indent(1); 
-                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
+                    printf("%%%d = fcmp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
                     op1 = varcounter;
                     varcounter++;
                 }
 				else{
 					print_code_indent(1); 
-                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
+                    printf("%%%d = icmp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
                     op1 = varcounter;
 					varcounter++;
 				}
@@ -396,13 +396,13 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
 
 				if(op2type != s_double ){
                     print_code_indent(1); 
-                    printf("%%%d = fmcp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
+                    printf("%%%d = fcmp une %s %%%d, %s\n", varcounter, "double", op2, "0.0");
                     op2 = varcounter;
                     varcounter++;
                 }
 				else{
 					print_code_indent(1); 
-                    printf("%%%d = imcp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
+                    printf("%%%d = icmp ne %s %%%d, %s\n", varcounter, "i32", op2, "0");
                     op2 = varcounter;
 				}	
 				print_code_indent(1); 
@@ -433,12 +433,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp oeq %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp oeq %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp eq %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp eq %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             
@@ -461,12 +461,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp one %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp one %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp ne %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp ne %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             print_code_indent(1); 
@@ -488,12 +488,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp olt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp olt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp slt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp slt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             print_code_indent(1); 
@@ -515,12 +515,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp ole %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp ole %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp sle %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp sle %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             print_code_indent(1); 
@@ -542,12 +542,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp ogt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp ogt %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp sgt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp sgt %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             print_code_indent(1); 
@@ -569,12 +569,12 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     varcounter++;
                 }
                 print_code_indent(1); 
-                printf("%%%d = fmcp oge %s %%%d, %%%d\n", varcounter, "double", op1, op2);
+                printf("%%%d = fcmp oge %s %%%d, %%%d\n", varcounter, "double", op1, op2);
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = imcp sge %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+                printf("%%%d = icmp sge %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
                 varcounter++;
             }
             print_code_indent(1); 

@@ -1,5 +1,9 @@
 int main(void){
-    int a = 65;
-    putchar(a);
-    putchar('\n');
+    double a = 3;
+    if(a < 2){
+        putchar('b');
+    }
+    else{
+        putchar('c');
+    }
 }
