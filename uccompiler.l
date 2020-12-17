@@ -176,7 +176,7 @@ int main(int argc, char* argv[]) {
 
     if((mf == meta3 && syntax_error_counter == 0 ) ||(mf == meta4 && syntax_error_counter == 0) ){ 
         semantic_errors += check_program(myprog);
-        /* if (semantic_errors > 0) printf("Total semantic_errors: %d\n",semantic_errors); */
+        /* if (semantic_errors > 0){} printf("Total semantic_errors: %d\n",semantic_errors); */
         if (ASTnoted){
             showTable(scope_head);
             printf("\n");
@@ -190,7 +190,7 @@ int main(int argc, char* argv[]) {
     else if (ASTnoted && syntax_error_counter == 0) { // AST-noted
         print_ast(myprog);
     }
-    else if(meta4){
+    else if(meta4 && semantic_errors == 0){
         if( myprog != NULL && scope_head != NULL)
             codegen(myprog, scope_head);
     }

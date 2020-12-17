@@ -8,6 +8,8 @@ void print_code_indent(int depth){
 char* get_type(struct tpspec * t){
     if(t->type == t_typespec_double)
         return "double";
+    if(t->type == t_typespec_void)
+        return "void";
     else
     {
         return "i32";
@@ -67,6 +69,7 @@ void codegen(struct program* head, struct scope* scope_head){
 
 void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
     struct declaration* head = dec;
+    int result;
     while(dec != NULL){
 
         if(strcmp(scope_name, "Global") == 0){
@@ -77,8 +80,9 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
         else{
             print_code_indent(depth);
             printf("%%%s = alloca %s\n", dec->decl->info->id, get_type(head->tsp));
+            result = codegen_expression(dec->decl->expr, scope_name);
             print_code_indent(depth);
-            printf("store %s %s, %s* %%%s\n", get_type(head->tsp), get_expr_global(dec->decl->expr),get_type(head->tsp), dec->decl->info->id);
+            printf("store %s %%%d, %s* %%%s\n", get_type(head->tsp), result,get_type(head->tsp), dec->decl->info->id);
             dec = dec->next;
         }
     }
@@ -91,6 +95,15 @@ void codegen_f_def(struct function_definition* f_def){
     codegen_param_list_stores(f_def->param_list);
     if(f_def->f_body != NULL){
         codegen_f_body(f_def->f_body, f_def->info->id);
+    }
+
+    if(strcmp(get_type(f_def->tsp), "i32") == 0){
+        print_code_indent(1);
+        printf("ret i32 0\n");
+    }
+    if(strcmp(get_type(f_def->tsp), "double") == 0){
+        print_code_indent(1);
+        printf("ret double 0.0\n");
     }
     printf("}\n");
     varcounter = 1;
