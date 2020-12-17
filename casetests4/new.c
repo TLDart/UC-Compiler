@@ -1,6 +1,7 @@
 int main(void){
-    int a = -2;
-    if( a == -2){
+    int a = !2.1;
+    double b = -2.1;
+    if( b == -2.1){
         putchar('a');
     }
 }

@@ -335,12 +335,12 @@ int codegen_op1(struct op1* op, char* local_scope_name) {
         case t_not:
             if(op1type == s_double){
                 print_code_indent(1); 
-                printf("%%%d = fcmp une %s %%%d, %%%s\n", varcounter, "double", op1, "0.0");
+                printf("%%%d = fcmp une %s %%%d, %s\n", varcounter, "double", op1, "0.0");
                 varcounter++;
             }
             else{
                 print_code_indent(1); 
-                printf("%%%d = icmp ne %s %%%d, %%%s\n", varcounter, "i32", op1, "0");
+                printf("%%%d = icmp ne %s %%%d, %s\n", varcounter, "i32", op1, "0");
                 varcounter++;
             }
             print_code_indent(1); 
