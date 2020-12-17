@@ -6,7 +6,7 @@
 #include "print_lib.h"
 
 char* buf[250];
-extern int varcounter;
+extern int varcounter, labelcounter;
 
 char* codegen_terminal_type(t_type t);
 char* get_expr_value(struct expression* exp);

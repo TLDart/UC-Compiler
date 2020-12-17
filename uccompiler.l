@@ -63,6 +63,7 @@ MLCOMMENTE      "*/"
     extern int syntax_error_counter;
     
     int varcounter = 1;
+    int labelcounter = 1;
     int lines = 1;
     int columns = 1;
     int verbose = 0;

@@ -13,6 +13,9 @@ double test(double a, int b){
     int f = 1;
     if(d == 1){
     }
+    else{
+        putchar(65);
+    }
 
 
     return 1;

@@ -172,35 +172,35 @@ int codegen_statement(struct statement* stt, char* local_scope_name){
 
 int codegen_if(struct if_statement* stt_if, char* local_scope_name){
     int result = codegen_expression(stt_if->expr, local_scope_name);
-    int label1, label2, label3, old;
+    int label1, label2, label3;
     print_code_indent(1);
     printf("%%%d = icmp eq %s %%%d, %s\n", varcounter, "i32", result, "1");
     varcounter++;
-    label1= varcounter;
+    label1= labelcounter++;
     varcounter++;
-    label2 = stt_if->if_body == NULL ? varcounter:  codegen_statement(stt_if->if_body, local_scope_name);
+    label2 = labelcounter++;
     varcounter++;
-    label3 = stt_if->else_body == NULL ? varcounter:  codegen_statement(stt_if->else_body, local_scope_name);
+    label3 = labelcounter++;
     varcounter = label1;
     print_code_indent(1);
-    printf("br %s %%%d, label %%%d, label %%%d\n", "i1", varcounter - 1, label1,label2);
+    printf("br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label1,label2);
     varcounter++;
 
-    printf("\n%d:\n", label1);
+    printf("\nlabel%d:\n", label1);
     if(stt_if->if_body != NULL)
         codegen_statement(stt_if->if_body, local_scope_name);
     print_code_indent(1);
-    printf("br label %%%d\n", label3);
+    printf("br label %%label%d\n", label3);
     varcounter++;
 
     printf("\n%d:\n", label2);
     if(stt_if->else_body != NULL)
         codegen_statement(stt_if->else_body, local_scope_name);
     print_code_indent(1);
-    printf("br label %%%d\n", label3);
+    printf("br label %%label%d\n", label3);
     varcounter++;
 
-    printf("\n%d:\n", label3);
+    printf("\nlabel%d:\n", label3);
 
     return -1;
 }
