@@ -26,4 +26,11 @@ int codegen_op1(struct op1* op, char* local_scope_name);
 int codegen_op2(struct op2* op, char* local_scope_name);
 int codegen_term(struct terminal* t, char* local_scope_name);
 int codegen_call(struct call* c, char* local_scope_name);
+
+//Helper Funcs
+double calc_global_expression(struct expression* expr);
+double calc_op1(struct op1* op);
+double calc_op2(struct op2* op);
+double calc_term(struct terminal* t);
+void add_default_main();
 #endif
