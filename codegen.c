@@ -8,7 +8,7 @@ void print_code_indent(int depth){
 char* get_type(struct tpspec * t){
     if(t->type == t_typespec_double)
         return "double";
-    if(t->type == t_typespec_void)
+    else if(t->type == t_typespec_void)
         return "void";
     else
     {
@@ -17,11 +17,11 @@ char* get_type(struct tpspec * t){
 }
 char* codegen_terminal_type(t_type t){
     switch (t){
-    case t_double: case t_reallit:
-        return "double";
+        case t_double: case t_reallit:
+            return "double";
     
-    default:
-        return "i32";
+        default:
+            return "i32";
     }
 }
 
@@ -37,16 +37,15 @@ char* codegen_s_type(s_types s){
         }
 
 }
-void try_main(){
+void try_main(){//If there is no main defined, then define a main
     struct scope* s = NULL;
     s = get_scope_by_name(scope_head,"main");
     if(s == NULL)
         printf("\ndefine i32 @main(){\n  ret i32 0\n}\n");
 }
-
+//if neg symbol
 
 double get_expr_global(struct expression* exp){//TODO Fix this
-//if neg symbol
     if(exp->expr_t == t_op1 && exp->expression_morphs.operation1->type == t_minus){
         return -atof(exp->expression_morphs.t->info->id);
     }
@@ -54,10 +53,8 @@ double get_expr_global(struct expression* exp){//TODO Fix this
 }
 
 void codegen(struct program* head, struct scope* scope_head){
-    printf("declare i32 @putchar(i32)\n");
-    printf("\n");
-    printf("declare i32 @getchar(i32)\n");
-    printf("\n");
+    printf("declare i32 @putchar(i32)\n\n");
+    printf("declare i32 @getchar(i32)\n\n");
     
     while(head != NULL){
         if(head->type == t_f_def){
@@ -71,7 +68,7 @@ void codegen(struct program* head, struct scope* scope_head){
         }
         head = head->next;
     }
-    try_main();
+    try_main();//If we only defined a main
 }
 
 void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
@@ -80,62 +77,44 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
     s_types op1type;
     double globnr;
     while(dec != NULL){
-        if(strcmp(scope_name, "Global") == 0){
-            globnr = get_expr_global(dec->decl->expr);
-            if(strcmp(get_type(head->tsp), "double") == 0){
-                if(globnr == (int) globnr)
-                    printf("@%s = global %s %.2lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
-                else
-                {
-                    printf("@%s = global %s %lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
+        if(strcmp(scope_name, "Global") == 0){// If is global we will have to calculate the value of the expression in place, else we will calculate with the help of variables
+
+            if(dec->decl->expr != NULL){// If the expression is initialized
+                globnr = get_expr_global(dec->decl->expr); // calc the value of the expression
+                if(strcmp(get_type(head->tsp), "double") == 0){
+                    if(globnr == (int) globnr)
+                        printf("@%s = global %s %.2lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
+                    else
+                        printf("@%s = global %s %lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
                 }
-                
+                else
+                    printf("@%s = global %s %.0lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
             }
-            else{
-                printf("@%s = global %s %.0lf\n", dec->decl->info->id, get_type(head->tsp), globnr);
-
+            else{// If is it not declared then we are going to use a default value of 0 to initialize the variable
+                if(strcmp(get_type(head->tsp), "double") == 0)//Check for type
+                    printf("@%s = global %s 0.0\n", dec->decl->info->id, get_type(head->tsp));
+                else
+                    printf("@%s = global %s 0\n", dec->decl->info->id, get_type(head->tsp));
             }
-
-            dec = dec->next;
         }
-        else{
-            print_code_indent(depth);
-            printf("%%%s = alloca %s\n", dec->decl->info->id, get_type(head->tsp));
+        else{ // If it is in scope local aka inside a function
+            printf("  %%%s = alloca %s\n", dec->decl->info->id, get_type(head->tsp));
 
             if(dec->decl->expr != NULL){
-                result = codegen_expression(dec->decl->expr, scope_name);
-                
-                //Convert int to float
+                result = codegen_expression(dec->decl->expr, scope_name); // Get value of the expression
                 op1type = get_expression_type(dec->decl->expr, scope_name,0);
-                if(op1type != s_double && strcmp(get_type(head->tsp), "double") == 0){
-                    print_code_indent(depth);
-                    printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
-                    result = varcounter++;
+                if(op1type != s_double && strcmp(get_type(head->tsp), "double") == 0){ //Convert to double if required
+                    printf("  %%%d = sitofp %s %%%d to %s\n", varcounter++, "i32", result, "double");
                 }
-
-            print_code_indent(depth);
-            printf("store %s %%%d, %s* %%%s\n", get_type(head->tsp), result,get_type(head->tsp), dec->decl->info->id);
+                printf("  store %s %%%d, %s* %%%s\n", get_type(head->tsp), varcounter,get_type(head->tsp), dec->decl->info->id);
             }
             else{
-				if(strcmp(get_type(head->tsp), "double") == 0){
-                   /*  if(get_expression_type(dec->decl->expr, scope_name, 0) == s_int){
-                        print_code_indent(depth);
-                        printf("%%%d = sitofp %s %%%d to %s\n", varcounter, "i32", result, "double");
-                        varcounter++;
-                    } */
-                       
-                        print_code_indent(depth);
-                        printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0.0",get_type(head->tsp), dec->decl->info->id);
-				}
-				else if(strcmp(get_type(head->tsp), "i32") == 0){
-					print_code_indent(depth);
-					printf("store %s %s, %s* %%%s\n", get_type(head->tsp), "0",get_type(head->tsp), dec->decl->info->id);
-				}
-                
+                char * val = strcmp(get_type(head->tsp), "double") == 0 ? "0.0" : "0";  
+                printf("  store %s %s, %s* %%%s\n", get_type(head->tsp), val, get_type(head->tsp), dec->decl->info->id);
             }
+        }
             dec = dec->next;
         }
-    }
 }
 
 void codegen_f_def(struct function_definition* f_def){
