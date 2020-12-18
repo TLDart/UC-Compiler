@@ -89,7 +89,7 @@ int check_f_dec(struct function_declaration* f_dec, char *name){
         }
         if ((void_param_flag && counter > 1) || (void_param_flag && current_second->p_dec->info && current_second->p_dec->info != NULL)){
             printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
-            return ec; // dont add function to the scope neither create a scope of their own
+            return ++ec; // dont add function to the scope neither create a scope of their own
         }
         current_second = current_second->next;
     }
@@ -160,6 +160,7 @@ int check_f_dec_param_list(struct parameter_list* pl) {
                     disney_scope->symtab = insert_sym_element(disney_scope->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
                 } else {
                     printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
+                    ec++;
                 }
             }
             pl = pl->next;
@@ -199,15 +200,18 @@ int check_dec(struct declaration* dec, char *name){
                     printf(", expected ");
                     print_scope_f_dec(sym_elem->sym_f);
                     printf(")\n");
+                    ec++;
                 } else if (sym_elem->already_defined) {
                     if(is_global){
                         if (current->decl->expr != NULL) { // If current is a definition
                             printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
+                            ec++;
                         } else {
                             // Not an error
                         }
                     } else { // Inside a Function
                         printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
+                        ec++;
                     }
                 } else if (!sym_elem->already_defined) { // Only declared, but not defined
                     if (is_global) {
@@ -218,6 +222,7 @@ int check_dec(struct declaration* dec, char *name){
                         }
                     } else {
                         printf("Line %d, col %d: Symbol %s already defined\n",current->decl->info->lines, current->decl->info->cols, current->decl->info->id);
+                        ec++;
                     }
                 }
                 
@@ -225,6 +230,7 @@ int check_dec(struct declaration* dec, char *name){
                 if ((void_type_flag == 1) || ((s_types) current->tsp->type == s_void)) { // case void a = 1;
                     void_type_flag = 1;
                     printf("Line %d, col %d: Invalid use of void type in declaration\n",current->decl->info->lines,current->decl->info->cols);
+                    ec++;
                 } else {    // case type different from void
                     if (current->decl->expr && compare_types((s_types) current->tsp->type,(s_type = get_expression_type(current->decl->expr,name,false)))) {
                         printf("Line %d, col %d: Conflicting types (got ",current->decl->info->lines, current->decl->info->cols);
@@ -232,6 +238,7 @@ int check_dec(struct declaration* dec, char *name){
                         printf(", expected ");
                         print_s_type((s_types) current->tsp->type);
                         printf(")\n");
+                        ec++;
                     }
                     
                     s->symtab = insert_sym_element(s->symtab, create_sym_element(current->decl->info->id,(s_types) dec->tsp->type, NULL, 0, (current->decl->expr == NULL) ? 0 : 1));
@@ -265,7 +272,7 @@ int check_f_def(struct function_definition* fdef){
         }
         if ((void_param_flag && counter > 1) || (void_param_flag && current_def->p_dec->info && current_def->p_dec->info->id != NULL)){
             printf("Line %d, col %d: Invalid use of void type in declaration\n",void_param_flag->p_dec->tsp->lines,void_param_flag->p_dec->tsp->cols);
-            return ec;
+            return ++ec;
         }
         current_def = current_def->next;
     }
@@ -299,6 +306,7 @@ int check_f_def(struct function_definition* fdef){
             }
             if (sym_elem->already_defined) {
                 printf("Line %d, col %d: Symbol %s already defined\n",fdef->info->lines,fdef->info->cols,fdef->info->id);
+                ec++;
             } else { // Caso apenas haja a declaração da função
                 if ((sym_elem->sym_f->return_value != (s_types) fdef->tsp->type) || (len_declaration != len_definition) || (dif > 0)){
                     f_dec->tsp = (struct tpspec*) malloc(sizeof(struct tpspec));
@@ -311,6 +319,7 @@ int check_f_def(struct function_definition* fdef){
                     printf(")\n");
                     free(f_dec->tsp);
                     free(f_dec);
+                    ec++;
                 } else {
                     sym_elem->already_defined = 1;
                     ec += check_return_type(fdef->tsp->type, fdef->info->id); // Adicionar o return < type > ao scope da função     | isto caso haja
@@ -330,6 +339,7 @@ int check_f_def(struct function_definition* fdef){
             printf(")\n");
             free(f_dec->tsp);
             free(f_dec);
+            ec++;
         }
     } else { //Meaning that it did not find a valid definition
         struct tpspec* tpsp = (struct tpspec*) malloc(sizeof(struct tpspec));
@@ -376,6 +386,7 @@ int check_param_list(struct parameter_list* pl, char* name){
                     head->symtab = insert_sym_element(head->symtab, create_sym_element(pl->p_dec->info->id,(s_types)pl->p_dec->tsp->type, NULL, 1,1));	
                 } else {
                     printf("Line %d, col %d: Symbol %s already defined\n",pl->p_dec->info->lines,pl->p_dec->info->cols,pl->p_dec->info->id);
+                    ec++;
                 }
             }
 		    pl = pl->next;
@@ -441,6 +452,7 @@ int check_return(struct return_statement* rs, char* name) {
             printf(", expected ");
             print_s_type(sym_elem->sym_f->return_value);
             printf(")\n");
+            ec++;
         }
     }
     return ec;
@@ -466,11 +478,13 @@ int check_if(struct if_statement* head, char* name){
             } else if (head->expr->expr_t == t_call){
                 printf(" col %d: Conflicting types (got ",head->expr->expression_morphs.c->call_morphs.info->cols);
                 print_s_type(s_type);
+
             } else { 
                 printf(" col %d: Conflicting types (got ", get_expression_col(head->expr));
                 print_s_type(s_type);
             }
             printf(", expected int)\n");
+            ec++;
         }
     }
     return ec;
@@ -499,6 +513,7 @@ int check_while(struct while_statement* head, char* name){
                 print_s_type(s_type);
             }
             printf(", expected int)\n");
+            ec++;
         }
     }
     return ec;
@@ -539,6 +554,7 @@ int check_op1(struct op1* op, char* name) {
             printf(" cannot be applied to type ");
             print_s_type(get_expression_type(op->exp, name, true));
             printf("\n");
+            ec++;
         }
     }
     return ec;
@@ -567,6 +583,7 @@ int check_op2(struct op2* op, char* name) {
                         printf(", "); 
                         print_s_type(get_expression_type(op->exp2,name,true));
                         printf("\n"); 
+                        ec++;
                     }
                     break;
                 case t_le: case t_lt: case t_eq: case t_ne: case t_ge: case t_gt:
@@ -579,6 +596,7 @@ int check_op2(struct op2* op, char* name) {
                         printf(", "); 
                         print_s_type(get_expression_type(op->exp2,name,true));
                         printf("\n"); 
+                        ec++;
                     }
                     break;
                 case t_store:
@@ -590,6 +608,7 @@ int check_op2(struct op2* op, char* name) {
                         printf(", "); 
                         print_s_type(get_expression_type(op->exp2,name,true));
                         printf("\n"); 
+                        ec++;
                     }
                     if (op->exp1->expr_t == t_term) {
                         if (op->exp1->expression_morphs.t->type == t_id) {
@@ -598,9 +617,11 @@ int check_op2(struct op2* op, char* name) {
                             }
                         } else {
                             printf("Line %d, col %d: Lvalue required\n",op->lines, get_expression_col(op->exp1));
+                            ec++;
                         }
                     } else {
                         printf("Line %d, col %d: Lvalue required\n",op->lines,get_expression_col(op->exp1));
+                        ec++;
                     }
                     break;
             }
@@ -634,6 +655,7 @@ int check_call(struct call* c, char* name) {
                 if ((sym_elem = search_symbol(scope_head, current->call_morphs.info->id, name))){
                     if (sym_elem->type != s_function) {
                         printf("Line %d, col %d: Symbol %s is not a function\n", current->call_morphs.info->lines, current->call_morphs.info->cols, current->call_morphs.info->id);
+                        ec++;
                     } else { // é uma função e portanto é necessário ver se não dá wrong number of args
                         current_sym_param = sym_elem->sym_f->params;
                         while(current_sym_param){
@@ -644,7 +666,7 @@ int check_call(struct call* c, char* name) {
                         }
                         if ((got_args = count_call_params(current)) != required_args){
                             printf("Line %d, col %d: Wrong number of arguments to function %s (got %d, required %d)\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id,got_args,required_args);
-                            return ec;
+                            return ++ec;
                         }
                         current_sym_param = sym_elem->sym_f->params; // for the call_exp: current is already on the head, just ->next to next param
                         call_id = c;
@@ -652,6 +674,7 @@ int check_call(struct call* c, char* name) {
                 } else { // Se o simbolo não for encontrado
                     printf("Line %d, col %d: Unknown symbol %s\n", current->call_morphs.info->lines, current->call_morphs.info->cols,current->call_morphs.info->id);
                     printf("Line %d, col %d: Symbol %s is not a function\n", current->call_morphs.info->lines, current->call_morphs.info->cols, current->call_morphs.info->id);
+                    ec += 2;
                 }
                 break;
             case call_exp:
@@ -664,6 +687,7 @@ int check_call(struct call* c, char* name) {
                         printf(", expected ");
                         print_s_type(current_sym_param->param_type);
                         printf(")\n");
+                        ec++;
                     }
                     current_sym_param = current_sym_param->next;
                 }
