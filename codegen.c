@@ -81,9 +81,11 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
             if(dec->decl->expr != NULL){
                 result = codegen_expression(dec->decl->expr, scope_name); // Get value of the expression
                 op1type = get_expression_type(dec->decl->expr, scope_name,0);
-                if(op1type != s_double && strcmp(get_type(head->tsp), "double") == 0) //Convert to double if required
+                if(op1type != s_double && strcmp(get_type(head->tsp), "double") == 0){ //Convert to double if required
                     printf("  %%%d = sitofp %s %%%d to %s\n", varcounter++, "i32", result, "double");
-                printf("  store %s %%%d, %s* %%%s\n", get_type(head->tsp), varcounter,get_type(head->tsp), dec->decl->info->id);
+					result++;
+				}
+                printf("  store %s %%%d, %s* %%%s\n", get_type(head->tsp), result,get_type(head->tsp), dec->decl->info->id);
             }
             else{
                 char * val = strcmp(get_type(head->tsp), "double") == 0 ? "0.0" : "0";  
@@ -120,7 +122,7 @@ void codegen_f_def(struct function_definition* f_def){
 
 void codegen_param_list(struct parameter_list* p_list){
     while(p_list != NULL){
-        if( p_list->p_dec->tsp->type != t_typespec_void)
+        if(p_list->p_dec->tsp->type != t_typespec_void)
 			printf("%s %%arg.%s", get_type(p_list->p_dec->tsp), p_list->p_dec->info->id);
         p_list = p_list->next;
         if(p_list != NULL) printf(","); //Check if one should print "," on the last instance
@@ -268,7 +270,7 @@ int codegen_return(struct return_statement* stt_ret, char* local_scope_name){
 
     print_code_indent(1);
     printf("ret %s %%%d\n",codegen_s_type(sm->sym_f->return_value) , result);
-    return varcounter;
+    return varcounter++;
 }
 int codegen_expression(struct expression* expr, char* local_scope_name){//TODO Fix this
     if (expr->expr_t == t_op1){
@@ -803,7 +805,6 @@ int codegen_call(struct call* c, char* local_scope_name){
         printf("call %s @%s(",codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
     else{
         printf("%%%d = call %s @%s(", varcounter,codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
-        varcounter++;
     }
     //Print Param list
     for (current = c, i = 0; current; current = current->next_arg){
@@ -819,12 +820,10 @@ int codegen_call(struct call* c, char* local_scope_name){
     }   
         
     printf(")\n");
-    return varcounter;
+    return varcounter++;
 }
 
 //=====================================================Helper funcs=======================================================
-
-
 
 double calc_global_expression(struct expression* expr){// Global expressions can only be constants and therefore neither call nor id types are possible
 	if(expr){

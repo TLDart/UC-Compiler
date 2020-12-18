@@ -1,0 +1,13 @@
+
+int main(void){
+    double a = 1;
+}
+int test1(int a, double b, char c, double d, short f){
+    a = 1;
+}
+int test2(int a, double b, char c, double d, short f){
+    a = 1;
+}
+int test3(int a, double b, char c, double d, short f){
+    a = 1;
+}
