@@ -529,36 +529,51 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             break;
         case t_store:
             if(op2type == s_double){
-                printf("  store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
-            } 
-            else{
                 if ((s = get_scope_by_name(scope_head,local_scope_name)) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id)) &&  strcmp(codegen_s_type(se->type), "double") == 0){
-                    printf("  %%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
-                    op2 = varcounter++;
                     printf("  store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
                 }
                 else{
-                    printf("  store %s %%%d, %s* %%%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
+                    printf("  store %s %%%d, %s* @%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
+                }
+            } 
+            else{
+                if ((s = get_scope_by_name(scope_head,local_scope_name)) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id))){
+                    if(strcmp(codegen_s_type(se->type), "double") == 0){
+                        printf("  %%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                        op2 = varcounter++;
+                        printf("  store %s %%%d, %s* %%%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
+                    }
+                    else{
+                        printf("  store %s %%%d, %s* %%%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
+                    }
+                   
+                }
+                if ((s = get_scope_by_name(scope_head,"double")) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id))){
+                    if(strcmp(codegen_s_type(se->type), "double") == 0){
+                        printf("  %%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
+                        op2 = varcounter++;
+                        printf("  store %s %%%d, %s* @%s\n", "double", op2, "double", op->exp1->expression_morphs.t->info->id);
+                    }
+                    else{
+                        printf("  store %s %%%d, %s* @%s\n", "i32", op2, "i32", op->exp1->expression_morphs.t->info->id);
+                    }
                 }
             }
             codegen_expression(op->exp1, local_scope_name);
             return varcounter - 1;
             break;
-        case t_comma:
+        case t_comma://here
             break;
         case t_bitwiseand:
-            print_code_indent(1);
-            printf("%%%d = and %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("  %%%d = and %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
             return varcounter++;
             break;
         case t_bitwisexor:
-            print_code_indent(1);
-            printf("%%%d = xor %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("  %%%d = xor %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
             return varcounter++;
             break;
         case t_bitwiseor:
-            print_code_indent(1);
-            printf("%%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
+            printf("  %%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
             return varcounter++;
             break;
     }

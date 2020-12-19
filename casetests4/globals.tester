@@ -4,7 +4,9 @@ char a2 = 3,b2,c2,d2,e2 =2;
 int a3 = 2,b3,c3,d3,e3 =2;
 
 int test(void){
-    return 1;
+    int a0;
+    a1 = 2;
+    a = 2;    
 }
 
 int a4 = 1,b4,c4 = 2 * 3,d4,e4 =2;
