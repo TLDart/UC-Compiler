@@ -4,5 +4,4 @@ int main(void){
         putchar('f');
         a = a + 3.2;
     }
-
 }

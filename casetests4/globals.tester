@@ -5,7 +5,7 @@ int a3 = 2,b3,c3,d3,e3 =2;
 
 int test(void){
     int a0;
-    a1 = 2;
+    a1 = 2 + 2;
     a = 2;    
 }
 

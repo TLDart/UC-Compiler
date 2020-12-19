@@ -221,17 +221,24 @@ int codegen_statlist(struct statlist_statement* stt_stl, char* local_scope_name)
 }
 
 int codegen_return(struct return_statement* stt_ret, char* local_scope_name){
-    int result = codegen_expression(stt_ret->expr, local_scope_name);   
-    s_types t = get_expression_type(stt_ret->expr, local_scope_name, 0);
-    struct sym_element* sm = get_token_by_name(scope_head->symtab, local_scope_name);
-    //if the operator is of type i32 but the function is of type double we need to convert
-    if(sm->sym_f->return_value == s_double && t != s_double){
-        printf("  %%%d = sitofp %s %%%d to %s\n", varcounter++, "i32", result, "double");
-        result = varcounter - 1;
-    }
+    int result ;
+    if(stt_ret->expr) {
+        result = codegen_expression(stt_ret->expr, local_scope_name);   
+        s_types t = get_expression_type(stt_ret->expr, local_scope_name, 0);
+        struct sym_element* sm = get_token_by_name(scope_head->symtab, local_scope_name);
+        //if the operator is of type i32 but the function is of type double we need to convert
+        if(sm->sym_f->return_value == s_double && t != s_double){
+            printf("  %%%d = sitofp %s %%%d to %s\n", varcounter++, "i32", result, "double");
+            result = varcounter - 1;
+        }
 
-    printf("  ret %s %%%d\n",codegen_s_type(sm->sym_f->return_value) , result);
+        printf("  ret %s %%%d\n",codegen_s_type(sm->sym_f->return_value) , result);
+    }
+    else{
+        printf("  ret void\n");
+    }
     return varcounter++;
+
 }
 int codegen_expression(struct expression* expr, char* local_scope_name){
     if (expr->expr_t == t_op1){
