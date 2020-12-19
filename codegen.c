@@ -178,7 +178,7 @@ int codegen_statement(struct statement* stt, char* local_scope_name){
 int codegen_if(struct if_statement* stt_if, char* local_scope_name){
     int result = codegen_expression(stt_if->expr, local_scope_name);
     int label1 = labelcounter++, label2 = labelcounter++, label3 = labelcounter++;
-    printf("  %%%d = icmp eq %s %%%d, %s\n", varcounter++, "i32", result, "1");
+    printf("  %%%d = icmp ne %s %%%d, %s\n", varcounter++, "i32", result, "0");
     printf("  br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label1,label2);
 
     printf("\nlabel%d:\n", label1);
@@ -204,7 +204,7 @@ int codegen_while(struct while_statement* stt_whi, char* local_scope_name){
     printf("\nlabel%d:\n", label1);
 
     result = codegen_expression(stt_whi->expr, local_scope_name);
-    printf("  %%%d = icmp eq %s %%%d, %s\n", varcounter++, "i32", result, "1");
+    printf("  %%%d = icmp ne %s %%%d, %s\n", varcounter++, "i32", result, "0");
     printf("  br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label2,label3);
 
     printf("\nlabel%d:\n", label2);
