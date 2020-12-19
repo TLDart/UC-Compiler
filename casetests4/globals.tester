@@ -3,6 +3,11 @@ double a1 = 1,b1,c1,d1,e1 = -2.2;
 char a2 = 3,b2,c2,d2,e2 =2;
 int a3 = 2,b3,c3,d3,e3 =2;
 
-int main(void){
+int test(void){
     return 1;
 }
+
+int a4 = 1,b4,c4 = 2 * 3,d4,e4 =2;
+double a5 = 1,b5,c5,d5,e5 = -2.2;
+char a6 = 3,b6,c6,d6,e6 =2;
+int a7 = 2,b7,c7,d7,e7 =2;
