@@ -97,6 +97,7 @@ void codegen_declaration(struct declaration* dec, int depth, char* scope_name){
 }
 
 void codegen_f_def(struct function_definition* f_def){
+    char* tp, *rt;
     printf("define %s @%s(", get_type(f_def->tsp), f_def->info->id);
     codegen_param_list(f_def->param_list);
     printf("){\n");
@@ -106,14 +107,9 @@ void codegen_f_def(struct function_definition* f_def){
         codegen_f_body(f_def->f_body, f_def->info->id);
     
 	//Add a default return type
-    if(strcmp(get_type(f_def->tsp), "i32") == 0){
-        print_code_indent(1);
-        printf("ret i32 0\n");
-    }
-    if(strcmp(get_type(f_def->tsp), "double") == 0){
-        print_code_indent(1);
-        printf("ret double 0.0\n");
-    }
+    tp = strcmp(get_type(f_def->tsp), "i32") == 0 ? "i32" : strcmp(get_type(f_def->tsp), "void") == 0 ? "void" :"double";
+    rt = strcmp(get_type(f_def->tsp), "i32") == 0 ? "0" : strcmp(get_type(f_def->tsp), "void") == 0 ? "" : "0.0";
+    printf("  ret %s %s\n", tp, rt);
 
     printf("}\n");
     varcounter = 1; // Reset varcounter each time we leave a function
@@ -132,19 +128,10 @@ void codegen_param_list(struct parameter_list* p_list){
 
 void codegen_param_list_stores(struct parameter_list* p_list){
     while(p_list != NULL){
-        if(p_list->p_dec->tsp->type != t_typespec_void){
-            if(strcmp(get_type(p_list->p_dec->tsp), "double") == 0){
-                print_code_indent(1);
-                printf("%%%s = alloca %s\n", p_list->p_dec->info->id, "double");
-                print_code_indent(1);
-                printf("store %s %%arg.%s, %s* %%%s\n", "double", p_list->p_dec->info->id, "double", p_list->p_dec->info->id);
-            } 
-            else{
-                print_code_indent(1);
-                printf("%%%s = alloca %s\n", p_list->p_dec->info->id, "i32");
-                print_code_indent(1);
-                printf("store %s %%arg.%s, %s* %%%s\n", "i32", p_list->p_dec->info->id, "i32", p_list->p_dec->info->id);
-            }
+        if(p_list->p_dec->tsp->type != t_typespec_void){// If it is not void
+            char * tp = strcmp(get_type(p_list->p_dec->tsp), "double") == 0 ? "double" : "i32";
+            printf("  %%%s = alloca %s\n", p_list->p_dec->info->id, tp);
+            printf("  store %s %%arg.%s, %s* %%%s\n",tp, p_list->p_dec->info->id, tp, p_list->p_dec->info->id);
         }
         p_list = p_list->next;
     }

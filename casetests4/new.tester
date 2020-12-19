@@ -1,5 +1,8 @@
 int main(void){
     char a = '\666';
     putchar(a);
-    return 2;
+}
+
+void test(void){
+    putchar('a');
 }
