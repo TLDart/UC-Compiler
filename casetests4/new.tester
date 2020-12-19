@@ -1,7 +1,10 @@
-int u = 1;
-int d = 1;
-
-int f33(int v) {
-    int a = u < d && d > 10 && d > 10;
-    return 0;
+void putint(int n) {
+    if (n < 0) {
+        putchar('-');
+        n = -n;
+    }
+    if (n / 10) {
+        putint(n / 10);
+    }
+    putchar(n % 10 + '0');
 }

@@ -208,6 +208,7 @@ int codegen_while(struct while_statement* stt_whi, char* local_scope_name){
     printf("  br %s %%%d, label %%label%d, label %%label%d\n", "i1", varcounter - 1, label2,label3);
 
     printf("\nlabel%d:\n", label2);
+
     if(stt_whi->while_body != NULL) codegen_statement(stt_whi->while_body, local_scope_name);
     printf("  br label %%label%d\n", label1);
 
@@ -543,7 +544,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             }
             break;
         case t_mod:
-                printf("%%%d = srem %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
+                printf("  %%%d = srem %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
                 return varcounter - 1;
             break;
         case t_store:
@@ -582,6 +583,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             return varcounter - 1;
             break;
         case t_comma://here
+            return op1;
             break;
         case t_bitwiseand:
             printf("  %%%d = and %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
@@ -671,11 +673,16 @@ int codegen_call(struct call* c, char* local_scope_name){
         }
     }
     print_code_indent(1); 
-    if(strcmp(codegen_s_type(sm->sym_f->return_value), "void") == 0 )
+    if(strcmp(codegen_s_type(sm->sym_f->return_value), "void") == 0 ){
         printf("call %s @%s(",codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
+        varcounter--; // Doing this here to neutralize varcounter em returning
+
+    }
+
     else{
         printf("%%%d = call %s @%s(", varcounter,codegen_s_type(sm->sym_f->return_value), c->call_morphs.info->id);
     }
+
     //Print Param list
     for (current = c, i = 0; current; current = current->next_arg){
         if (current->ct == call_exp){
@@ -688,7 +695,6 @@ int codegen_call(struct call* c, char* local_scope_name){
             }
         }
     }   
-        
     printf(")\n");
     return varcounter++;
 }
