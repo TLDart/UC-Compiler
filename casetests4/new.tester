@@ -1,8 +1,12 @@
 int main(void){
-    char a = '\666';
-    putchar(a);
+    int a,b;
+    a =  b = 2; 
 }
 
 void test(void){
     putchar('a');
+}
+
+double hithere(void){
+    return 1;
 }
