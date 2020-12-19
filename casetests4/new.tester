@@ -1,12 +1,7 @@
-int main(void){
-    int a,b;
-    a =  b = 2; 
-}
+int u = 1;
+int d = 1;
 
-void test(void){
-    putchar('a');
-}
-
-double hithere(void){
-    return 1;
+int f33(int v) {
+    int a = u < d && d > 10 && d > 10;
+    return 0;
 }

@@ -41,7 +41,7 @@ char* codegen_s_type(s_types s){
 
 void codegen(struct program* head, struct scope* scope_head){
     printf("declare i32 @putchar(i32)\n\n");
-    printf("declare i32 @getchar(i32)\n\n");
+    printf("declare i32 @getchar()\n\n");
     
     while(head != NULL){
         if(head->type == t_f_def){
@@ -270,15 +270,16 @@ int codegen_op1(struct op1* op, char* local_scope_name) {
         case t_minus:
             if(op1type == s_double){
                 printf("  %%%d = fneg %s %%%d\n", varcounter++, "double", op1);
-                return varcounter;
+                return varcounter - 1;
             }
             else{
                 printf("  %%%d = sub %s %s, %%%d\n", varcounter++, "i32", "0",op1);
-                return varcounter;
+                return varcounter - 1;
             }
             
             break;
-        case t_plus: 
+        case t_plus:
+            return varcounter - 1;
             break;
         default:
             return -1;
@@ -289,7 +290,7 @@ int codegen_op1(struct op1* op, char* local_scope_name) {
 int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars and converstion required to i32 from string
     int op1 = codegen_expression(op->exp1, local_scope_name);
     int op2 = codegen_expression(op->exp2, local_scope_name);
-	int label1, label2, result;
+	int label0,label1, label2, result;
     s_types t = get_op2_type(op, local_scope_name, 0);
     s_types op1type = get_expression_type(op->exp1, local_scope_name, 0);
     s_types op2type = get_expression_type(op->exp2, local_scope_name, 0);
@@ -297,8 +298,13 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
     struct scope* s = NULL;
     switch (op->type){
         case t_and:
+            label0 = labelcounter++;
             label1 = labelcounter++;
-            label2 = labelcounter++;//TODO fix label2
+            label2 = labelcounter++;    
+
+            printf("  br label %%label%d\n", label0);
+            printf("\nlabel%d:\n", label0);
+
             if(op1type == s_double ){
                 printf("  %%%d = fcmp une %s %%%d, %s\n", varcounter++, "double", op1, "0.0");
                 result = varcounter - 1;
@@ -322,13 +328,19 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
 
             printf("\nlabel%d:\n", label2);
 
-            printf("  %%%d = phi %s [ false, %%0 ], [ %%%d, %%label%d ]\n", varcounter++, "i1", result, label1);
+            printf("  %%%d = phi %s [ false, %%label%d ], [ %%%d, %%label%d ]\n", varcounter++, "i1",label0, result, label1);
             printf("  %%%d = zext %s %%%d to %s\n",varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
         case t_or:
+				label0 = labelcounter++;
 				label1 = labelcounter++;
 				label2 = labelcounter++;
+
+
+                printf("  br label %%label%d\n", label0);
+                printf("\nlabel%d:\n", label0);
+
             	if(op1type == s_double ){
                     printf("  %%%d = fcmp une %s %%%d, %s\n", varcounter++, "double", op1, "0.0");
                     result = varcounter - 1;
@@ -352,7 +364,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
 
 				printf("\nlabel%d:\n", label2);
 
-            printf("  %%%d = phi %s [ true, %%0 ], [ %%%d, %%label%d ]\n", varcounter++, "i1", result, label1);
+            printf("  %%%d = phi %s [ true, %%label%d ], [ %%%d, %%label%d ]\n", varcounter++, "i1",label0, result, label1);
             printf("  %%%d = zext %s %%%d to %s\n",varcounter, "i1", varcounter - 1, "i32");
             return varcounter++;
             break;
@@ -572,16 +584,16 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
         case t_comma://here
             break;
         case t_bitwiseand:
-            printf("  %%%d = and %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
-            return varcounter++;
+            printf("  %%%d = and %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
+            return varcounter - 1;
             break;
         case t_bitwisexor:
             printf("  %%%d = xor %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
-            return varcounter++;
+            return varcounter - 1;
             break;
         case t_bitwiseor:
-            printf("  %%%d = or %s %%%d, %%%d\n", varcounter, "i32", op1, op2);
-            return varcounter++;
+            printf("  %%%d = or %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
+            return varcounter - 1;
             break;
     }
     return -1;
