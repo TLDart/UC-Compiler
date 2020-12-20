@@ -583,7 +583,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
             return varcounter - 1;
             break;
         case t_comma://here
-            return op1;
+            return op2;
             break;
         case t_bitwiseand:
             printf("  %%%d = and %s %%%d, %%%d\n", varcounter++, "i32", op1, op2);
