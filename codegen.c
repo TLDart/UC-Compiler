@@ -631,6 +631,8 @@ int codegen_term(struct terminal* t, char* local_scope_name){
                 printf("%%%d = add %s %d, 0\n", varcounter,"i32", 34);
             else if(strncmp(t->info->id, "\\\'",2) == 0)
                 printf("%%%d = add %s %d, 0\n", varcounter,"i32", 39);
+            else if(strncmp(t->info->id, "\\\\",2) == 0)
+                printf("%%%d = add %s %d, 0\n", varcounter,"i32", 92);
             else if(strlen(t->info->id) == 5){
                 int r = (t->info->id[1] - '0') * (8 * 8) +  (t->info->id[2]- '0') * (8) + (t->info->id[3] -'0') * (1);
                 printf("%%%d = add %s %d, 0\n", varcounter,"i32", r);
