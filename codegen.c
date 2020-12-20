@@ -647,6 +647,10 @@ int codegen_term(struct terminal* t, char* local_scope_name){
                 printf("%%%d = add %s %d, 0\n", varcounter,"i32", t->info->id[0]);
             return varcounter++;
         }
+        else if(t->type == t_intlit && t->info->id[0] == '0'){
+            printf("%%%d = add %s %d, 0\n", varcounter,"i32", calc_octal(t->info->id));
+            return varcounter++;
+        } 
         else{
             printf("%%%d = add %s %s, 0\n", varcounter,"i32", t->info->id);
             return varcounter++;
@@ -818,4 +822,17 @@ void add_default_main(){//If there is no main defined, then define a main
     s = get_scope_by_name(scope_head,"main");
     if(s == NULL)
         printf("\ndefine i32 @main(){\n  ret i32 0\n}\n");
+}
+
+int calc_octal(char* str){
+    int i = strlen(str) - 1;
+    int r = 0;
+    int p = 1;
+    for(i = strlen(str) - 1; i > 0;i--){
+        //printf("%d // %d", str[i], p);
+        r += (str[i] -  '0') *  p;
+        p *=8;
+    }
+
+    return r;
 }

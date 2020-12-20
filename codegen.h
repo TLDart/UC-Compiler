@@ -4,7 +4,6 @@
 #include "symbol_table.h"
 #include <string.h>
 #include "print_lib.h"
-
 char* buf[250];
 extern int varcounter, labelcounter;
 
@@ -33,4 +32,5 @@ double calc_op1(struct op1* op);
 double calc_op2(struct op2* op);
 double calc_term(struct terminal* t);
 void add_default_main();
+int calc_octal(char* str);
 #endif
