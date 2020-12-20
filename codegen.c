@@ -618,7 +618,7 @@ int codegen_term(struct terminal* t, char* local_scope_name){
         print_code_indent(1);
         s_types tp = get_terminal_type(t, local_scope_name, 0);
         if(tp == s_double){
-            printf("%%%d = fadd %s %s, 0.0\n", varcounter,"double", t->info->id);
+            printf("%%%d = fadd %s 0%s, 0.0\n", varcounter,"double", t->info->id);
             return varcounter++;
         }
         else if(t->type == t_charlit){
