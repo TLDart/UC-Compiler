@@ -1,3 +1,10 @@
-void putint(int n) {
-   putchar(012345);
+int cc = 70;
+
+void f(void){
+    cc = 'Y';
+}
+int main(void){
+    int b = 2;
+    b = 3;
+    cc = 3;
 }

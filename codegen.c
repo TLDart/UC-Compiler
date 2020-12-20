@@ -568,7 +568,7 @@ int codegen_op2(struct op2* op, char* local_scope_name){//TODO Beware of chars a
                     }
                    
                 }
-                if ((s = get_scope_by_name(scope_head,"double")) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id))){
+                if ((s = get_scope_by_name(scope_head,"Global")) && (se = get_token_by_name(s->symtab,op->exp1->expression_morphs.t->info->id))){
                     if(strcmp(codegen_s_type(se->type), "double") == 0){
                         printf("  %%%d = sitofp %s %%%d to %s\n", varcounter, "i32", op2, "double");
                         op2 = varcounter++;
