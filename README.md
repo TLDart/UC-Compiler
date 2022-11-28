@@ -10,20 +10,15 @@ The UC language is a subset of the C language, missing in some key features (but
 * uccompiler.y -> Yacc file
 Used for paring the language
 
-* free.c 
-Library used for cleanup
+* free.c -> Library used for cleanup
 
-* printlib.c
-Library focused on printing the moving parts of the application (required for the evaluation process)
+* printlib.c -> Library focused on printing the moving parts of the application (required for the evaluation process)
 
-* symbol_table.c
-Manages the symbol table
+* symbol_table.c -> Manages the symbol table
 
-* semantics.c
-Checks if the semantics of the inserted program are correct and parses them into an AST
+* semantics.c -> Checks if the semantics of the inserted program are correct and parses them into an AST
 
-* functions.c
-* Miscelaenous Functions
+* functions.c -> Miscelaenous Functions
 
 ## Contributors
 * [Miguel Rabuge](https://github.com/MikeLrUC)
